@@ -8,5 +8,5 @@ Projekt do předmětu IJA - Aplikace pro zobrazení a editaci diagramů tříd a
 
 Contributors names and login
 
-**Marek Roman** - [xmarek74](mailto:xmarek74@stud.fit.vutbr.cz) (Team leader)
-**Václavek Lukáš** - [xvacla32](mailto:xvacla32@stud.fit.vutbr.cz)
+**Marek Roman** - [xmarek74](mailto:xmarek74@stud.fit.vutbr.cz) (Team leader)  
+**Václavek Lukáš** - [xvacla32](mailto:xvacla32@stud.fit.vutbr.cz)  
