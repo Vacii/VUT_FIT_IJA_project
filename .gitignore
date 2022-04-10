@@ -20,6 +20,7 @@ homework2/
 .mtj.tmp/
 
 # Package Files #
+*.jar
 *.war
 *.nar
 *.ear
