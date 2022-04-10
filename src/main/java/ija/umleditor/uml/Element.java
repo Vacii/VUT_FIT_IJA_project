@@ -1,4 +1,4 @@
-package ija.homework1.uml;
+package ija.umleditor.uml;
 
 // Třída reprezentuje pojmenovaný element (thing), který může být součástí jakékoliv části v diagramu.
 public class Element extends java.lang.Object {

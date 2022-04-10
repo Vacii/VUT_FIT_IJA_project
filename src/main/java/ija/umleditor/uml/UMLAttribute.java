@@ -1,4 +1,4 @@
-package ija.homework1.uml;
+package ija.umleditor.uml;
 
 //Třída reprezentuje atribut, který má své jméno a typ. Je odvozena (rozšiřuje) od třídy Element.
 // Typ atributu je reprezentován třidou UMLClassifier. Lze použít jako atribut UML třídy nebo argument operace.

@@ -1,4 +1,4 @@
-package ija.homework1.uml;
+package ija.umleditor.uml;
 
 //Třída reprezentuje klasifikátor v diagramu.
 //Odvozené třídy reprezentují konkrétní podoby klasifikátoru (třída, rozhraní, atribut, apod.)
