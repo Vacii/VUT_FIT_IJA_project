@@ -9,6 +9,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Main JavaFX scene
+ */
 public class Main extends Application {
     public static Scene scene;
     public static ClassDiagram classDiagram;
