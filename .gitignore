@@ -10,6 +10,9 @@ homework2/
 # Log file
 *.log
 
+#IDE repo
+*.idea
+
 # BlueJ files
 *.ctxt
 
@@ -17,7 +20,6 @@ homework2/
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
