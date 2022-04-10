@@ -1,6 +1,7 @@
 package ija.umleditor;
 
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -14,7 +15,8 @@ public class MainController {
     private Scene scene;
     private Parent root;
 
-    public void switchToMainScene(ActionEvent event) throws IOException {
+    @FXML
+    private void switchToMainScene(ActionEvent event) throws IOException {
         root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root);
@@ -22,7 +24,8 @@ public class MainController {
         stage.show();
     }
 
-    public void switchToSequenceScene(ActionEvent event) throws IOException {
+    @FXML
+    private void switchToSequenceScene(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("sequenceView.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root);
@@ -30,8 +33,8 @@ public class MainController {
         stage.show();
     }
 
-
-    public void helpPopupClick(ActionEvent e) throws IOException {
+    @FXML
+    private void helpPopupClick(ActionEvent e) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("helpPopup.fxml"));
         Parent root1 = (Parent) fxmlLoader.load();
         Stage stage = new Stage();
@@ -39,11 +42,14 @@ public class MainController {
         stage.show();
     }
 
-    public void createClassClick(ActionEvent e){}
+    @FXML
+    private void createClassClick(ActionEvent e){}
 
-    public void createInterfaceClick(ActionEvent e){}
+    @FXML
+    private void createInterfaceClick(ActionEvent e){}
 
-    public void createElementClick(ActionEvent e){}
+    @FXML
+    private void createElementClick(ActionEvent e){}
 
 
 }
