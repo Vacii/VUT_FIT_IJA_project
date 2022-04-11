@@ -1,16 +1,18 @@
 package ija.umleditor;
-
 import ija.umleditor.uml.ClassDiagram;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 /**
- * Main JavaFX scene
+ * Main JavaFX scene builder
+ * Vytváří hlavní scénu a stage pro GUI aplikace
+ * Zároveň vytvoří nový diagram
+ *
+ * @author  Lukáš Václavek (xvacla32)
  */
 public class Main extends Application {
     public static Scene scene;
