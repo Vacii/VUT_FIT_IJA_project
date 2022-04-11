@@ -26,6 +26,9 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         classDiagram = new ClassDiagram("Diagram");
+        loadJson jsonStr = new loadJson();
+        String jsonString = jsonStr.getJSONFromFile("./demo.json");
+        System.out.println(jsonString);
         launch();
     }
 }

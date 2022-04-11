@@ -1,0 +1,31 @@
+[
+  {
+    "entity" : "Employee",
+    "atributes" : {
+
+        "id" : "int",
+        "name" : "String",
+        "surname" : "String",
+        "telephoneNumber" : "int"
+    },
+
+    "methods" : {
+
+        "getName()" : "String",
+        "setName()" : "void"
+    }
+  },
+  {
+    "entity" : "Vehicle",
+    "atributes" : {
+
+      "registrationNumber" : "int",
+      "brand" : "String"
+    },
+    "methods" : {
+
+      "getBrand()" : "String",
+      "setRegistrationNumber()" : "void"
+    }
+  }
+]
