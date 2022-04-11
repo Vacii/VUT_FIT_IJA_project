@@ -1,21 +1,25 @@
 package ija.umleditor.uml;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
-//Třída (její instance) reprezentuje model třídy z jazyka UML. Rozšiřuje třídu UMLClassifier.
-//Obsahuje seznam atributů a operací (metod). Třída může být abstraktní.
+/**
+ * Třída UMLClass (její instance) reprezentuje model třídy z jazyka UML. Rozšiřuje třídu UMLClassifier.
+ * Obsahuje seznam atributů a operací (metod). Třída může být abstraktní.
+ *
+ * @author  Lukáš Václavek (xvacla32)
+ */
 public class UMLClass extends UMLClassifier {
     private boolean abstraktni;
     private List<UMLAttribute> atributy;
 
 // ----- Constructors -----
 
-    /*
-        UMLClass(Název třídy (klasifikátoru))
-        Vytvoří instanci reprezentující model třídy z jazyka UML. Třída není abstraktní.
-     */
+/**
+ *  UMLClass(Název třídy (klasifikátoru))
+ *  Vytvoří instanci reprezentující model třídy z jazyka UML. Třída není abstraktní.
+ *  @param name název třídy
+ */
     public UMLClass(java.lang.String name) {
         super(name);
         this.atributy = new ArrayList<>();
@@ -24,11 +28,13 @@ public class UMLClass extends UMLClassifier {
 
 //  ----- Methods -----
 
-    /*
-        addAttribute(Vkládaný atribut)
-        Vloží atribut do modelu UML třídy. Atribut se vloží na konec seznamu (poslední položka).
-        Pokud již třída obsahuje atribut stejného jména, nedělá nic.
-     */
+/**
+ *  addAttribute(Vkládaný atribut)
+ *  Vloží atribut do modelu UML třídy. Atribut se vloží na konec seznamu (poslední položka).
+ *  Pokud již třída obsahuje atribut stejného jména, nedělá nic.
+ *  @param attr přidávaný atribut
+ *  @return true/false jestli atribut byl vložen, nebo ne
+ */
     public boolean addAttribute(UMLAttribute attr) {
         if (this.atributy.contains(attr)) {
             return false;
@@ -37,20 +43,20 @@ public class UMLClass extends UMLClassifier {
         return true;
     }
 
-    /*
-        getAttributes()
-        Vrací nemodifikovatelný seznam atributů.
-        Lze využít pro zobrazení atributů třídy.
-    */
+/**
+ *  getAttributes()
+ *  @return nemodifikovatelný seznam atributů.
+ */
     public List<UMLAttribute> getAttributes() {
         return Collections.unmodifiableList(this.atributy);
     }
 
-    /*
-        getAttrPosition(Hledaný atribut)
-        Vrací pozici atributu v seznamu atributů. Pozice se indexuje od hodnoty 0.
-        Pokud třída daný atribut neobsahuje, vrací -1.
-    */
+/**
+ *  getAttrPosition(Hledaný atribut)
+ *  Konstruktor pro vytvoření instance diagramu. Každý diagram má svůj název name.
+ *  @param attr hledaný atribut
+ *  @return pozice atributu v seznamu atributů
+ */
     public int getAttrPosition(UMLAttribute attr) {
         int n = 0;
         for (UMLAttribute att : this.atributy) {
@@ -62,20 +68,24 @@ public class UMLClass extends UMLClassifier {
         return -1;
     }
 
-    /*
-        abstraktni()
-        Test, zda objekt reprezentuje model abstraktní třídy.
-    */
+/**
+ *  isAbstract()
+ *  Test, zda objekt reprezentuje model abstraktní třídy.
+ *  @return true/false toho, zda je objekt abstraktní
+ */
     public boolean isAbstract() {
         return this.abstraktni;
     }
 
-    /*
-        moveAttrAtPosition(Přesunovaný atribut, Nová pozice)
-        Přesune pozici atributu na nově zadanou. Pozice se indexuje od hodnoty 0.
-        Pokud třída daný atribut neobsahuje, nic neprovádí a vrací -1.
-        Při přesunu na pozici pos se všechny stávající položky (atributy) od pozice pos (včetně) posunou o jednu pozici doprava.
-    */
+/**
+ * moveAttrAtPosition(Přesunovaný atribut, Nová pozice)
+ * Přesune pozici atributu na nově zadanou. Pozice se indexuje od hodnoty 0.
+ * Pokud třída daný atribut neobsahuje, nic neprovádí a vrací -1.
+ * Při přesunu na pozici pos se všechny stávající položky (atributy) od pozice pos (včetně) posunou o jednu pozici doprava.
+ * @param attr atribut, který se má přesunout
+ * @param pos pozice, na kterou se má atribut přesunout
+ * @return nová pozice
+ */
     public int moveAttrAtPosition(UMLAttribute attr, int pos) {
         if (!this.atributy.contains(attr)) {
             return -1;
@@ -85,10 +95,11 @@ public class UMLClass extends UMLClassifier {
         return pos;
     }
 
-    /*
-        setAbstract(Zda se jedná o abstraktní třídu nebo ne)
-        Změní informaci objektu, zda reprezentuje abstraktní třídu.
-    */
+/**
+ * setAbstract(Zda se jedná o abstraktní třídu nebo ne)
+ * Změní informaci objektu, zda reprezentuje abstraktní třídu.
+ * @param isAbstract informace zda se má nastavit na abstraktni, nebo neabstraktni
+ */
     public void setAbstract(boolean isAbstract) {
         this.abstraktni = isAbstract;
     }

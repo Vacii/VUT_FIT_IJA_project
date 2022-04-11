@@ -9,12 +9,18 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
 
+/**
+ * MainController je hlavní třída pro ovládání GUI
+ *
+ * @author  Lukáš Václavek (xvacla32)
+ */
 public class MainController {
 
     private Stage stage;
     private Scene scene;
     private Parent root;
 
+    //Button that switches sequence diagram view to main (class diagram view)
     @FXML
     private void switchToMainScene(ActionEvent event) throws IOException {
         root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
@@ -24,6 +30,7 @@ public class MainController {
         stage.show();
     }
 
+    //Button that switches class diagram view to sequence diagram view
     @FXML
     private void switchToSequenceScene(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("sequenceView.fxml"));
@@ -33,6 +40,7 @@ public class MainController {
         stage.show();
     }
 
+    //Help popup. TODO Tutorial how to use our app (what each button does)
     @FXML
     private void helpPopupClick(ActionEvent e) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("helpPopup.fxml"));
