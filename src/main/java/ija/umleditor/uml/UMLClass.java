@@ -53,7 +53,8 @@ public class UMLClass extends UMLClassifier {
 
 /**
  *  getAttrPosition(Hledaný atribut)
- *  Konstruktor pro vytvoření instance diagramu. Každý diagram má svůj název name.
+ *  Vrací pozici atributu v seznamu atributů. Pozice se indexuje od hodnoty 0.
+ *  Pokud třída daný atribut neobsahuje, vrací -1.
  *  @param attr hledaný atribut
  *  @return pozice atributu v seznamu atributů
  */

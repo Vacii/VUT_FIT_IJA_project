@@ -1,12 +1,14 @@
 package ija.umleditor;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -19,6 +21,10 @@ public class MainController {
     private Stage stage;
     private Scene scene;
     private Parent root;
+
+    @FXML
+    private Label label_class1;
+
 
     //Button that switches sequence diagram view to main (class diagram view)
     @FXML
@@ -33,11 +39,19 @@ public class MainController {
     //Button that switches class diagram view to sequence diagram view
     @FXML
     private void switchToSequenceScene(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("sequenceView.fxml"));
+        root = FXMLLoader.load(getClass().getResource("sequenceView.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+    }
+
+    //Select JSON file to be loaded
+    @FXML
+    private void loadJsonFile(ActionEvent event){
+        FileChooser chooseFile = new FileChooser();
+        chooseFile.setTitle("Select file");
+        File selectedFile = chooseFile.showOpenDialog(new Stage());
     }
 
     //Help popup. TODO Tutorial how to use our app (what each button does)
@@ -51,10 +65,12 @@ public class MainController {
     }
 
     @FXML
-    private void createClassClick(ActionEvent e){}
+    private void exitApp(ActionEvent e){
+        System.exit(0);
+    }
 
     @FXML
-    private void createInterfaceClick(ActionEvent e){}
+    private void createClassClick(ActionEvent e){}
 
     @FXML
     private void createElementClick(ActionEvent e){}
