@@ -35,7 +35,7 @@ public class Main extends Application {
         loadJson jsonObject = new loadJson();
         ArrayList<JSONObject> array = new ArrayList<>();
 
-        String jsonString = jsonObject.getJSONFromFile("./demo.json");
+        String jsonString = jsonObject.getJSONFromFile("./data/demo.json");
         jsonObject.parseJsonToObject(jsonString);
         launch();
     }
