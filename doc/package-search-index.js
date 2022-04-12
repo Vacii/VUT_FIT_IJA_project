@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"m":"ija.umleditor","l":"ija.umleditor"},{"m":"ija.umleditor","l":"ija.umleditor.uml"}]
