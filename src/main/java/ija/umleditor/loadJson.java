@@ -1,3 +1,6 @@
+/* author - Roman Marek
+** login - xmarek74
+*/
 package ija.umleditor;
 
 import ija.umleditor.uml.*;
