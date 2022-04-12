@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class loadJson {
@@ -66,7 +67,7 @@ public class loadJson {
             //iterating through attribute array, on "j" key we store the key (name of our attribute)
             //and value, which is type in our case -> creating new Attribute object that requires UMLClassifier
             //object for its type
-            //TO DO - Jsem confused z toho druhýho konstruktoru u UMLClassifier, kde je userdefinied - usage?
+            //TO DO - userDefined - usage?
 
             for (int j = 0; j < keys.length(); j++) {
 
@@ -88,6 +89,8 @@ public class loadJson {
             JSONObject jsonMethodObject = (JSONObject) jsonObject.get("methods");
             JSONArray keys2 = jsonMethodObject.names();
 
+            ArrayList<UMLOperation> array = new ArrayList<>();
+
             for (int j = 0; j < keys2.length(); j++) {
 
                 String key = keys2.getString(j);
@@ -95,10 +98,16 @@ public class loadJson {
 
                 //creating method
                 UMLOperation operationObject = UMLOperation.create(key, d.classifierForName(value));
-
+                array.add(operationObject);
                 //TO DO - how to add method to certain class?
 
             }
+
+            //printing data to output
+            System.out.println(cls);
+            List<UMLAttribute> arr = cls.getAttributes();
+            System.out.println(arr);
+            System.out.println(array);
         }
     }
 }
