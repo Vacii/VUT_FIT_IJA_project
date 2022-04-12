@@ -1,9 +1,6 @@
 package ija.umleditor;
 
-import ija.umleditor.uml.Element;
-import ija.umleditor.uml.UMLAttribute;
-import ija.umleditor.uml.UMLClassifier;
-import ija.umleditor.uml.UMLOperation;
+import ija.umleditor.uml.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -44,6 +41,9 @@ public class loadJson {
 
         JSONArray jsonArray = new JSONArray(JSONStr);
 
+        //creating class diagram
+        ClassDiagram d = new ClassDiagram("Class Model");
+
         for (int i = 0; i < jsonArray.length(); i++) {
 
             //iterating over JSON array -> this way we can select all elements and its attributes
@@ -52,9 +52,8 @@ public class loadJson {
             //in "i" object select the entity key word in JSON -> corresponds to elements name
             String entity = jsonObject.getString("entity");
 
-            //element in class diagram, takes the entity name as a constructor parameter
-            Element elementObject = new Element(entity);
-            System.out.println(elementObject.getName()); //debug
+            //creating class in diagram, entity = name of class
+            UMLClass cls = d.createClass(entity);
 
             //same as entity, only now we are choosing attributes -> it's an array
             //need to iterate through that one more time
@@ -74,11 +73,11 @@ public class loadJson {
                 String key = keys.getString(j);
                 String value = jsonAttributeObject.getString(key);
 
-                UMLClassifier classifierObject = new UMLClassifier(value);
-                UMLAttribute attributeObject = new UMLAttribute(key, classifierObject);
+                //creating attribute
+                UMLAttribute attributeObject = new UMLAttribute(key, d.classifierForName(value));
 
-                String name = attributeObject.toString(); //debug
-                System.out.println(name);
+                //adding attribute to class where it belongs
+                cls.addAttribute(attributeObject);
 
             }
 
@@ -94,17 +93,12 @@ public class loadJson {
                 String key = keys2.getString(j);
                 String value = jsonMethodObject.getString(key);
 
-                UMLClassifier classifierObject = new UMLClassifier(value);
-                UMLOperation operationObject = new UMLOperation(key, classifierObject);
+                //creating method
+                UMLOperation operationObject = UMLOperation.create(key, d.classifierForName(value));
 
-                String string = operationObject.toString(); //debug
-                System.out.println(string);
+                //TO DO - how to add method to certain class?
 
             }
-
-
         }
-
     }
-
 }
