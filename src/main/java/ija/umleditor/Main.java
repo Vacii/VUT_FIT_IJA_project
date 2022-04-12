@@ -5,7 +5,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Main JavaFX scene builder
@@ -28,9 +32,11 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         classDiagram = new ClassDiagram("Diagram");
-        loadJson jsonStr = new loadJson();
-        String jsonString = jsonStr.getJSONFromFile("./demo.json");
-        System.out.println(jsonString);
+        loadJson jsonObject = new loadJson();
+        ArrayList<JSONObject> array = new ArrayList<>();
+
+        String jsonString = jsonObject.getJSONFromFile("./demo.json");
+        jsonObject.parseJsonToObject(jsonString);
         launch();
     }
 }

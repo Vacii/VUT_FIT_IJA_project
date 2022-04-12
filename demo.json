@@ -1,7 +1,7 @@
 [
   {
     "entity" : "Employee",
-    "atributes" : {
+    "attributes" : {
 
         "id" : "int",
         "name" : "String",
@@ -17,7 +17,7 @@
   },
   {
     "entity" : "Vehicle",
-    "atributes" : {
+    "attributes" : {
 
       "registrationNumber" : "int",
       "brand" : "String"
