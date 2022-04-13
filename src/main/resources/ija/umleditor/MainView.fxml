@@ -33,7 +33,7 @@
                 </Menu>
               </menus>
             </MenuBar>
-            <Button layoutX="38.0" layoutY="45.0" mnemonicParsing="false" onAction="#createClassClick" text="Create Class">
+            <Button layoutX="38.0" layoutY="68.0" mnemonicParsing="false" onAction="#createClassClick" text="Create Class">
                <font>
                   <Font name="Arial" size="13.0" />
                </font></Button>
@@ -41,6 +41,11 @@
                <font>
                   <Font name="Arial" size="13.0" />
                </font></Button>
+            <Label layoutX="24.0" layoutY="40.0" text="Class diagram mode">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
    </left>
