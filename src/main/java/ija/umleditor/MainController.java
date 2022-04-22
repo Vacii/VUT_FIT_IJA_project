@@ -1,4 +1,6 @@
 package ija.umleditor;
+import ija.umleditor.uml.ClassDiagram;
+import ija.umleditor.uml.UMLClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -6,10 +8,19 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+
+import static ija.umleditor.Main.classDiagram;
 
 /**
  * MainController je hlavní třída pro ovládání GUI
@@ -21,9 +32,19 @@ public class MainController {
     private Stage stage;
     private Scene scene;
     private Parent root;
+    private double classCounter = 0.0;
 
     @FXML
     private Label label_class1;
+
+    @FXML
+    private TextField newName;
+
+    @FXML
+    private AnchorPane mainPane;
+
+    private double xAxis;
+    private double yAxis;
 
 
     //Button that switches sequence diagram view to main (class diagram view)
@@ -48,10 +69,23 @@ public class MainController {
 
     //Select JSON file to be loaded
     @FXML
-    private void loadJsonFile(ActionEvent event){
+    private void loadJsonFile(ActionEvent event) throws IOException {
         FileChooser chooseFile = new FileChooser();
         chooseFile.setTitle("Select file");
         File selectedFile = chooseFile.showOpenDialog(new Stage());
+
+        if (selectedFile != null){
+//            loadJson jsonObject = new loadJson();
+//            String jsonString = jsonObject.getJSONFromFile();
+//            jsonObject.parseJsonToObject(jsonString);
+        }
+        else {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("loadFailed.fxml"));
+            Parent root1 = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root1));
+            stage.show();
+        }
     }
 
     //Help popup. TODO Tutorial how to use our app (what each button does)
@@ -70,7 +104,34 @@ public class MainController {
     }
 
     @FXML
-    private void createClassClick(ActionEvent e){}
+    private void createClassClick(ActionEvent e){
+        String name = newName.getText();
+        if (!name.isEmpty()) {
+            classDiagram.createClass(name);
+            VBox vbox = new VBox();
+            TitledPane titledPane = new TitledPane(name, vbox);
+            titledPane.setText(name);
+            titledPane.setCollapsible(false);
+            titledPane.setPrefHeight(100);
+            titledPane.setPrefWidth(100);
+            //TODO upravit pozici dalsich novych trid
+            if (classDiagram.findClass(name) != null) {
+                titledPane.setLayoutX(classDiagram.findClass(name).getXposition() + classCounter*5);
+                titledPane.setLayoutY(classDiagram.findClass(name).getYposition() + classCounter*5);
+                mainPane.getChildren().add(titledPane);
+                classCounter++;
+            }
+
+            titledPane.setOnMousePressed(event -> {
+                xAxis = event.getSceneX() - titledPane.getTranslateX();
+                yAxis = event.getSceneY() - titledPane.getTranslateY();
+            });
+            titledPane.setOnMouseDragged(event -> {
+                titledPane.setTranslateX(event.getSceneX() - xAxis);
+                titledPane.setTranslateY(event.getSceneY() - yAxis);
+            });
+        }
+    }
 
     @FXML
     private void createElementClick(ActionEvent e){}
