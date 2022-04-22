@@ -12,6 +12,8 @@ import java.util.Collections;
 public class UMLClass extends UMLClassifier {
     private boolean abstraktni;
     private List<UMLAttribute> atributy;
+    private double posX;
+    private double posY;
 
 // ----- Constructors -----
 
@@ -24,6 +26,8 @@ public class UMLClass extends UMLClassifier {
         super(name);
         this.atributy = new ArrayList<>();
         this.abstraktni = false;
+        this.posX = 20.0;
+        this.posY = 20.0;
     }
 
 //  ----- Methods -----
@@ -103,5 +107,47 @@ public class UMLClass extends UMLClassifier {
  */
     public void setAbstract(boolean isAbstract) {
         this.abstraktni = isAbstract;
+    }
+
+    /**
+     * getXposition(String name)
+     * @return X pozice třídy
+     */
+    public double getXposition() {
+        return this.posX;
+    }
+
+    /**
+     * getYposition(String name)
+     * @return Y pozice třídy
+     */
+    public double getYposition() {
+        return this.posY;
+    }
+
+    /**
+     * setXposition(double position)
+     * Setter pro X pozici tridy
+     * @param position nova X pozice
+     */
+    public void setXposition(double position){
+        this.posX = position;
+    }
+
+    /**
+     * setXposition(double position)
+     * Setter pro Y pozici tridy
+     * @param position nova Y pozice
+     */
+    public void setYposition(double position){
+        this.posY = position;
+    }
+
+    /**
+     * getClassName()
+     * @return getter pro jmémo třídy
+     */
+    public String getClassName(){
+        return this.getName();
     }
 }

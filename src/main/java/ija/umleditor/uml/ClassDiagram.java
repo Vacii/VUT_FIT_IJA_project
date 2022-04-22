@@ -50,12 +50,31 @@ public class ClassDiagram extends Element {
  *  @return nová třída
  */
     public UMLClass createClass(java.lang.String name) {
-        UMLClass klas = new UMLClass(name);
 
-        if (!this.tridy.contains(klas)) {
-            this.klasifikatory.add(klas);
-            this.tridy.add(klas);
-            return klas;
+        UMLClass obj;
+        for (int i = 0; i < this.tridy.size(); i++) {
+            obj = this.tridy.get(i);
+            if (obj.getName().compareTo(name) == 0) {
+                return null;
+            }
+        }
+        UMLClass klas = new UMLClass(name);
+        this.klasifikatory.add(klas);
+        this.tridy.add(klas);
+        return klas;
+    }
+
+    /**
+     * findClass(String name)
+     * Vyhledá třídu podle jména
+     * @param name jméno hledané třídy
+     * @return hledanou třídu pokud nalezena, v opačném případě null
+     */
+    public UMLClass findClass(String name){
+        for (int i = 0; i < tridy.size(); i++){
+            if (tridy.get(i).getClassName() == name){
+                return tridy.get(i);
+            }
         }
         return null;
     }
