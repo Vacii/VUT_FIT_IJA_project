@@ -70,14 +70,22 @@ public class MainController {
     //Select JSON file to be loaded
     @FXML
     private void loadJsonFile(ActionEvent event) throws IOException {
+
+        String FilePath;
         FileChooser chooseFile = new FileChooser();
+        chooseFile.setInitialDirectory(new File(System.getProperty("user.home")));
         chooseFile.setTitle("Select file");
+        chooseFile.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json"));
         File selectedFile = chooseFile.showOpenDialog(new Stage());
 
         if (selectedFile != null){
-//            loadJson jsonObject = new loadJson();
-//            String jsonString = jsonObject.getJSONFromFile();
-//            jsonObject.parseJsonToObject(jsonString);
+
+            FilePath = selectedFile.getAbsolutePath();
+
+            loadJson jsonObject = new loadJson();
+            jsonObject.parseJsonToObject(jsonObject.getJSONFromFile(FilePath));
+
+            //TODO - DISPLAY SHIT TO GUI
         }
         else {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("loadFailed.fxml"));
