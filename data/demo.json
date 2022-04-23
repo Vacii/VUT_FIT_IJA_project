@@ -13,6 +13,12 @@
 
         "getName()" : "String",
         "setName()" : "void"
+    },
+
+    "position" : {
+
+      "x" : 10,
+      "y" : 10
     }
   },
   {
@@ -26,6 +32,12 @@
 
       "getBrand()" : "String",
       "setRegistrationNumber()" : "void"
+    },
+
+    "position" : {
+
+      "x" : 110,
+      "y" : 110
     }
   }
 ]

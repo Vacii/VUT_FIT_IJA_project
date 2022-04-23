@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,8 +107,21 @@ public class loadJson {
 
             }
 
+            JSONObject jsonPositionObject = (JSONObject) jsonObject.get("position");
+            JSONArray positionKeys = jsonPositionObject.names();
+
+            ArrayList<Integer> coordinatesArray = new ArrayList<>();
+
+            for (int j = 0; j < positionKeys.length(); j++) {
+
+                String key = positionKeys.getString(j);
+                int value = jsonPositionObject.getInt(key);
+
+                coordinatesArray.add(value);
+            }
+
             //printing data to output
-            System.out.println(cls);
+            System.out.println(cls + "\t" + coordinatesArray);
             List<UMLAttribute> arr = cls.getAttributes();
             System.out.println(arr);
             System.out.println(array);
