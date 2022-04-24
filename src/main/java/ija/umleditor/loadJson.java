@@ -110,18 +110,21 @@ public class loadJson {
             JSONObject jsonPositionObject = (JSONObject) jsonObject.get("position");
             JSONArray positionKeys = jsonPositionObject.names();
 
-            ArrayList<Integer> coordinatesArray = new ArrayList<>();
-
             for (int j = 0; j < positionKeys.length(); j++) {
 
                 String key = positionKeys.getString(j);
-                int value = jsonPositionObject.getInt(key);
+                double value = jsonPositionObject.getDouble(key);
+            //    coordinatesArray.add(value);
 
-                coordinatesArray.add(value);
+                 if (key.equals("x")) cls.setXposition(value);
+                 else cls.setYposition(value);
             }
 
             //printing data to output
-            System.out.println(cls + "\t" + coordinatesArray);
+            double x = cls.getXposition();
+            double y = cls.getYposition();
+            System.out.println("x coordinate" + x);
+            System.out.println("y coordinate" + y);
             List<UMLAttribute> arr = cls.getAttributes();
             System.out.println(arr);
             System.out.println(array);
