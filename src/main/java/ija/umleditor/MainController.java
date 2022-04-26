@@ -1,5 +1,8 @@
 package ija.umleditor;
-import ija.umleditor.uml.*;
+import ija.umleditor.uml.ClassDiagram;
+import ija.umleditor.uml.UMLAttribute;
+import ija.umleditor.uml.UMLClass;
+import ija.umleditor.uml.UMLOperation;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,6 +10,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
@@ -37,6 +42,8 @@ public class MainController {
     private Parent root;
     private static double classCounter = 0.0;
 
+    @FXML
+    private Label label_class1;
 
     @FXML
     private TextField newName;
@@ -242,7 +249,7 @@ public class MainController {
 
                 //creating method
                 UMLOperation operationObject = UMLOperation.create(key, d.classifierForName(value));
-                array.add(operationObject);
+                cls.addMethod(operationObject);
                 //TO DO - how to add method to certain class?
 
             }
@@ -253,7 +260,7 @@ public class MainController {
             System.out.println(cls);
             List<UMLAttribute> arr = cls.getAttributes();
             System.out.println(arr);
-            System.out.println(array);
+            System.out.println(cls.getMethods());
         }
     }
 
