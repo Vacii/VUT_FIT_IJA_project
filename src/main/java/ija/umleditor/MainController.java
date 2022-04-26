@@ -231,7 +231,6 @@ public class MainController {
             JSONObject jsonMethodObject = (JSONObject) jsonObject.get("methods");
             JSONArray keys2 = jsonMethodObject.names();
 
-            ArrayList<UMLOperation> array = new ArrayList<>();
 
             for (int j = 0; j < keys2.length(); j++) {
 
@@ -240,7 +239,7 @@ public class MainController {
 
                 //creating method
                 UMLOperation operationObject = UMLOperation.create(key, d.classifierForName(value));
-                array.add(operationObject);
+                cls.addMethod(operationObject);
                 //TO DO - how to add method to certain class?
 
             }
@@ -251,7 +250,7 @@ public class MainController {
             System.out.println(cls);
             List<UMLAttribute> arr = cls.getAttributes();
             System.out.println(arr);
-            System.out.println(array);
+            System.out.println(cls.getMethods());
         }
     }
 

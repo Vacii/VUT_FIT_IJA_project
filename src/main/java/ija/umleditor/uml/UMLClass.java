@@ -12,6 +12,7 @@ import java.util.Collections;
 public class UMLClass extends UMLClassifier {
     private boolean abstraktni;
     private List<UMLAttribute> atributy;
+    private List<UMLOperation> operace;
     private double posX;
     private double posY;
 
@@ -25,6 +26,7 @@ public class UMLClass extends UMLClassifier {
     public UMLClass(java.lang.String name) {
         super(name);
         this.atributy = new ArrayList<>();
+        this.operace = new ArrayList<>();
         this.abstraktni = false;
         this.posX = 20.0;
         this.posY = 20.0;
@@ -47,6 +49,19 @@ public class UMLClass extends UMLClassifier {
         return true;
     }
 
+
+    public boolean addMethod (UMLOperation operation) {
+
+        if (this.operace.contains(operation)) return false;
+
+        this.operace.add(operation);
+        return true;
+    }
+
+    public List<UMLOperation> getMethods () {
+
+        return Collections.unmodifiableList(this.operace);
+    }
 /**
  *  getAttributes()
  *  @return nemodifikovatelný seznam atributů.
