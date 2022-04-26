@@ -4,6 +4,8 @@
 package ija.umleditor;
 
 import ija.umleditor.uml.*;
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -16,7 +18,7 @@ import java.util.List;
 
 public class loadJson {
 
-    public static String getJSONFromFile(String filename) {
+    public String getJSONFromFile(String filename) {
 
         String jsonText = "";
 
@@ -42,7 +44,7 @@ public class loadJson {
         return jsonText;
     }
 
-    public static void parseJsonToObject(String JSONStr) {
+    public void parseJsonToObject(String JSONStr) {
 
         JSONArray jsonArray = new JSONArray(JSONStr);
 
@@ -120,6 +122,8 @@ public class loadJson {
                  else cls.setYposition(value);
             }
 
+//            showClassToGUI(d, cls);
+
             //printing data to output
             double x = cls.getXposition();
             double y = cls.getYposition();
@@ -130,4 +134,5 @@ public class loadJson {
             System.out.println(array);
         }
     }
+
 }
