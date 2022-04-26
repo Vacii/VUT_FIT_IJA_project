@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -40,8 +41,21 @@ public class MainController {
     @FXML
     private TextField newName;
 
+
     @FXML
     private AnchorPane mainPane;
+
+    @FXML
+    private TextField attributeType;
+
+    @FXML
+    private TextField attributeName;
+
+    @FXML
+    private TextField classOfAttribute;
+
+    @FXML
+    private Button addFinal;
 
     private double xAxis;
     private double yAxis;
@@ -128,6 +142,7 @@ public class MainController {
                 titledPane.setLayoutY(classDiagram.findClass(name).getYposition() + classCounter*5);
                 mainPane.getChildren().add(titledPane);
                 classCounter++;
+                System.out.println();
             }
 
             titledPane.setOnMousePressed(event -> {
@@ -142,7 +157,34 @@ public class MainController {
     }
 
     @FXML
-    private void createElementClick(ActionEvent e){}
+    private void addAttributeClick(ActionEvent e) {
+
+        if (attributeName.isVisible() == true) {
+
+            attributeType.setVisible(false);
+            attributeName.setVisible(false);
+            classOfAttribute.setVisible(false);
+            addFinal.setVisible(false);
+        }
+
+        else {
+            attributeType.setVisible(true);
+            attributeName.setVisible(true);
+            classOfAttribute.setVisible(true);
+            addFinal.setVisible(true);
+        }
+
+        String name = attributeName.getText();
+        String type = attributeType.getText();
+        String classToAddAttribute = classOfAttribute.getText();
+
+
+    }
+    
+    @FXML
+    private void createElementClick(ActionEvent e){
+
+    }
 
 
 }
