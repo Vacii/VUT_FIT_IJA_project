@@ -94,7 +94,7 @@ public class MainController {
         }
         else {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("loadFailed.fxml"));
-            Parent root1 = (Parent) fxmlLoader.load();
+            Parent root1 = fxmlLoader.load();
             Stage stage = new Stage();
             stage.setScene(new Scene(root1));
             stage.show();
@@ -105,7 +105,7 @@ public class MainController {
     @FXML
     private void helpPopupClick(ActionEvent e) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("helpPopup.fxml"));
-        Parent root1 = (Parent) fxmlLoader.load();
+        Parent root1 = fxmlLoader.load();
         Stage stage = new Stage();
         stage.setScene(new Scene(root1));
         stage.show();
@@ -251,15 +251,12 @@ public class MainController {
     }
 
     private void showClassToGUI(ClassDiagram d, UMLClass cls) {
-        System.out.println("Tady");
         VBox box = new VBox();
         TitledPane titledPane = new TitledPane(cls.getName(), box);
         titledPane.setText(cls.getName());
         titledPane.setCollapsible(false);
         titledPane.setPrefHeight(100);
         titledPane.setPrefWidth(100);
-        System.out.println("Taady");
-        System.out.println("Taaady");
         if (d.findClass(cls.getName()) != null) {
             titledPane.setLayoutX(cls.getXposition() + classCounter*300);
             titledPane.setLayoutY(cls.getYposition());
