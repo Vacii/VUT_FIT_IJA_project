@@ -33,11 +33,6 @@ public class Main extends Application {
     public static void main(String[] args) {
         //TODO classDiagram se takto nesmi nastavovat, pokud bude uzivatel otevirat json file
         classDiagram = new ClassDiagram("Diagram");
-//        loadJson jsonObject = new loadJson();
-//        ArrayList<JSONObject> array = new ArrayList<>();
-//
-//        String jsonString = jsonObject.getJSONFromFile("../data/demo.json");
-//        jsonObject.parseJsonToObject(jsonString);
         launch();
     }
 }
