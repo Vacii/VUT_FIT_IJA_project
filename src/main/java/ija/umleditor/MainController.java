@@ -1,15 +1,12 @@
 package ija.umleditor;
-import ija.umleditor.uml.ClassDiagram;
-import ija.umleditor.uml.UMLAttribute;
-import ija.umleditor.uml.UMLClass;
-import ija.umleditor.uml.UMLOperation;
+import ija.umleditor.uml.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
@@ -40,14 +37,21 @@ public class MainController {
     private Parent root;
     private static double classCounter = 0.0;
 
-    @FXML
-    private Label label_class1;
 
     @FXML
     private TextField newName;
 
     @FXML
+    private TextField attAndMethText;
+
+    @FXML
+    private TextField typeText;
+
+    @FXML
     public AnchorPane mainPane;
+
+    @FXML
+    public ChoiceBox<String> chooseClass;
 
     private double xAxis;
     private double yAxis;
@@ -122,8 +126,12 @@ public class MainController {
         if (!name.isEmpty()) {
             classDiagram.createClass(name);
             VBox vbox = new VBox();
+            VBox attributes = new VBox();
+            vbox.getChildren().add(attributes);
+            attributes.setId(name + "Attributes");
             TitledPane titledPane = new TitledPane(name, vbox);
             titledPane.setText(name);
+            titledPane.setId(name);
             titledPane.setCollapsible(false);
             titledPane.setPrefHeight(100);
             titledPane.setPrefWidth(100);
@@ -132,6 +140,7 @@ public class MainController {
                 titledPane.setLayoutY(classDiagram.findClass(name).getYposition() + classCounter*5);
                 mainPane.getChildren().add(titledPane);
                 classCounter++;
+                chooseClass.getItems().add(name);
             }
 
             titledPane.setOnMousePressed(event -> {
@@ -145,8 +154,6 @@ public class MainController {
         }
     }
 
-    @FXML
-    private void createElementClick(ActionEvent e){}
 
 
     public String getJSONFromFile(String filename) {
@@ -271,6 +278,38 @@ public class MainController {
             titledPane.setTranslateX(event.getSceneX() - xAxis);
             titledPane.setTranslateY(event.getSceneY() - yAxis);
         });
+    }
+
+
+    @FXML
+    private void deleteClass(ActionEvent e){
+        String nameOfRemovedClass = chooseClass.getValue();
+        //TODO nez se vymaze trida, tak se musi vymazat vsechny jeji atributy (pozdeji metody, relace atd.)
+        classDiagram.deleteClass(classDiagram.findClass(nameOfRemovedClass));
+        mainPane.getChildren().remove(mainPane.lookup("#" + nameOfRemovedClass));
+        chooseClass.getItems().remove(nameOfRemovedClass);
+    }
+
+    @FXML
+    private void addAttribute(ActionEvent e){
+        if (chooseClass.getValue() != null){
+            UMLClass chosenClass = classDiagram.findClass(chooseClass.getValue());
+            String name = attAndMethText.getText();
+            String type = typeText.getText();
+            if (!name.isEmpty() || !type.isEmpty()) {
+                UMLAttribute newAttribute = new UMLAttribute(name, classDiagram.classifierForName(type));
+                chosenClass.addAttribute(newAttribute);
+                System.out.println(newAttribute.toString());
+            }
+        }
+    }
+
+    @FXML
+    private void addMethod(ActionEvent e){
+        if (chooseClass.getValue() != null){
+            UMLClass chosenClass = classDiagram.findClass(chooseClass.getValue());
+            String name = attAndMethText.getText();
+        }
     }
 
 }

@@ -93,4 +93,9 @@ public class ClassDiagram extends Element {
         }
         return null;
     }
+
+    public void deleteClass(UMLClass aClass) {
+        this.klasifikatory.remove(aClass);
+        this.tridy.remove(aClass);
+    }
 }
