@@ -48,19 +48,6 @@
                </font>
             </Label>
             <TextField fx:id="newName" layoutX="4.0" layoutY="65.0" promptText="Enter new class name" />
-            <Button layoutX="38.0" layoutY="142.0" mnemonicParsing="false" onAction="#addAttributeClick" prefHeight="24.0" prefWidth="94.0" text="Add Attribute">
-               <font>
-                  <Font name="Arial" size="13.0" />
-               </font>
-            </Button>
-            <TextField fx:id="attributeName" layoutX="10.0" layoutY="179.0" promptText="Enter name of attribute" visible="false" />
-            <TextField fx:id="attributeType" layoutX="10.0" layoutY="216.0" promptText="Enter type of attribute" visible="false" />
-            <TextField fx:id="classOfAttribute" layoutX="10.0" layoutY="253.0" promptText="Enter class of attribute" visible="false" />
-            <Button fx:id="addFinal" layoutX="54.0" layoutY="290.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="60.0" text="Add" visible="false">
-               <font>
-                  <Font name="Arial" size="13.0" />
-               </font>
-            </Button>
          </children>
       </AnchorPane>
    </left>

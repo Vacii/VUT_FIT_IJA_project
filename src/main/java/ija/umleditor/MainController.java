@@ -51,18 +51,6 @@ public class MainController {
     @FXML
     public AnchorPane mainPane;
 
-    @FXML
-    private TextField attributeType;
-
-    @FXML
-    private TextField attributeName;
-
-    @FXML
-    private TextField classOfAttribute;
-
-    @FXML
-    private Button addFinal;
-
     private double xAxis;
     private double yAxis;
 
@@ -160,31 +148,6 @@ public class MainController {
         }
     }
 
-    @FXML
-    private void addAttributeClick(ActionEvent e) {
-
-        if (attributeName.isVisible() == true) {
-
-            attributeType.setVisible(false);
-            attributeName.setVisible(false);
-            classOfAttribute.setVisible(false);
-            addFinal.setVisible(false);
-        }
-
-        else {
-            attributeType.setVisible(true);
-            attributeName.setVisible(true);
-            classOfAttribute.setVisible(true);
-            addFinal.setVisible(true);
-        }
-
-        String name = attributeName.getText();
-        String type = attributeType.getText();
-        String classToAddAttribute = classOfAttribute.getText();
-
-
-    }
-    
     @FXML
     private void createElementClick(ActionEvent e){
 
