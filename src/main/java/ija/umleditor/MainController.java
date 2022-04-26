@@ -16,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONArray;
@@ -266,17 +267,53 @@ public class MainController {
 
     private void showClassToGUI(ClassDiagram d, UMLClass cls) {
         VBox box = new VBox();
+
+        //vbox v classe, ve kterým mají být metody, nastavuju mu id, abych se na něj pak mohl odkázat dole v loopu
+
+        VBox methods = new VBox();
+        box.getChildren().add(methods);
+        String name = cls.getName();
+        System.out.println(name);
+        methods.setId(name+"Methods");
+
         TitledPane titledPane = new TitledPane(cls.getName(), box);
+        titledPane.setId(cls.getName());
         titledPane.setText(cls.getName());
         titledPane.setCollapsible(false);
         titledPane.setPrefHeight(100);
         titledPane.setPrefWidth(100);
+
+        //procházím všechny metody dané classy a chci je printnout do toho příslušnýho vboxu, kterej má každá classa
+        for (int i = 0; i < cls.getMethods().size(); i++) {
+
+            List<UMLOperation> tempArray = cls.getMethods();
+            UMLOperation currentOperation = tempArray.get(i);
+
+            String operationString = currentOperation.toString();
+            //jenom osekání, aby to bylo korektně zapsaný
+            String [] parts = operationString.split(":");
+            String operationName = parts[0];
+            String type = parts[1];
+            type = type.replaceAll("\\([^\\)]*\\)\\s*", "");
+
+            //TODO TADY JE PROBLÉM, NECHCE SE TO NALINKOVAT NA TEN VBOX NAHOŘE - TRIED EVERYTHING STILL AINT WORKING
+            //      VBox operationBox = ((VBox) mainPane.lookup("#" + cls.getName() + "Methods"));
+            //pokud se to správně nalinkuje tak tady už jen vytvářím místo pro ten text v tom příslušným vboxu
+            Text method = new Text (name + ":" + type);
+            //nastavení id do budoucna, kdy ho budu chtít znát
+            method.setId(operationName+"Method");
+            //musí být zakomentovaný, aby jel zbytek
+            //      operationBox.getChildren().add(method);
+
+        }
+
         if (d.findClass(cls.getName()) != null) {
             titledPane.setLayoutX(cls.getXposition() + classCounter*300);
             titledPane.setLayoutY(cls.getYposition());
-            mainPane.getChildren().add(titledPane);
+            mainPane.getChildren().add(titledPane); //adding class to main window so its visible
             classCounter++;
         }
+
         titledPane.setOnMousePressed(event -> {
             xAxis = event.getSceneX() - titledPane.getTranslateX();
             yAxis = event.getSceneY() - titledPane.getTranslateY();
