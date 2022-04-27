@@ -22,10 +22,7 @@ import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -354,6 +351,45 @@ public class MainController {
             UMLClass chosenClass = classDiagram.findClass(chooseClass.getValue());
             String name = attAndMethText.getText();
         }
+    }
+
+
+    private JSONObject classToJsonObject (UMLClass cls) {
+
+        JSONObject object = new JSONObject();
+        object.put("entity", cls.getName());
+        return object;
+
+    }
+
+    @FXML
+    private void saveJsonFile(ActionEvent e) {
+
+        List<UMLClass> classList = classDiagram.getClasses();
+        JSONArray arr = new JSONArray();
+
+        for (UMLClass umlClass : classList) {
+
+            arr.put(classToJsonObject(umlClass));
+        }
+
+        String jsonText = arr.toString();
+        try {
+
+            File file = new File("try.json");
+            file.createNewFile();
+
+            FileWriter fw = new FileWriter(file);
+            fw.write(jsonText);
+            fw.close();
+            System.out.println(arr);
+        }
+
+        catch (Exception exc) {
+
+            throw new RuntimeException();
+        }
+
     }
 
 }

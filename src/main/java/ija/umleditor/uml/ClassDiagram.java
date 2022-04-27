@@ -1,4 +1,5 @@
 package ija.umleditor.uml;
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -78,6 +79,8 @@ public class ClassDiagram extends Element {
         }
         return null;
     }
+
+    public List<UMLClass> getClasses() {return Collections.unmodifiableList(this.tridy);}
 
 /**
  *  findClassifier(Název klasifikátoru)
