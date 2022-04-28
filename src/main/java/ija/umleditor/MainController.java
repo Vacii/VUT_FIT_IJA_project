@@ -102,7 +102,6 @@ public class MainController {
 
             parseJsonToObject(getJSONFromFile(FilePath));
 
-            //TODO - DISPLAY SHIT TO GUI
         }
         else {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("loadFailed.fxml"));
@@ -222,7 +221,7 @@ public class MainController {
         JSONArray jsonArray = new JSONArray(JSONStr);
 
         //creating class diagram
-        ClassDiagram d = new ClassDiagram("Class Model");
+    //    ClassDiagram d = new ClassDiagram("Class Model");
 
         for (int i = 0; i < jsonArray.length(); i++) {
 
@@ -233,7 +232,7 @@ public class MainController {
             String entity = jsonObject.getString("entity");
 
             //creating class in diagram, entity = name of class
-            UMLClass cls = d.createClass(entity);
+            UMLClass cls = classDiagram.createClass(entity);
 
             //same as entity, only now we are choosing attributes -> it's an array
             //need to iterate through that one more time
@@ -254,7 +253,7 @@ public class MainController {
                 String value = jsonAttributeObject.getString(key);
 
                 //creating attribute
-                UMLAttribute attributeObject = new UMLAttribute(key, d.classifierForName(value));
+                UMLAttribute attributeObject = new UMLAttribute(key, classDiagram.classifierForName(value));
 
                 //adding attribute to class where it belongs
                 cls.addAttribute(attributeObject);
@@ -268,7 +267,6 @@ public class MainController {
             JSONObject jsonMethodObject = (JSONObject) jsonObject.get("methods");
             JSONArray keys2 = jsonMethodObject.names();
 
-            ArrayList<UMLOperation> array = new ArrayList<>();
 
             for (int j = 0; j < keys2.length(); j++) {
 
@@ -276,16 +274,14 @@ public class MainController {
                 String value = jsonMethodObject.getString(key);
 
                 //creating method
-                UMLOperation operationObject = UMLOperation.create(key, d.classifierForName(value));
+                UMLOperation operationObject = UMLOperation.create(key, classDiagram.classifierForName(value));
                 cls.addMethod(operationObject);
-                //TO DO - how to add method to certain class?
 
             }
 
-            showClassToGUI(d, cls);
+            showClassToGUI(classDiagram, cls);
 
             //printing data to output
-            List<UMLAttribute> arr = cls.getAttributes();
         }
     }
 
@@ -294,10 +290,19 @@ public class MainController {
 
         //vbox v classe, ve kterým mají být metody, nastavuju mu id, abych se na něj pak mohl odkázat dole v loopu
 
+        String name = cls.getName();
+
+        VBox attributes = new VBox();
+        box.getChildren().add(attributes);
+        attributes.setId(name + "Attributes");
+
+        box.getChildren().add(new Separator()); // to jsem ti ukradl
+
         VBox methods = new VBox();
         box.getChildren().add(methods);
-        String name = cls.getName();
         methods.setId(name + "Methods");
+
+        System.out.println(cls.getXposition() + "" + cls.getYposition());
 
         TitledPane titledPane = new TitledPane(cls.getName(), box);
         titledPane.setId(cls.getName());
@@ -319,15 +324,27 @@ public class MainController {
             String type = parts[1];
             type = type.replaceAll("\\([^\\)]*\\)\\s*", "");
 
-            //TODO TADY JE PROBLÉM, NECHCE SE TO NALINKOVAT NA TEN VBOX NAHOŘE - TRIED EVERYTHING STILL AINT WORKING
-            VBox operationBox = (VBox) mainPane.lookup("#" + cls.getName() + "Methods");
             //pokud se to správně nalinkuje tak tady už jen vytvářím místo pro ten text v tom příslušným vboxu
-            Text method = new Text (name + ":" + type);
+            Text method = new Text (operationName + ":" + type);
             //nastavení id do budoucna, kdy ho budu chtít znát
-            method.setId(operationName+"Method");
-            //musí být zakomentovaný, aby jel zbytek
-//            operationBox.getChildren().add(method);
-            System.out.println(operationBox);
+            method.setId(operationName + "Meth");
+            methods.getChildren().add(method);
+
+        }
+
+        for (int i = 0; i < cls.getAttributes().size(); i++) {
+
+            List<UMLAttribute> tempArray = cls.getAttributes();
+            UMLAttribute currentAttribute = tempArray.get(i);
+
+            String attributeString = currentAttribute.toString();
+            String [] parts = attributeString.split(":");
+            String attributeName = parts[0];
+            String type = parts[1].replaceAll("\\([^\\)]*\\)\\s*", "");
+
+            Text attribute = new Text (attributeName + ":" + type);
+            attribute.setId(attributeName + "Attr");
+            attributes.getChildren().add(attribute);
 
         }
 
@@ -385,7 +402,7 @@ public class MainController {
             String type = typeText.getText();
             if ((!name.isEmpty() && !type.isEmpty()) && !listOfMethods.contains(name)) {
                 UMLOperation newMethod = new UMLOperation(name, classDiagram.classifierForName(type));
-                chosenClass.addAttribute(newMethod);
+                chosenClass.addMethod(newMethod); //BUG FIX - You had addAttribute instead of addMethod
                 VBox methods = (VBox) mainPane.lookup("#" + chooseClass.getValue() + "Methods");
                 Text method = new Text(chooseOperator.getValue() + name + ":" + type);
                 method.setId(name + "Meth");
@@ -404,12 +421,31 @@ public class MainController {
         JSONObject attributes = new JSONObject();
 
         //methods n attributes cannot be empty atm - TODO
-        //data only for debugging purposes
 
         position.put("x", cls.getXposition());
         position.put("y", cls.getYposition());
-        methods.put("getName()", "String");
-        attributes.put("Name", "Roman");
+
+        List<UMLOperation> operationList = cls.getMethods();
+        for (UMLOperation operation : operationList) {
+
+            String operationString = operation.toString();
+            String [] parts = operationString.split(":");
+            String operationName = parts[0];
+            String type = parts[1];
+            type = type.replaceAll("\\([^\\)]*\\)\\s*", "");
+            methods.put(operationName, type);
+        }
+
+        List<UMLAttribute> attributeList = cls.getAttributes();
+        for (UMLAttribute attribute : attributeList) {
+
+            String attributeString = attribute.toString();
+            String [] parts = attributeString.split(":");
+            String attributeName = parts[0];
+            String type = parts[1].replaceAll("\\([^\\)]*\\)\\s*", "");
+            attributes.put(attributeName, type);
+        }
+
         object.put("position", position);
         object.put("methods", methods);
         object.put("attributes", attributes);
@@ -451,7 +487,6 @@ public class MainController {
                     FileWriter fw = new FileWriter(file);
                     fw.write(jsonText);
                     fw.close();
-                    System.out.println(arr);
                 } catch (Exception exc) {
 
                     throw new RuntimeException();
