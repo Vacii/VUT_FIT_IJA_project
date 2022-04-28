@@ -36,7 +36,7 @@
                 </Menu>
               </menus>
             </MenuBar>
-            <Button layoutX="49.0" layoutY="100.0" mnemonicParsing="false" onAction="#createClassClick" text="Create Class">
+            <Button layoutX="46.0" layoutY="101.0" mnemonicParsing="false" onAction="#createClass" text="Create Class">
                <font>
                   <Font name="Arial" size="13.0" />
                </font></Button>
@@ -57,10 +57,12 @@
                </font>
             </Label>
             <Button layoutX="7.0" layoutY="331.0" mnemonicParsing="false" onAction="#addAttribute" prefHeight="26.0" prefWidth="87.0" text="add attribute" />
-            <TextField fx:id="attAndMethText" layoutX="16.0" layoutY="269.0" prefHeight="26.0" prefWidth="153.0" promptText="Enter attribute or method name" />
+            <TextField fx:id="attAndMethText" layoutX="12.0" layoutY="269.0" prefHeight="26.0" prefWidth="167.0" promptText="Enter attribute or method name" />
             <Button layoutX="101.0" layoutY="331.0" mnemonicParsing="false" onAction="#addMethod" prefHeight="26.0" prefWidth="85.0" text="add method" />
             <Button layoutX="54.0" layoutY="237.0" mnemonicParsing="false" onAction="#deleteClass" text="Delete class" />
-            <TextField fx:id="typeText" layoutX="33.0" layoutY="300.0" prefHeight="26.0" prefWidth="128.0" promptText="Enter type" />
+            <TextField fx:id="typeText" layoutX="51.0" layoutY="298.0" prefHeight="26.0" prefWidth="128.0" promptText="Enter type" />
+            <Button layoutX="40.0" layoutY="126.0" mnemonicParsing="false" onAction="#createInterface" text="Create Interface" />
+            <ChoiceBox fx:id="chooseOperator" layoutX="14.0" layoutY="298.0" prefHeight="26.0" prefWidth="36.0" />
          </children>
       </AnchorPane>
    </left>

@@ -9,11 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -58,9 +54,15 @@ public class MainController {
 
     @FXML
     public ChoiceBox<String> chooseClass;
+    @FXML
+    public ChoiceBox<String> chooseOperator;
 
     private double xAxis;
     private double yAxis;
+
+    private boolean operatorsLoaded = false;
+    private ArrayList<String> listOfAttributes = new ArrayList<>();
+    private ArrayList<String> listOfMethods = new ArrayList<>();
 
 
     //Button that switches sequence diagram view to main (class diagram view)
@@ -121,20 +123,35 @@ public class MainController {
         stage.show();
     }
 
+    private void loadOperatorsToChoiceBox(){
+        String[] operators = {"+", "-", "#", "~"};
+        chooseOperator.setValue("+");
+        chooseOperator.getItems().addAll(operators);
+        operatorsLoaded = true;
+    }
+
     @FXML
     private void exitApp(ActionEvent e){
         System.exit(0);
     }
 
     @FXML
-    private void createClassClick(ActionEvent e){
+    private void createClass(ActionEvent e){
         String name = newName.getText();
         if (!name.isEmpty()) {
             classDiagram.createClass(name);
             VBox vbox = new VBox();
+
             VBox attributes = new VBox();
             vbox.getChildren().add(attributes);
             attributes.setId(name + "Attributes");
+
+            vbox.getChildren().add(new Separator());
+
+            VBox methods = new VBox();
+            vbox.getChildren().add(methods);
+            methods.setId(name + "Methods");
+
             TitledPane titledPane = new TitledPane(name, vbox);
             titledPane.setText(name);
             titledPane.setId(name);
@@ -153,11 +170,23 @@ public class MainController {
                 xAxis = event.getSceneX() - titledPane.getTranslateX();
                 yAxis = event.getSceneY() - titledPane.getTranslateY();
             });
+            //TODO nastavovat pozice i u trid nactenych ze souboru
             titledPane.setOnMouseDragged(event -> {
                 titledPane.setTranslateX(event.getSceneX() - xAxis);
                 titledPane.setTranslateY(event.getSceneY() - yAxis);
+                classDiagram.findClass(name).setXposition(event.getSceneX() - xAxis);
+                classDiagram.findClass(name).setYposition(event.getSceneY() - yAxis);
             });
+            //TODO pridat i do load json metody
+            if (!operatorsLoaded){
+                loadOperatorsToChoiceBox();
+            }
         }
+    }
+
+    @FXML
+    private void createInterface(ActionEvent e){
+
     }
 
 
@@ -256,10 +285,7 @@ public class MainController {
             showClassToGUI(d, cls);
 
             //printing data to output
-            System.out.println(cls);
             List<UMLAttribute> arr = cls.getAttributes();
-            System.out.println(arr);
-            System.out.println(cls.getMethods());
         }
     }
 
@@ -271,8 +297,7 @@ public class MainController {
         VBox methods = new VBox();
         box.getChildren().add(methods);
         String name = cls.getName();
-        System.out.println(name);
-        methods.setId(name+"Methods");
+        methods.setId(name + "Methods");
 
         TitledPane titledPane = new TitledPane(cls.getName(), box);
         titledPane.setId(cls.getName());
@@ -295,13 +320,14 @@ public class MainController {
             type = type.replaceAll("\\([^\\)]*\\)\\s*", "");
 
             //TODO TADY JE PROBLÉM, NECHCE SE TO NALINKOVAT NA TEN VBOX NAHOŘE - TRIED EVERYTHING STILL AINT WORKING
-            //      VBox operationBox = ((VBox) mainPane.lookup("#" + cls.getName() + "Methods"));
+            VBox operationBox = (VBox) mainPane.lookup("#" + cls.getName() + "Methods");
             //pokud se to správně nalinkuje tak tady už jen vytvářím místo pro ten text v tom příslušným vboxu
             Text method = new Text (name + ":" + type);
             //nastavení id do budoucna, kdy ho budu chtít znát
             method.setId(operationName+"Method");
             //musí být zakomentovaný, aby jel zbytek
-            //      operationBox.getChildren().add(method);
+//            operationBox.getChildren().add(method);
+            System.out.println(operationBox);
 
         }
 
@@ -335,18 +361,18 @@ public class MainController {
 
     @FXML
     private void addAttribute(ActionEvent e){
-        //TODO vytvorit choicebox na vyber operatoru (+,#..)
         if (chooseClass.getValue() != null){
             UMLClass chosenClass = classDiagram.findClass(chooseClass.getValue());
             String name = attAndMethText.getText();
             String type = typeText.getText();
-            if (!name.isEmpty() || !type.isEmpty()) {
+            if ((!name.isEmpty() && !type.isEmpty()) && !listOfAttributes.contains(name)) {
                 UMLAttribute newAttribute = new UMLAttribute(name, classDiagram.classifierForName(type));
                 chosenClass.addAttribute(newAttribute);
                 VBox attributes = (VBox) mainPane.lookup("#" + chooseClass.getValue() + "Attributes");
-                Text attribute = new Text(name + ":" + type);
+                Text attribute = new Text(chooseOperator.getValue() + name + ":" + type);
                 attribute.setId(name + "Attr");
                 attributes.getChildren().add(attribute);
+                listOfAttributes.add(name);
             }
         }
     }
@@ -356,6 +382,16 @@ public class MainController {
         if (chooseClass.getValue() != null){
             UMLClass chosenClass = classDiagram.findClass(chooseClass.getValue());
             String name = attAndMethText.getText();
+            String type = typeText.getText();
+            if ((!name.isEmpty() && !type.isEmpty()) && !listOfMethods.contains(name)) {
+                UMLOperation newMethod = new UMLOperation(name, classDiagram.classifierForName(type));
+                chosenClass.addAttribute(newMethod);
+                VBox methods = (VBox) mainPane.lookup("#" + chooseClass.getValue() + "Methods");
+                Text method = new Text(chooseOperator.getValue() + name + ":" + type);
+                method.setId(name + "Meth");
+                methods.getChildren().add(method);
+                listOfMethods.add(name);
+            }
         }
     }
 
