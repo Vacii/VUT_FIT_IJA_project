@@ -357,6 +357,20 @@ public class MainController {
     private JSONObject classToJsonObject (UMLClass cls) {
 
         JSONObject object = new JSONObject();
+        JSONObject position = new JSONObject();
+        JSONObject methods = new JSONObject();
+        JSONObject attributes = new JSONObject();
+
+        //methods n attributes cannot be empty atm - TODO
+        //data only for debugging purposes
+
+        position.put("x", cls.getXposition());
+        position.put("y", cls.getYposition());
+        methods.put("getName()", "String");
+        attributes.put("Name", "Roman");
+        object.put("position", position);
+        object.put("methods", methods);
+        object.put("attributes", attributes);
         object.put("entity", cls.getName());
         return object;
 
@@ -365,31 +379,48 @@ public class MainController {
     @FXML
     private void saveJsonFile(ActionEvent e) {
 
-        List<UMLClass> classList = classDiagram.getClasses();
-        JSONArray arr = new JSONArray();
+        String FilePath;
+        FileChooser chooseFile = new FileChooser();
+        chooseFile.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooseFile.setTitle("Save file");
+        chooseFile.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json"));
+        chooseFile.setInitialFileName(classDiagram.getName());
 
-        for (UMLClass umlClass : classList) {
-
-            arr.put(classToJsonObject(umlClass));
-        }
-
-        String jsonText = arr.toString();
         try {
+            File selectedFile = chooseFile.showSaveDialog(new Stage());
 
-            File file = new File("try.json");
-            file.createNewFile();
+            if (selectedFile != null) {
 
-            FileWriter fw = new FileWriter(file);
-            fw.write(jsonText);
-            fw.close();
-            System.out.println(arr);
+                List<UMLClass> classList = classDiagram.getClasses();
+                JSONArray arr = new JSONArray();
+                FilePath = selectedFile.getAbsolutePath();
+
+                for (UMLClass umlClass : classList) {
+
+                    arr.put(classToJsonObject(umlClass));
+                }
+
+                String jsonText = arr.toString();
+                try {
+
+                    File file = new File(FilePath);
+                    file.createNewFile();
+
+                    FileWriter fw = new FileWriter(file);
+                    fw.write(jsonText);
+                    fw.close();
+                    System.out.println(arr);
+                } catch (Exception exc) {
+
+                    throw new RuntimeException();
+                }
+            }
         }
 
-        catch (Exception exc) {
+        catch (Exception exception) {
 
             throw new RuntimeException();
         }
-
     }
 
 }
