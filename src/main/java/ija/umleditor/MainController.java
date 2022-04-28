@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -309,6 +310,7 @@ public class MainController {
             titledPane.setLayoutY(cls.getYposition());
             mainPane.getChildren().add(titledPane); //adding class to main window so its visible
             classCounter++;
+            chooseClass.getItems().add(name);
         }
 
         titledPane.setOnMousePressed(event -> {
@@ -333,6 +335,7 @@ public class MainController {
 
     @FXML
     private void addAttribute(ActionEvent e){
+        //TODO vytvorit choicebox na vyber operatoru (+,#..)
         if (chooseClass.getValue() != null){
             UMLClass chosenClass = classDiagram.findClass(chooseClass.getValue());
             String name = attAndMethText.getText();
@@ -340,7 +343,10 @@ public class MainController {
             if (!name.isEmpty() || !type.isEmpty()) {
                 UMLAttribute newAttribute = new UMLAttribute(name, classDiagram.classifierForName(type));
                 chosenClass.addAttribute(newAttribute);
-                System.out.println(newAttribute.toString());
+                VBox attributes = (VBox) mainPane.lookup("#" + chooseClass.getValue() + "Attributes");
+                Text attribute = new Text(name + ":" + type);
+                attribute.setId(name + "Attr");
+                attributes.getChildren().add(attribute);
             }
         }
     }
