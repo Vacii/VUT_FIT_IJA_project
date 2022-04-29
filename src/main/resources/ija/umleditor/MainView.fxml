@@ -63,6 +63,8 @@
             <TextField fx:id="typeText" layoutX="51.0" layoutY="298.0" prefHeight="26.0" prefWidth="128.0" promptText="Enter type" />
             <Button layoutX="40.0" layoutY="126.0" mnemonicParsing="false" onAction="#createInterface" text="Create Interface" />
             <ChoiceBox fx:id="chooseOperator" layoutX="14.0" layoutY="298.0" prefHeight="26.0" prefWidth="36.0" />
+            <Button fx:id="removeMethodButton" layoutX="32.0" layoutY="372.0" mnemonicParsing="false" onAction="#removeMethod" prefHeight="26.0" prefWidth="124.0" text="remove method" />
+            <Button fx:id="removeAttributeButton" layoutX="32.0" layoutY="406.0" mnemonicParsing="false" onAction="#removeAttribute" prefHeight="26.0" prefWidth="124.0" text="remove attribute" />
          </children>
       </AnchorPane>
    </left>

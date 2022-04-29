@@ -4,6 +4,7 @@ import ija.umleditor.uml.UMLAttribute;
 import ija.umleditor.uml.UMLClass;
 import ija.umleditor.uml.UMLOperation;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -36,6 +37,7 @@ public class MainController {
     private Scene scene;
     private Parent root;
     private static double classCounter = 0.0;
+    private ArrayList<String> actionsPerformed = new ArrayList<>();
 
     @FXML
     private Label label_class1;
@@ -88,6 +90,8 @@ public class MainController {
     //Select JSON file to be loaded
     @FXML
     private void loadJsonFile(ActionEvent event) throws IOException {
+
+        actionsPerformed.add("load performed");
 
         String FilePath;
         FileChooser chooseFile = new FileChooser();
@@ -412,6 +416,75 @@ public class MainController {
         }
     }
 
+    @FXML
+    private void removeMethod(ActionEvent e) {
+
+        if (chooseClass.getValue() != null) {
+
+            UMLClass chosenClass = classDiagram.findClass(chooseClass.getValue());
+            String name = attAndMethText.getText();
+            String type = typeText.getText();
+
+            List<UMLOperation> operationList = chosenClass.getMethods();
+            for (UMLOperation operation : operationList) {
+
+                String operationString = operation.toString();
+                String [] parts = operationString.split(":");
+                String compareType = parts[1].replaceAll("\\([^\\)]*\\)\\s*", "");
+                String compareName = parts[0];
+
+
+                if (name.equals(compareName) && type.equals(compareType)) {
+
+                    chosenClass.removeMethod(operation); //deleted from backend data
+
+                    //TODO delete corresponding vbox in gui
+
+                    System.out.println(chosenClass.getMethods());
+                    break;
+                }
+            }
+
+        }
+
+
+    }
+
+    @FXML
+    private void removeAttribute (ActionEvent e) {
+
+        if (chooseClass.getValue() != null) {
+
+            UMLClass chosenClass = classDiagram.findClass(chooseClass.getValue());
+            String name = attAndMethText.getText();
+            String type = typeText.getText();
+
+            List<UMLAttribute> attributeList = chosenClass.getAttributes();
+            for (UMLAttribute attribute : attributeList) {
+
+                String attributeString = attribute.toString();
+                String [] parts = attributeString.split(":");
+                String compareType = parts[1].replaceAll("\\([^\\)]*\\)\\s*", "");
+                String compareName = parts[0];
+
+
+                if (name.equals(compareName) && type.equals(compareType)) {
+
+                    System.out.println(attribute);
+                    chosenClass.removeAttribute(attribute);
+
+                    //TODO delete corresponding vbox in gui
+
+                    System.out.println(chosenClass.getAttributes());
+                    break;
+                }
+            }
+
+        }
+
+
+    }
+
 
     private JSONObject classToJsonObject (UMLClass cls) {
 
@@ -457,6 +530,8 @@ public class MainController {
     @FXML
     private void saveJsonFile(ActionEvent e) {
 
+        actionsPerformed.add("save performed"); // undo saving doesnt make sense just for testing
+
         String FilePath;
         FileChooser chooseFile = new FileChooser();
         chooseFile.setInitialDirectory(new File(System.getProperty("user.home")));
@@ -498,6 +573,17 @@ public class MainController {
 
             throw new RuntimeException();
         }
+
+        System.out.println(actionsPerformed);
+    }
+
+    private void undoAction (ActionEvent e) {
+
+        //all possibilities that user can do - adding/removing/editing - attributes/methods/classes + relations when done
+        //loading file -> undo -> new screen (deleting everything that has loaded)
+
+
+
     }
 
 }
