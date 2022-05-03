@@ -37,7 +37,15 @@ public class MainController {
     private Scene scene;
     private Parent root;
     private static double classCounter = 0.0;
+
+    /* UNDO STUFF */
     private ArrayList<String> actionsPerformed = new ArrayList<>();
+    private ArrayList<UMLClass> classesDeleted = new ArrayList<>();
+    private ArrayList<UMLAttribute> attributesDeleted = new ArrayList<>();
+    private ArrayList<UMLClass> classOfAttributeDeleted = new ArrayList<>();
+    private ArrayList<UMLAttribute> attributesAdded = new ArrayList<>();
+    private ArrayList<UMLClass> classOfAttributeAdded = new ArrayList<>();
+    /**************/
 
     @FXML
     private Label label_class1;
@@ -58,11 +66,14 @@ public class MainController {
     public ChoiceBox<String> chooseClass;
     @FXML
     public ChoiceBox<String> chooseOperator;
+    @FXML
+    public Button undoButton;
 
     private double xAxis;
     private double yAxis;
 
     private boolean operatorsLoaded = false;
+    private boolean undoActive = false;
     private ArrayList<String> listOfAttributes = new ArrayList<>();
     private ArrayList<String> listOfMethods = new ArrayList<>();
 
@@ -138,9 +149,13 @@ public class MainController {
         System.exit(0);
     }
 
-    @FXML
-    private void createClass(ActionEvent e){
-        String name = newName.getText();
+    private void createClassHelpMethod () {
+        String name;
+
+        if (undoActive == true) name = classesDeleted.get(classesDeleted.size()-1).getName();
+
+        else name = newName.getText();
+
         if (!name.isEmpty()) {
             classDiagram.createClass(name);
             VBox vbox = new VBox();
@@ -185,6 +200,12 @@ public class MainController {
                 loadOperatorsToChoiceBox();
             }
         }
+    }
+
+    @FXML
+    private void createClass(ActionEvent e){
+
+        createClassHelpMethod();
     }
 
     @FXML
@@ -375,25 +396,53 @@ public class MainController {
     private void deleteClass(ActionEvent e){
         String nameOfRemovedClass = chooseClass.getValue();
         //TODO nez se vymaze trida, tak se musi vymazat vsechny jeji atributy (pozdeji metody, relace atd.)
+        classesDeleted.add(classDiagram.findClass(nameOfRemovedClass)); //UNDO
         classDiagram.deleteClass(classDiagram.findClass(nameOfRemovedClass));
         mainPane.getChildren().remove(mainPane.lookup("#" + nameOfRemovedClass));
         chooseClass.getItems().remove(nameOfRemovedClass);
+        actionsPerformed.add("removed class");
     }
 
     @FXML
     private void addAttribute(ActionEvent e){
+
+        addAttributeHelp();
+    }
+
+    private void addAttributeHelp() {
+
+
         if (chooseClass.getValue() != null){
-            UMLClass chosenClass = classDiagram.findClass(chooseClass.getValue());
-            String name = attAndMethText.getText();
-            String type = typeText.getText();
-            if ((!name.isEmpty() && !type.isEmpty()) && !listOfAttributes.contains(name)) {
+
+            String name, type;
+            UMLClass chosenClass;
+
+            if (undoActive == true) {
+
+                name = attributesDeleted.get(attributesDeleted.size() - 1).getName();
+                type = attributesDeleted.get(attributesDeleted.size() - 1).getType().toString().replaceAll("\\([^\\)]*\\)\\s*", "");
+                chosenClass = classOfAttributeDeleted.get(classOfAttributeDeleted.size() - 1);
+
+            }
+
+            else {
+                chosenClass = classDiagram.findClass(chooseClass.getValue());
+                name = attAndMethText.getText();
+                type = typeText.getText();
+            }
+
+            if ((!name.isEmpty() && !type.isEmpty())) {
+
+                if (!undoActive == true) actionsPerformed.add("added attribute");
+
                 UMLAttribute newAttribute = new UMLAttribute(name, classDiagram.classifierForName(type));
                 chosenClass.addAttribute(newAttribute);
-                VBox attributes = (VBox) mainPane.lookup("#" + chooseClass.getValue() + "Attributes");
+                VBox attributes = (VBox) mainPane.lookup("#" + chosenClass.getName() + "Attributes");
                 Text attribute = new Text(chooseOperator.getValue() + name + ":" + type);
                 attribute.setId(name + "Attr");
                 attributes.getChildren().add(attribute);
-                listOfAttributes.add(name);
+                attributesAdded.add(newAttribute); //UNDO
+                classOfAttributeAdded.add(chosenClass); //UNDO
             }
         }
     }
@@ -438,8 +487,8 @@ public class MainController {
 
                     chosenClass.removeMethod(operation); //deleted from backend data
 
-                    //TODO delete corresponding vbox in gui
-
+                    VBox methods = (VBox) mainPane.lookup("#" + chooseClass.getValue() + "Methods");
+                    methods.getChildren().remove(methods.lookup("#" + name + "Meth"));
                     System.out.println(chosenClass.getMethods());
                     break;
                 }
@@ -453,12 +502,27 @@ public class MainController {
     @FXML
     private void removeAttribute (ActionEvent e) {
 
+        removeAttributeHelp();
+    }
+
+    private void removeAttributeHelp () {
+
+        String name, type;
+        UMLClass chosenClass;
+
         if (chooseClass.getValue() != null) {
 
-            UMLClass chosenClass = classDiagram.findClass(chooseClass.getValue());
-            String name = attAndMethText.getText();
-            String type = typeText.getText();
+            if (undoActive == true) {
 
+                name = attributesAdded.get(attributesAdded.size() - 1).getName();
+                type = attributesAdded.get(attributesAdded.size() - 1).getType().toString().replaceAll("\\([^\\)]*\\)\\s*", "");
+                chosenClass = classOfAttributeAdded.get(classOfAttributeAdded.size() - 1);
+            }
+            else {
+                chosenClass = classDiagram.findClass(chooseClass.getValue());
+                name = attAndMethText.getText();
+                type = typeText.getText();
+            }
             List<UMLAttribute> attributeList = chosenClass.getAttributes();
             for (UMLAttribute attribute : attributeList) {
 
@@ -470,21 +534,22 @@ public class MainController {
 
                 if (name.equals(compareName) && type.equals(compareType)) {
 
+                    if (!undoActive == true) actionsPerformed.add("removed attribute");
                     System.out.println(attribute);
                     chosenClass.removeAttribute(attribute);
+                    listOfAttributes.remove(attribute.getName());
 
-                    //TODO delete corresponding vbox in gui
+                    VBox methods = (VBox) mainPane.lookup("#" + chooseClass.getValue() + "Attributes");
+                    methods.getChildren().remove(methods.lookup("#" + name + "Attr"));
 
-                    System.out.println(chosenClass.getAttributes());
+                    attributesDeleted.add(attribute);
+                    classOfAttributeDeleted.add(chosenClass);
                     break;
                 }
             }
 
         }
-
-
     }
-
 
     private JSONObject classToJsonObject (UMLClass cls) {
 
@@ -577,13 +642,53 @@ public class MainController {
         System.out.println(actionsPerformed);
     }
 
+    @FXML
     private void undoAction (ActionEvent e) {
 
         //all possibilities that user can do - adding/removing/editing - attributes/methods/classes + relations when done
         //loading file -> undo -> new screen (deleting everything that has loaded)
 
 
+        if (!actionsPerformed.isEmpty()) {
 
+            //1. attribute was removed - needs to be added
+            undoActive = true;
+
+            System.out.println(actionsPerformed);
+            if (actionsPerformed.get(actionsPerformed.size() - 1).equals("removed attribute")) {
+
+                addAttributeHelp();
+                System.out.println("yes");
+                actionsPerformed.remove(actionsPerformed.size() - 1);
+                attributesDeleted.remove(attributesDeleted.size() - 1);
+                classOfAttributeDeleted.remove(classOfAttributeDeleted.size() - 1);
+
+            }
+
+            //2. attribute was added - needs to be removed
+
+            else if (actionsPerformed.get(actionsPerformed.size() - 1).equals("added attribute")) {
+
+                removeAttributeHelp();
+                actionsPerformed.remove(actionsPerformed.size() - 1);
+                attributesAdded.remove(attributesAdded.size() - 1);
+                classOfAttributeAdded.remove(classOfAttributeAdded.size() - 1);
+
+            }
+
+            //3. class was removed - needs to be added
+
+            else if (actionsPerformed.get(actionsPerformed.size() - 1).equals("removed class")) {
+
+                createClassHelpMethod();
+                actionsPerformed.remove(actionsPerformed.size() - 1);
+                classesDeleted.remove(classesDeleted.size() - 1);
+
+                //TODO display attributes n methods of deleted class
+            }
+
+            undoActive = false;
+        }
     }
-
 }
+
