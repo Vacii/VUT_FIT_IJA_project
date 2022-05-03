@@ -434,7 +434,7 @@ public class MainController {
             if ((!name.isEmpty() && !type.isEmpty())) {
 
                 if (!undoActive == true) actionsPerformed.add("added attribute");
-
+                System.out.println(actionsPerformed);
                 UMLAttribute newAttribute = new UMLAttribute(name, classDiagram.classifierForName(type));
                 chosenClass.addAttribute(newAttribute);
                 VBox attributes = (VBox) mainPane.lookup("#" + chosenClass.getName() + "Attributes");
@@ -539,7 +539,7 @@ public class MainController {
                     chosenClass.removeAttribute(attribute);
                     listOfAttributes.remove(attribute.getName());
 
-                    VBox methods = (VBox) mainPane.lookup("#" + chooseClass.getValue() + "Attributes");
+                    VBox methods = (VBox) mainPane.lookup("#" + chosenClass.getName() + "Attributes");
                     methods.getChildren().remove(methods.lookup("#" + name + "Attr"));
 
                     attributesDeleted.add(attribute);
