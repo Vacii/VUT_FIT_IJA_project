@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="710.0" prefWidth="1078.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.umleditor.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="835.0" prefWidth="1204.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.umleditor.MainController">
    <left>
       <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="190.0" style="-fx-background-color: grey;" BorderPane.alignment="CENTER">
          <children>
@@ -40,7 +40,7 @@
                <font>
                   <Font name="Arial" size="13.0" />
                </font></Button>
-            <Button layoutX="46.0" layoutY="663.0" mnemonicParsing="false" onAction="#switchToSequenceScene" text="Switch mode">
+            <Button layoutX="44.0" layoutY="790.0" mnemonicParsing="false" onAction="#switchToSequenceScene" text="Switch mode">
                <font>
                   <Font name="Arial" size="13.0" />
                </font></Button>
@@ -61,7 +61,7 @@
             <Button layoutX="101.0" layoutY="331.0" mnemonicParsing="false" onAction="#addMethod" prefHeight="26.0" prefWidth="85.0" text="add method" />
             <Button layoutX="54.0" layoutY="237.0" mnemonicParsing="false" onAction="#deleteClass" text="Delete class" />
             <TextField fx:id="typeText" layoutX="51.0" layoutY="298.0" prefHeight="26.0" prefWidth="128.0" promptText="Enter type" />
-            <Button layoutX="40.0" layoutY="126.0" mnemonicParsing="false" onAction="#createInterface" text="Create Interface" />
+            <Button layoutX="41.0" layoutY="137.0" mnemonicParsing="false" onAction="#createInterface" text="Create Interface" />
             <ChoiceBox fx:id="chooseOperator" layoutX="14.0" layoutY="298.0" prefHeight="26.0" prefWidth="36.0" />
             <Button fx:id="removeMethodButton" layoutX="32.0" layoutY="372.0" mnemonicParsing="false" onAction="#removeMethod" prefHeight="26.0" prefWidth="124.0" text="remove method" />
             <Button fx:id="removeAttributeButton" layoutX="32.0" layoutY="406.0" mnemonicParsing="false" onAction="#removeAttribute" prefHeight="26.0" prefWidth="124.0" text="remove attribute" />
@@ -77,6 +77,27 @@
                  </font>
              </Label>
              <Button layoutX="107.0" layoutY="576.0" mnemonicParsing="false" onAction="#deleteRelation" prefHeight="26.0" prefWidth="62.0" text="Delete" />
+            <Label alignment="CENTER" layoutX="69.0" layoutY="623.0" prefHeight="16.0" prefWidth="50.0" text="Edit" textFill="WHITE">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font>
+            </Label>
+            <ChoiceBox fx:id="chooseMethod" layoutX="106.0" layoutY="664.0" prefHeight="26.0" prefWidth="70.0" />
+            <ChoiceBox fx:id="chooseAttribute" layoutX="15.0" layoutY="664.0" prefHeight="26.0" prefWidth="70.0" />
+            <Label alignment="CENTER" layoutX="116.0" layoutY="639.0" prefHeight="16.0" prefWidth="50.0" text="Methods" textFill="WHITE">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" layoutX="19.0" layoutY="639.0" prefHeight="16.0" prefWidth="62.0" text="Attributes" textFill="WHITE">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font>
+            </Label>
+            <TextField fx:id="editName" layoutX="15.0" layoutY="706.0" prefHeight="26.0" prefWidth="71.0" promptText="New name" />
+            <TextField fx:id="editType" layoutX="103.0" layoutY="706.0" prefHeight="26.0" prefWidth="71.0" promptText="New type" />
+            <Button layoutX="7.0" layoutY="746.0" mnemonicParsing="false" onAction="#editAttribute" prefHeight="26.0" prefWidth="85.0" text="Edit attribute" />
+            <Button layoutX="101.0" layoutY="746.0" mnemonicParsing="false" onAction="#editMethod" prefHeight="26.0" prefWidth="85.0" text="Edit method" />
          </children>
       </AnchorPane>
    </left>

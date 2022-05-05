@@ -98,6 +98,14 @@ public class MainController {
 
     @FXML
     private TextField relationName;
+    @FXML
+    private ChoiceBox<String> chooseAttribute;
+    @FXML
+    private ChoiceBox<String> chooseMethod;
+    @FXML
+    private TextField editType;
+    @FXML
+    private TextField editName;
 
 
     //Button that switches sequence diagram view to main (class diagram view)
@@ -603,6 +611,7 @@ public class MainController {
                 attribute.setId(name + "Attr");
                 attributes.getChildren().add(attribute);
                 listOfAttributes.add(name);
+                chooseAttribute.getItems().add(attribute.getText().substring(1));
                 attributesAdded.add(newAttribute); //UNDO
                 classOfAttributeAdded.add(chosenClass); //UNDO
             }
@@ -631,6 +640,7 @@ public class MainController {
                 Text method = new Text(chooseOperator.getValue() + name + ":" + type);
                 method.setId(name + "Meth");
                 methods.getChildren().add(method);
+                chooseMethod.getItems().add(method.getText().substring(1));
                 listOfMethods.add(name); //UNDO
                 classOfMethodAdded.add(chosenClass); //UNDO
             }
@@ -749,16 +759,127 @@ public class MainController {
                     chosenClass.removeAttribute(attribute);
                     listOfAttributes.remove(attribute.getName());
 
-                    VBox methods = (VBox) mainPane.lookup("#" + chosenClass.getName() + "Attributes");
-                    methods.getChildren().remove(methods.lookup("#" + name + "Attr"));
+                    VBox attributes = (VBox) mainPane.lookup("#" + chosenClass.getName() + "Attributes");
+                    attributes.getChildren().remove(attributes.lookup("#" + name + "Attr"));
 
                     attributesDeleted.add(attribute);
                     classOfAttributeDeleted.add(chosenClass);
+                    chooseAttribute.getItems().remove(name + ":" + type);
                     break;
                 }
             }
 
         }
+    }
+
+    @FXML
+    public void editAttribute(ActionEvent e) {
+
+        //musí být zvolená classa, abych věděl, kde hledat
+        //prvně atribut vytáhnu z menu - podívám se, jestli pro danou classu existuje a odstraním
+        //potom ho musím přidat do stejné classy s novýma datama z textfieldů
+
+        if (chooseClass.getValue() != null && chooseAttribute != null && editName != null && editType != null) {
+
+            String className = chooseClass.getValue();
+            UMLClass currentClass = classDiagram.findClass(className);
+            String newName = editName.getText();
+            String newType = editType.getText();
+            String attributeInformation = chooseAttribute.getValue();
+
+            String [] parts = attributeInformation.split(":");
+            String name = parts[0];
+            String type = parts[1];
+
+            boolean removed = false;
+
+            for (UMLAttribute attribute : currentClass.getAttributes()){
+
+                    String compareType = attribute.getType().toString().replaceAll("\\([^\\)]*\\)\\s*", "");
+                    String compareName = attribute.getName();
+
+                    //remove if the attributes are matching
+                    if(name.equals(compareName) && type.equals(compareType)) {
+
+                        removed = true;
+                        currentClass.removeAttribute(attribute);
+                        listOfAttributes.remove(attribute.getName());
+
+                        VBox attributes = (VBox) mainPane.lookup("#" + currentClass.getName() + "Attributes");
+                        attributes.getChildren().remove(attributes.lookup("#" + name + "Attr"));
+                        chooseAttribute.getItems().remove(name + ":" + type);
+                        break;
+
+                    }
+            }
+
+            //if attribute was removed we need to add the new version to the same class
+            if (removed) {
+
+                UMLAttribute newAttribute = new UMLAttribute(newName, classDiagram.classifierForName(newType));
+                currentClass.addAttribute(newAttribute);
+                VBox attributes = (VBox) mainPane.lookup("#" + currentClass.getName() + "Attributes");
+                Text attribute = new Text(chooseOperator.getValue() + newName + ":" + newType);
+                attribute.setId(newName + "Attr");
+                attributes.getChildren().add(attribute);
+                chooseAttribute.getItems().add(newName + ":" + newType);
+
+            }
+
+        }
+
+    }
+
+    @FXML
+    public void editMethod(ActionEvent e) {
+
+        if (chooseMethod.getValue() != null && chooseAttribute != null && editName != null && editType != null) {
+
+            String className = chooseClass.getValue();
+            UMLClass currentClass = classDiagram.findClass(className);
+            String newName = editName.getText();
+            String newType = editType.getText();
+            String attributeInformation = chooseMethod.getValue();
+
+            String [] parts = attributeInformation.split(":");
+            String name = parts[0];
+            String type = parts[1];
+
+            boolean removed = false;
+
+            for (UMLOperation operation : currentClass.getMethods()) {
+
+
+                String compareType = operation.getType().toString().replaceAll("\\([^\\)]*\\)\\s*", "");
+                String compareName = operation.getName();
+
+                //remove if the attributes are matching
+                if(name.equals(compareName) && type.equals(compareType)) {
+
+                    removed = true;
+                    currentClass.removeMethod(operation);
+                    VBox methods = (VBox) mainPane.lookup("#" + currentClass.getName() + "Methods");
+                    methods.getChildren().remove(methods.lookup("#" + name + "Meth"));
+                    chooseMethod.getItems().remove(name + ":" + type);
+                    break;
+
+                }
+            }
+            //if removed add new method
+            if (removed) {
+
+                UMLOperation newOperation = new UMLOperation(newName, classDiagram.classifierForName(newType));
+                currentClass.addMethod(newOperation);
+                VBox methods = (VBox) mainPane.lookup("#" + currentClass.getName() + "Methods");
+                Text method = new Text(chooseOperator.getValue() + newName + ":" + newType);
+                method.setId(newName + "Meth");
+                methods.getChildren().add(method);
+                chooseMethod.getItems().add(newName + ":" + newType);
+
+
+            }
+        }
+
     }
 
     private JSONObject classToJsonObject (UMLClass cls) {
