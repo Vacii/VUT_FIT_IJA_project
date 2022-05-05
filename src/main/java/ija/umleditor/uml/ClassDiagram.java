@@ -17,6 +17,7 @@ public class ClassDiagram extends Element {
     private List<UMLClass> tridy;
     private List<UMLInterface> rozhrani;
     private List<UMLRelation> relace;
+    private List<SequenceDiagram> sequenceDiagrams;
 
 // ----- Constructors -----
 
@@ -31,6 +32,7 @@ public class ClassDiagram extends Element {
         this.tridy = new ArrayList<>();
         this.rozhrani = new ArrayList<>();
         this.relace = new ArrayList<>();
+        this.sequenceDiagrams = new ArrayList<>();
     }
 
 //  ----- Methods -----
@@ -99,9 +101,9 @@ public class ClassDiagram extends Element {
         UMLRelation obj;
         for (int i = 0; i < this.relace.size(); i++) {
             obj = this.relace.get(i);
-//            if (obj.getName().compareTo(name) == 0) {
-//                return null;
-//            }
+            if (obj.getName().compareTo(name) == 0) {
+                return null;
+            }
         }
         UMLRelation rel = new UMLRelation(classA, classB, name);
         classA.addRelation(rel);
@@ -174,5 +176,32 @@ public class ClassDiagram extends Element {
         this.relace.remove(relation);
         relation.getFirstClass().removeReltion(relation);
         relation.getSecondClass().removeReltion(relation);
+    }
+
+    public SequenceDiagram createSeqDiagram(String name) {
+        SequenceDiagram obj;
+        for (int i = 0; i < this.sequenceDiagrams.size(); i++) {
+            obj = this.sequenceDiagrams.get(i);
+            if (obj.getName().compareTo(name) == 0) {
+                return null;
+            }
+        }
+        SequenceDiagram seq = new SequenceDiagram(name);
+        this.sequenceDiagrams.add(seq);
+        return seq;
+    }
+
+    public SequenceDiagram findSeqDiagram(String name){
+        for (int i = 0; i < this.sequenceDiagrams.size(); i++){
+            if (sequenceDiagrams.get(i).getName().equals(name)){
+                return sequenceDiagrams.get(i);
+            }
+        }
+        return null;
+    }
+
+    public void removeSeqDiagram(String name){
+        //tady ne potreba mazat diagram
+        this.sequenceDiagrams.remove(name);
     }
 }

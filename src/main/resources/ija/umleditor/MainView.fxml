@@ -9,6 +9,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="835.0" prefWidth="1204.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.umleditor.MainController">
@@ -40,13 +41,9 @@
                <font>
                   <Font name="Arial" size="13.0" />
                </font></Button>
-            <Button layoutX="44.0" layoutY="790.0" mnemonicParsing="false" onAction="#switchToSequenceScene" text="Switch mode">
+            <Label layoutX="6.0" layoutY="34.0" text="Class diagram mode" textFill="WHITE">
                <font>
-                  <Font name="Arial" size="13.0" />
-               </font></Button>
-            <Label layoutX="41.0" layoutY="41.0" text="Class diagram mode" textFill="WHITE">
-               <font>
-                  <Font name="Arial" size="13.0" />
+                  <Font name="Arial" size="19.0" />
                </font>
             </Label>
             <TextField fx:id="newName" layoutX="14.0" layoutY="66.0" promptText="Enter new class name" />
@@ -70,7 +67,7 @@
              <ChoiceBox fx:id="firstClassForRelation" layoutX="16.0" layoutY="505.0" prefHeight="26.0" prefWidth="70.0" />
              <ChoiceBox fx:id="secondClassForRelation" layoutX="104.0" layoutY="505.0" prefHeight="26.0" prefWidth="72.0" />
              <ChoiceBox fx:id="chooseRelationType" layoutX="17.0" layoutY="540.0" prefHeight="26.0" prefWidth="68.0" />
-             <TextField fx:id="relationName" layoutX="105.0" layoutY="540.0" prefHeight="26.0" prefWidth="71.0" />
+             <TextField fx:id="relationName" layoutX="105.0" layoutY="540.0" prefHeight="26.0" prefWidth="71.0" promptText="Name" />
              <Label layoutX="68.0" layoutY="478.0" text="Relations" textFill="WHITE">
                  <font>
                      <Font name="Arial" size="13.0" />
@@ -104,7 +101,19 @@
    <center>
       <AnchorPane id="UML_Pane" fx:id="mainPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="label_class1" layoutX="350.0" layoutY="38.0" prefHeight="17.0" prefWidth="60.0" />
+            <HBox alignment="CENTER" prefHeight="29.0" prefWidth="1014.0" spacing="20.0" style="-fx-background-color: gray;">
+               <children>
+                  <Label text="Sequence diagram" textFill="WHITE">
+                     <font>
+                        <Font name="Arial" size="13.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="nameOfNewSeqDiagram" promptText="Name of diagram" />
+                  <Button mnemonicParsing="false" onAction="#createSeqDiagram" text="Create" />
+                  <ChoiceBox fx:id="chooseSeqDiagram" prefWidth="150.0" />
+                  <Button mnemonicParsing="false" onAction="#loadSeqDiagram" text="Enter" />
+                  <Button mnemonicParsing="false" onAction="#deleteSeqDiagram" text="Delete" />
+               </children></HBox>
          </children></AnchorPane>
    </center>
 </BorderPane>

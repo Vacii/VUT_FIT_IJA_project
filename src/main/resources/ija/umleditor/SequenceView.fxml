@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="570.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.umleditor.SequenceController">
+   <left>
+      <AnchorPane prefHeight="570.0" prefWidth="193.0" style="-fx-background-color: grey;" BorderPane.alignment="CENTER">
+         <children>
+            <MenuBar prefHeight="28.0" prefWidth="194.0">
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                        <MenuItem mnemonicParsing="false" text="Open" />
+                        <MenuItem mnemonicParsing="false" text="Save" />
+                    <MenuItem mnemonicParsing="false" onAction="#closeSeqView" text="Exit" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Delete" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="About" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <ChoiceBox fx:id="chooseClass" layoutX="21.0" layoutY="97.0" prefWidth="150.0" />
+            <Button layoutX="71.0" layoutY="135.0" mnemonicParsing="false" onAction="#showClass" text="Create" />
+            <Button fx:id="classLoadBtn" layoutX="26.0" layoutY="531.0" mnemonicParsing="false" onAction="#loadClasses" text="Temp load of classes" />
+            <Label layoutX="8.0" layoutY="40.0" text="Sequence diagram mode" textFill="WHITE">
+               <font>
+                  <Font name="Arial" size="15.0" />
+               </font></Label>
+            <Label fx:id="nameOfSeqDiagram" layoutX="118.0" layoutY="63.0" text="Label" textFill="#00ffe3" />
+            <Label layoutX="10.0" layoutY="64.0" text="Name of diagram:" />
+         </children>
+      </AnchorPane>
+   </left>
+   <center>
+      <ScrollPane fx:id="sequencePane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <content>
+            <AnchorPane fx:id="classPane" prefHeight="64.0" prefWidth="597.0" />
+         </content>
+      </ScrollPane>
+   </center>
+</BorderPane>

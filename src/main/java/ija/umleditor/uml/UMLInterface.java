@@ -22,8 +22,8 @@ public class UMLInterface extends UMLClassifier{
         super(name);
         this.operace = new ArrayList<>();
         this.relace = new ArrayList<>();
-        this.posX = 20.0;
-        this.posY = 20.0;
+        this.posX = 70.0;
+        this.posY = 70.0;
     }
 
 //  ----- Methods -----

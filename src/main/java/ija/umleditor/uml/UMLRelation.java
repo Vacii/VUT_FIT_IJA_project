@@ -2,6 +2,7 @@ package ija.umleditor.uml;
 
 import ija.umleditor.uml.UMLClass;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,13 +11,14 @@ public class UMLRelation {
     private double XpositionOfRelationEnd;
     private double YpositionOfRelationStart;
     private double YpositionOfRelationEnd;
-    private final List<UMLClass> classes = new LinkedList<>();
+    private List<UMLClass> classes;
     private UMLClass classA;
     private UMLClass classB;
     private String name;
 
     public UMLRelation(UMLClass classA, UMLClass classB, String name){
         this.name = name;
+        this.classes = new ArrayList<>();
         this.XpositionOfRelationStart = classA.getXposition();
         this.YpositionOfRelationStart = classA.getYposition();
         this.XpositionOfRelationEnd = classB.getXposition();

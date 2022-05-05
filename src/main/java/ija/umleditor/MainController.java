@@ -67,6 +67,7 @@ public class MainController {
     @FXML
     private TextField typeText;
 
+    //TODO classes can be mover outside of mainPane
     @FXML
     public AnchorPane mainPane;
 
@@ -106,6 +107,13 @@ public class MainController {
     private TextField editType;
     @FXML
     private TextField editName;
+
+//  Sequence diagram
+    @FXML
+    private TextField nameOfNewSeqDiagram;
+    @FXML
+    private ChoiceBox<String> chooseSeqDiagram;
+
 
 
     //Button that switches sequence diagram view to main (class diagram view)
@@ -183,7 +191,7 @@ public class MainController {
     private void createClassHelpMethod () {
         String name;
 
-        if (undoActive == true) name = classesDeleted.get(classesDeleted.size()-1).getName();
+        if (undoActive) name = classesDeleted.get(classesDeleted.size()-1).getName();
 
         else name = newName.getText();
 
@@ -214,6 +222,7 @@ public class MainController {
                 mainPane.getChildren().add(titledPane);
                 classCounter++;
                 chooseClass.getItems().add(name);
+                chooseClass.setValue(name);
                 firstClassForRelation.getItems().add(name);
                 secondClassForRelation.getItems().add(name);
             }
@@ -297,6 +306,7 @@ public class MainController {
                     mainPane.getChildren().add(titledPane);
                     classCounter++;
                     chooseClass.getItems().add(name);
+                    chooseClass.setValue(name);
                     firstClassForRelation.getItems().add(name);
                     secondClassForRelation.getItems().add(name);
                 }
@@ -1048,6 +1058,7 @@ public class MainController {
     }
 
     //TODO relations can be created only between 2 classes, not interface
+    //TODO show names of realtions
     @FXML
     private void createRelation(ActionEvent e) throws IOException {
         String newRelName = relationName.getText();
@@ -1059,8 +1070,10 @@ public class MainController {
                 UMLClass firstClass = classDiagram.findClass(firstClassForRelation.getValue());
                 UMLClass secondClass = classDiagram.findClass(secondClassForRelation.getValue());
                 UMLRelation relace = classDiagram.createRelation(firstClass, secondClass, newRelName);
-                drawRelation(relace);
-                System.out.println(relace.getName());
+                if (relace != null) {
+                    drawRelation(relace);
+                    System.out.println(relace.getName());
+                }
             }
         }
     }
@@ -1088,6 +1101,55 @@ public class MainController {
         String[] relationType = {"Asociation", "Inheritance", "Aggregation", "Composion"};
         chooseRelationType.setValue("Asociation");
         chooseRelationType.getItems().addAll(relationType);
+    }
+
+
+    /*
+    * SEQUENCE DIAGRAM*/
+    //TODO add classes to SeqDiagram backend
+    @FXML
+    private void createSeqDiagram(ActionEvent e){
+        if (!nameOfNewSeqDiagram.getText().isEmpty()){
+            SequenceDiagram seqDiagram = classDiagram.createSeqDiagram(nameOfNewSeqDiagram.getText());
+            if (seqDiagram != null) {
+                chooseSeqDiagram.getItems().add(seqDiagram.getName());
+                chooseSeqDiagram.setValue(seqDiagram.getName());
+            }
+            else {
+                System.out.println("Sequence diagram " + nameOfNewSeqDiagram.getText() + " has not been created!");
+            }
+        }
+    }
+
+    @FXML
+    private void loadSeqDiagram(ActionEvent event){
+        if (!(chooseSeqDiagram.getValue() == null)){
+            try{
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("SequenceView.fxml"));
+                Parent root = (Parent) loader.load();
+                SequenceController sq = loader.getController();
+                sq.nameOfSeqDiagram.setText(classDiagram.findSeqDiagram(chooseSeqDiagram.getValue()).getName());
+//            sq.loadClasses();
+                Stage stage = new Stage();
+                stage.setTitle("Sequence diagram");
+                stage.setScene( new Scene(root));
+                stage.show();
+            } catch (Exception e){
+                System.out.println("Failed to load Sequence View");
+            }
+        }
+        else {
+            System.out.println("You need to choose a diagram to open sequence diagram view");
+        }
+    }
+
+    //TODO delete backend data
+    @FXML
+    private void deleteSeqDiagram(ActionEvent e){
+        if (!chooseSeqDiagram.getValue().isEmpty()) {
+            classDiagram.removeSeqDiagram(chooseSeqDiagram.getValue());
+            chooseSeqDiagram.getItems().remove(chooseSeqDiagram.getValue());
+        }
     }
 }
 
