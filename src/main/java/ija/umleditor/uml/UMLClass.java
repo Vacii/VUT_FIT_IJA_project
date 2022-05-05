@@ -1,4 +1,5 @@
 package ija.umleditor.uml;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +14,7 @@ public class UMLClass extends UMLClassifier {
     private boolean abstraktni;
     private List<UMLAttribute> atributy;
     private List<UMLOperation> operace;
+    private List<UMLRelation> relace;
     private double posX;
     private double posY;
 
@@ -28,6 +30,7 @@ public class UMLClass extends UMLClassifier {
         super(name);
         this.atributy = new ArrayList<>();
         this.operace = new ArrayList<>();
+        this.relace = new ArrayList<>();
         this.abstraktni = false;
         this.posX = 20.0;
         this.posY = 20.0;
@@ -54,9 +57,18 @@ public class UMLClass extends UMLClassifier {
 
     public boolean addMethod(UMLOperation operation) {
 
-        if (this.operace.contains(operation)) return false;
+        if (this.operace.contains(operation))
+            return false;
 
         this.operace.add(operation);
+        return true;
+    }
+
+    public boolean addRelation(UMLRelation relace){
+        if (this.relace.contains(relace))
+            return false;
+
+        this.relace.add(relace);
         return true;
     }
 
@@ -198,6 +210,18 @@ public class UMLClass extends UMLClassifier {
             }
         }
         return false;
+    }
+
+    public List<UMLRelation> getRaletions(){
+        return this.relace;
+    }
+
+    public void setRelation(UMLRelation relation){
+        this.relace.add(relation);
+    }
+
+    public void removeReltion(UMLRelation relation){
+        this.relace.remove(relation);
     }
 
 }

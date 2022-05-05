@@ -5,4 +5,6 @@ module ija.umleditor {
 
     opens ija.umleditor to javafx.fxml;
     exports ija.umleditor;
+    exports ija.umleditor.uml;
+    opens ija.umleditor.uml to javafx.fxml;
 }

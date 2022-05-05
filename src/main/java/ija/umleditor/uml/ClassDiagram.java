@@ -1,4 +1,6 @@
 package ija.umleditor.uml;
+
+import java.nio.file.FileSystemLoopException;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
@@ -13,6 +15,8 @@ import java.util.Objects;
 public class ClassDiagram extends Element {
     private List<UMLClassifier> klasifikatory;
     private List<UMLClass> tridy;
+    private List<UMLInterface> rozhrani;
+    private List<UMLRelation> relace;
 
 // ----- Constructors -----
 
@@ -25,6 +29,8 @@ public class ClassDiagram extends Element {
         super(name);
         this.klasifikatory = new ArrayList<>();
         this.tridy = new ArrayList<>();
+        this.rozhrani = new ArrayList<>();
+        this.relace = new ArrayList<>();
     }
 
 //  ----- Methods -----
@@ -51,18 +57,57 @@ public class ClassDiagram extends Element {
  *  @return nová třída
  */
     public UMLClass createClass(java.lang.String name) {
-
-        UMLClass obj;
-        for (int i = 0; i < this.tridy.size(); i++) {
-            obj = this.tridy.get(i);
-            if (obj.getName().compareTo(name) == 0) {
-                return null;
-            }
+        if (testPresence(name)){
+            return null;
         }
         UMLClass klas = new UMLClass(name);
         this.klasifikatory.add(klas);
         this.tridy.add(klas);
         return klas;
+    }
+
+    private boolean testPresence(String name){
+        //TODO jestli bude cas, mrknout jestli nebude lepsi predelat
+        UMLClass obj;
+        UMLInterface objIn;
+        for (int i = 0; i < this.tridy.size(); i++) {
+            obj = this.tridy.get(i);
+            if (obj.getName().compareTo(name) == 0) {
+                return true;
+            }
+        }
+        for (int i = 0; i < this.rozhrani.size(); i++) {
+            objIn = this.rozhrani.get(i);
+            if (objIn.getName().compareTo(name) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public UMLInterface createInterface(java.lang.String name) {
+        if (testPresence(name)){
+            return null;
+        }
+        UMLInterface inter = new UMLInterface(name);
+        this.rozhrani.add(inter);
+        this.klasifikatory.add(inter);
+        return inter;
+    }
+
+    public UMLRelation createRelation(UMLClass classA, UMLClass classB, String name){
+        UMLRelation obj;
+        for (int i = 0; i < this.relace.size(); i++) {
+            obj = this.relace.get(i);
+//            if (obj.getName().compareTo(name) == 0) {
+//                return null;
+//            }
+        }
+        UMLRelation rel = new UMLRelation(classA, classB, name);
+        classA.addRelation(rel);
+        classB.addRelation(rel);
+        this.relace.add(rel);
+        return rel;
     }
 
     /**
@@ -75,6 +120,15 @@ public class ClassDiagram extends Element {
         for (int i = 0; i < tridy.size(); i++){
             if (tridy.get(i).getClassName() == name){
                 return tridy.get(i);
+            }
+        }
+        return null;
+    }
+
+    public UMLInterface findInterface(String name){
+        for (int i = 0; i < rozhrani.size(); i++){
+            if (rozhrani.get(i).getInterfaceName() == name){
+                return rozhrani.get(i);
             }
         }
         return null;
@@ -100,5 +154,25 @@ public class ClassDiagram extends Element {
     public void deleteClass(UMLClass aClass) {
         this.klasifikatory.remove(aClass);
         this.tridy.remove(aClass);
+    }
+
+    public List<UMLRelation> getClassRelations(String name) {
+        return findClass(name).getRaletions();
+    }
+
+    public UMLRelation findRelation(UMLClass classA, UMLClass classB){
+        for (int i = 0; i < relace.size(); i++){
+            //TODO musi byt spravne postupne (prvni firstClass) opravit jestli bude cas
+            if (relace.get(i).getFirstClass().equals(classA) && relace.get(i).getSecondClass().equals(classB)){
+                return relace.get(i);
+            }
+        }
+        return null;
+    }
+
+    public void deleteRelation(UMLRelation relation){
+        this.relace.remove(relation);
+        relation.getFirstClass().removeReltion(relation);
+        relation.getSecondClass().removeReltion(relation);
     }
 }

@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="930.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.umleditor.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="710.0" prefWidth="1078.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.umleditor.MainController">
    <left>
       <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="190.0" style="-fx-background-color: grey;" BorderPane.alignment="CENTER">
          <children>
@@ -40,18 +40,18 @@
                <font>
                   <Font name="Arial" size="13.0" />
                </font></Button>
-            <Button layoutX="42.0" layoutY="506.0" mnemonicParsing="false" onAction="#switchToSequenceScene" text="Switch mode">
+            <Button layoutX="46.0" layoutY="663.0" mnemonicParsing="false" onAction="#switchToSequenceScene" text="Switch mode">
                <font>
                   <Font name="Arial" size="13.0" />
                </font></Button>
-            <Label layoutX="41.0" layoutY="41.0" text="Class diagram mode">
+            <Label layoutX="41.0" layoutY="41.0" text="Class diagram mode" textFill="WHITE">
                <font>
                   <Font name="Arial" size="13.0" />
                </font>
             </Label>
             <TextField fx:id="newName" layoutX="14.0" layoutY="66.0" promptText="Enter new class name" />
             <ChoiceBox fx:id="chooseClass" layoutX="22.0" layoutY="202.0" prefWidth="150.0" />
-            <Label layoutX="62.0" layoutY="180.0" text="Select class">
+            <Label layoutX="62.0" layoutY="180.0" text="Select class" textFill="WHITE">
                <font>
                   <Font name="Arial" size="13.0" />
                </font>
@@ -66,6 +66,17 @@
             <Button fx:id="removeMethodButton" layoutX="32.0" layoutY="372.0" mnemonicParsing="false" onAction="#removeMethod" prefHeight="26.0" prefWidth="124.0" text="remove method" />
             <Button fx:id="removeAttributeButton" layoutX="32.0" layoutY="406.0" mnemonicParsing="false" onAction="#removeAttribute" prefHeight="26.0" prefWidth="124.0" text="remove attribute" />
             <Button fx:id="undoButton" layoutX="32.0" layoutY="440.0" mnemonicParsing="false" onAction="#undoAction" prefHeight="26.0" prefWidth="124.0" text="UNDO" />
+             <Button layoutX="25.0" layoutY="576.0" mnemonicParsing="false" onAction="#createRelation" prefHeight="26.0" prefWidth="59.0" text="Create" />
+             <ChoiceBox fx:id="firstClassForRelation" layoutX="16.0" layoutY="505.0" prefHeight="26.0" prefWidth="70.0" />
+             <ChoiceBox fx:id="secondClassForRelation" layoutX="104.0" layoutY="505.0" prefHeight="26.0" prefWidth="72.0" />
+             <ChoiceBox fx:id="chooseRelationType" layoutX="17.0" layoutY="540.0" prefHeight="26.0" prefWidth="68.0" />
+             <TextField fx:id="relationName" layoutX="105.0" layoutY="540.0" prefHeight="26.0" prefWidth="71.0" />
+             <Label layoutX="68.0" layoutY="478.0" text="Relations" textFill="WHITE">
+                 <font>
+                     <Font name="Arial" size="13.0" />
+                 </font>
+             </Label>
+             <Button layoutX="107.0" layoutY="576.0" mnemonicParsing="false" onAction="#deleteRelation" prefHeight="26.0" prefWidth="62.0" text="Delete" />
          </children>
       </AnchorPane>
    </left>

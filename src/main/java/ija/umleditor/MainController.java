@@ -1,8 +1,5 @@
 package ija.umleditor;
-import ija.umleditor.uml.ClassDiagram;
-import ija.umleditor.uml.UMLAttribute;
-import ija.umleditor.uml.UMLClass;
-import ija.umleditor.uml.UMLOperation;
+import ija.umleditor.uml.*;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -14,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -23,6 +21,7 @@ import org.json.JSONObject;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static ija.umleditor.Main.classDiagram;
 
@@ -60,9 +59,6 @@ public class MainController {
     /**************/
 
     @FXML
-    private Label label_class1;
-
-    @FXML
     private TextField newName;
 
     @FXML
@@ -81,8 +77,8 @@ public class MainController {
     @FXML
     public Button undoButton;
 
-    private double xAxis;
-    private double yAxis;
+    private double XpositionOfClass;
+    private double YpositionOfClass;
 
     private boolean operatorsLoaded = false;
     private boolean undoActive = false;
@@ -90,6 +86,18 @@ public class MainController {
 
     private ArrayList<String> listOfAttributes = new ArrayList<>();
     private ArrayList<String> listOfMethods = new ArrayList<>();
+
+    @FXML
+    private ChoiceBox<String> firstClassForRelation;
+
+    @FXML
+    private ChoiceBox<String> secondClassForRelation;
+
+    @FXML
+    private ChoiceBox<String> chooseRelationType;
+
+    @FXML
+    private TextField relationName;
 
 
     //Button that switches sequence diagram view to main (class diagram view)
@@ -156,6 +164,7 @@ public class MainController {
         chooseOperator.setValue("+");
         chooseOperator.getItems().addAll(operators);
         operatorsLoaded = true;
+        loadClassesToRelations();
     }
 
     @FXML
@@ -192,25 +201,32 @@ public class MainController {
             titledPane.setPrefWidth(100);
             if (classDiagram.findClass(name) != null) {
                 if (!undoActive) actionsPerformed.add("added class");
-                titledPane.setLayoutX(classDiagram.findClass(name).getXposition() + classCounter*5);
-                titledPane.setLayoutY(classDiagram.findClass(name).getYposition() + classCounter*5);
+                titledPane.setLayoutX(classDiagram.findClass(name).getXposition() + classCounter);
+                titledPane.setLayoutY(classDiagram.findClass(name).getYposition() + classCounter);
                 mainPane.getChildren().add(titledPane);
                 classCounter++;
                 chooseClass.getItems().add(name);
+                firstClassForRelation.getItems().add(name);
+                secondClassForRelation.getItems().add(name);
             }
 
             titledPane.setOnMousePressed(event -> {
-                xAxis = event.getSceneX() - titledPane.getTranslateX();
-                yAxis = event.getSceneY() - titledPane.getTranslateY();
+                XpositionOfClass = event.getSceneX() - titledPane.getTranslateX();
+                YpositionOfClass = event.getSceneY() - titledPane.getTranslateY();
             });
             //TODO nastavovat pozice i u trid nactenych ze souboru
             titledPane.setOnMouseDragged(event -> {
-                titledPane.setTranslateX(event.getSceneX() - xAxis);
-                titledPane.setTranslateY(event.getSceneY() - yAxis);
-                classDiagram.findClass(name).setXposition(event.getSceneX() - xAxis);
-                classDiagram.findClass(name).setYposition(event.getSceneY() - yAxis);
+                titledPane.setTranslateX(event.getSceneX() - XpositionOfClass);
+                titledPane.setTranslateY(event.getSceneY() - YpositionOfClass);
+                classDiagram.findClass(name).setXposition(event.getSceneX() - XpositionOfClass);
+                classDiagram.findClass(name).setYposition(event.getSceneY() - YpositionOfClass);
+
+                List<UMLRelation> relations = classDiagram.getClassRelations(name);
+                for (int i = 0; i < relations.size(); i++){
+                    mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondClass().getName() + "Relation")));
+                    drawRelation(relations.get(i));
+                }
             });
-            //TODO pridat i do load json metody
             if (!operatorsLoaded){
                 loadOperatorsToChoiceBox();
             }
@@ -252,7 +268,46 @@ public class MainController {
 
     @FXML
     private void createInterface(ActionEvent e){
+        String name = newName.getText();
+        if (!name.isEmpty()) {
+            if (classDiagram.createInterface(name) != null){
+                VBox vbox = new VBox();
 
+                VBox methods = new VBox();
+                vbox.getChildren().add(methods);
+                methods.setId(name + "Methods");
+
+                TitledPane titledPane = new TitledPane(name, vbox);
+                titledPane.setText(name);
+                titledPane.setId(name);
+                titledPane.setCollapsible(false);
+                titledPane.setPrefHeight(60);
+                titledPane.setPrefWidth(100);
+                if (classDiagram.findInterface(name) != null) {
+                    titledPane.setLayoutX(classDiagram.findInterface(name).getXposition() + classCounter*5);
+                    titledPane.setLayoutY(classDiagram.findInterface(name).getYposition() + classCounter*5);
+                    mainPane.getChildren().add(titledPane);
+                    classCounter++;
+                    chooseClass.getItems().add(name);
+                    firstClassForRelation.getItems().add(name);
+                    secondClassForRelation.getItems().add(name);
+                }
+
+                titledPane.setOnMousePressed(event -> {
+                    XpositionOfClass = event.getSceneX() - titledPane.getTranslateX();
+                    YpositionOfClass = event.getSceneY() - titledPane.getTranslateY();
+                });
+                titledPane.setOnMouseDragged(event -> {
+                    titledPane.setTranslateX(event.getSceneX() - XpositionOfClass);
+                    titledPane.setTranslateY(event.getSceneY() - YpositionOfClass);
+                    classDiagram.findInterface(name).setXposition(event.getSceneX() - XpositionOfClass);
+                    classDiagram.findInterface(name).setYposition(event.getSceneY() - YpositionOfClass);
+                });
+                if (!operatorsLoaded){
+                    loadOperatorsToChoiceBox();
+                }
+            }
+        }
     }
 
     public String getJSONFromFile(String filename) {
@@ -350,6 +405,7 @@ public class MainController {
         }
     }
 
+    //TODO vypisovat tridy na spravne pozice, tusim se to neparsuje
     private void showClassToGUI(ClassDiagram d, UMLClass cls) {
         VBox box = new VBox();
 
@@ -414,21 +470,34 @@ public class MainController {
         }
 
         if (d.findClass(cls.getName()) != null) {
-            titledPane.setLayoutX(cls.getXposition() + classCounter*300);
+            titledPane.setLayoutX(cls.getXposition());
             titledPane.setLayoutY(cls.getYposition());
             mainPane.getChildren().add(titledPane); //adding class to main window so its visible
             classCounter++;
             chooseClass.getItems().add(name);
+            firstClassForRelation.getItems().add(name);
+            secondClassForRelation.getItems().add(name);
         }
 
         titledPane.setOnMousePressed(event -> {
-            xAxis = event.getSceneX() - titledPane.getTranslateX();
-            yAxis = event.getSceneY() - titledPane.getTranslateY();
+            XpositionOfClass = event.getSceneX() - titledPane.getTranslateX();
+            YpositionOfClass = event.getSceneY() - titledPane.getTranslateY();
         });
         titledPane.setOnMouseDragged(event -> {
-            titledPane.setTranslateX(event.getSceneX() - xAxis);
-            titledPane.setTranslateY(event.getSceneY() - yAxis);
+            titledPane.setTranslateX(event.getSceneX() - XpositionOfClass);
+            titledPane.setTranslateY(event.getSceneY() - YpositionOfClass);
+            classDiagram.findClass(name).setXposition(event.getSceneX() - XpositionOfClass);
+            classDiagram.findClass(name).setYposition(event.getSceneY() - YpositionOfClass);
+
+            List<UMLRelation> relations = classDiagram.getClassRelations(name);
+            for (int i = 0; i < relations.size(); i++){
+                mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondClass().getName() + "Relation")));
+                drawRelation(relations.get(i));
+            }
         });
+        if (!operatorsLoaded){
+            loadOperatorsToChoiceBox();
+        }
     }
 
 
@@ -438,6 +507,8 @@ public class MainController {
         deleteClassHelp();
     }
 
+    //TODO remove deleted class from relations list
+    //TODO delete realtion when class deleted
     private void deleteClassHelp() {
 
         String nameOfRemovedClass;
@@ -496,19 +567,19 @@ public class MainController {
     private void addAttributeHelp() {
 
 
-        if (chooseClass.getValue() != null || classDeleteActive == true){
+        if (chooseClass.getValue() != null || classDeleteActive){
 
             String name, type;
             UMLClass chosenClass;
 
-            if (classDeleteActive == true) {
+            if (classDeleteActive) {
 
                 name = attributesOfClassesDeleted.get(attributesOfClassesDeleted.size() - 1).getName();
                 type = attributesOfClassesDeleted.get(attributesOfClassesDeleted.size() - 1).getType().toString().replaceAll("\\([^\\)]*\\)\\s*", "");
                 chosenClass = classesDeleted.get(classesDeleted.size() - 1);
             }
 
-            else if (undoActive == true) {
+            else if (undoActive) {
 
                 name = attributesDeleted.get(attributesDeleted.size() - 1).getName();
                 type = attributesDeleted.get(attributesDeleted.size() - 1).getType().toString().replaceAll("\\([^\\)]*\\)\\s*", "");
@@ -522,15 +593,16 @@ public class MainController {
                 type = typeText.getText();
             }
 
-            if ((!name.isEmpty() && !type.isEmpty())) {
+            if ((!name.isEmpty() && !type.isEmpty()) && chosenClass != null && !listOfAttributes.contains(name)) {
 
-                if (!undoActive == true) actionsPerformed.add("added attribute");
+                if (!undoActive) actionsPerformed.add("added attribute");
                 UMLAttribute newAttribute = new UMLAttribute(name, classDiagram.classifierForName(type));
                 chosenClass.addAttribute(newAttribute);
                 VBox attributes = (VBox) mainPane.lookup("#" + chosenClass.getName() + "Attributes");
                 Text attribute = new Text(chooseOperator.getValue() + name + ":" + type);
                 attribute.setId(name + "Attr");
                 attributes.getChildren().add(attribute);
+                listOfAttributes.add(name);
                 attributesAdded.add(newAttribute); //UNDO
                 classOfAttributeAdded.add(chosenClass); //UNDO
             }
@@ -546,22 +618,39 @@ public class MainController {
 
     private void addMethodHelp () {
 
-        if (chooseClass.getValue() != null){
+        if (chooseClass.getValue() != null && (classDiagram.findClass(chooseClass.getValue()) != null)){
             UMLClass chosenClass = classDiagram.findClass(chooseClass.getValue());
             String name = attAndMethText.getText();
             String type = typeText.getText();
-            if ((!name.isEmpty() && !type.isEmpty())) {
-
-                if (!undoActive == true) actionsPerformed.add("added method");
-
+            //TODO listOfMethods tady znamena, ze ruzne tridy nesmi mit stejny nazev metod, to stejne u atributu
+            if ((!name.isEmpty() && !type.isEmpty()) && !listOfMethods.contains(name)) {
+                if (!undoActive) actionsPerformed.add("added method");
                 UMLOperation newMethod = new UMLOperation(name, classDiagram.classifierForName(type));
-                chosenClass.addMethod(newMethod); //BUG FIX - You had addAttribute instead of addMethod
+                chosenClass.addMethod(newMethod);
                 VBox methods = (VBox) mainPane.lookup("#" + chooseClass.getValue() + "Methods");
                 Text method = new Text(chooseOperator.getValue() + name + ":" + type);
                 method.setId(name + "Meth");
                 methods.getChildren().add(method);
-                methodsAdded.add(newMethod); //UNDO
+                listOfMethods.add(name); //UNDO
                 classOfMethodAdded.add(chosenClass); //UNDO
+            }
+        }
+        else if(chooseClass.getValue() != null && (classDiagram.findInterface(chooseClass.getValue()) != null)){
+            System.out.println("tady");
+            UMLInterface chosenInterface = classDiagram.findInterface(chooseClass.getValue());
+            String name = attAndMethText.getText();
+            String type = typeText.getText();
+            if ((!name.isEmpty() && !type.isEmpty())) {
+
+//                if (!undoActive) actionsPerformed.add("added method");
+                UMLOperation newMethod = new UMLOperation(name, classDiagram.classifierForName(type));
+                chosenInterface.addMethod(newMethod);
+                VBox methods = (VBox) mainPane.lookup("#" + chooseClass.getValue() + "Methods");
+                Text method = new Text(chooseOperator.getValue() + name + ":" + type);
+                method.setId(name + "Meth");
+                methods.getChildren().add(method);
+//                methodsAdded.add(newMethod); //UNDO
+                //classOfMethodAdded.add(chosenInterface); //UNDO not ready for interfaces
             }
         }
 
@@ -608,6 +697,7 @@ public class MainController {
                     if(!undoActive == true) actionsPerformed.add("removed method");
 
                     chosenClass.removeMethod(operation); //deleted from backend data
+                    listOfMethods.remove(operation.getName());
 
                     VBox methods = (VBox) mainPane.lookup("#" + chosenClass.getName() + "Methods");
                     methods.getChildren().remove(methods.lookup("#" + name + "Meth"));
@@ -714,7 +804,7 @@ public class MainController {
 
     @FXML
     private void saveJsonFile(ActionEvent e) {
-
+    //TODO nejdou otevrit ulozene soubory
 
         String FilePath;
         FileChooser chooseFile = new FileChooser();
@@ -834,6 +924,49 @@ public class MainController {
             System.out.println(actionsPerformed);
             undoActive = false;
         }
+    }
+
+    //TODO relations can be created only between 2 classes, not interface
+    @FXML
+    private void createRelation(ActionEvent e) throws IOException {
+        String newRelName = relationName.getText();
+        if (classDiagram.findInterface(firstClassForRelation.getValue()) != null || classDiagram.findInterface(secondClassForRelation.getValue()) != null){
+            System.out.println("Interface relations are not inplemented yet!");
+        }
+        else if (classDiagram.findRelation(classDiagram.findClass(firstClassForRelation.getValue()), classDiagram.findClass(secondClassForRelation.getValue())) == null){
+            if (!newRelName.isEmpty() && !Objects.equals(firstClassForRelation.getValue(), secondClassForRelation.getValue())) {
+                UMLClass firstClass = classDiagram.findClass(firstClassForRelation.getValue());
+                UMLClass secondClass = classDiagram.findClass(secondClassForRelation.getValue());
+                UMLRelation relace = classDiagram.createRelation(firstClass, secondClass, newRelName);
+                drawRelation(relace);
+                System.out.println(relace.getName());
+            }
+        }
+    }
+
+    private void drawRelation(UMLRelation relation){
+        Line line = new Line();
+        line.setId(relation.getFirstClass().getName() + relation.getSecondClass().getName() + "Relation");
+        line.setStartX(relation.getFirstClass().getXposition() + 80);
+        line.setStartY(relation.getFirstClass().getYposition() + 80);
+        line.setEndX(relation.getSecondClass().getXposition() + 80);
+        line.setEndY(relation.getSecondClass().getYposition() + 80);
+        mainPane.getChildren().add(0,line);
+    }
+
+    //TODO relations can be deleted only when the first class is seleceted same way as when created
+    @FXML
+    private void deleteRelation(ActionEvent e){
+        if (classDiagram.findRelation(classDiagram.findClass(firstClassForRelation.getValue()), classDiagram.findClass(secondClassForRelation.getValue())) != null){
+            classDiagram.deleteRelation(classDiagram.findRelation(classDiagram.findClass(firstClassForRelation.getValue()), classDiagram.findClass(secondClassForRelation.getValue())));
+            mainPane.getChildren().remove(mainPane.lookup("#" + firstClassForRelation.getValue() + secondClassForRelation.getValue() + "Relation"));
+        }
+    }
+
+    public void loadClassesToRelations(){
+        String[] relationType = {"Asociation", "Inheritance", "Aggregation", "Composion"};
+        chooseRelationType.setValue("Asociation");
+        chooseRelationType.getItems().addAll(relationType);
     }
 }
 
