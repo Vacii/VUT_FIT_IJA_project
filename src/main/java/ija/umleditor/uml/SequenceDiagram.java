@@ -9,18 +9,22 @@ public class SequenceDiagram extends Element{
     private List<UMLClass> tridy;
     private List<UMLClassifier> klasifikatory;
     private List<UMLClass> zpravy;
+    private boolean initialized;
 
     public SequenceDiagram(String name) {
         super(name);
         this.tridy = new ArrayList<>();
         this.zpravy= new ArrayList<>();
+        this.klasifikatory = new ArrayList<>();
+        this.initialized = false;
     }
 
     public boolean addClass(UMLClass classA) {
         if (tridy.contains(classA)){
             return false;
         }
-        tridy.add(classA);
+        this.tridy.add(classA);
+        this.initialized = true;
         return true;
     }
 
@@ -33,5 +37,13 @@ public class SequenceDiagram extends Element{
             }
         }
         return null;
+    }
+
+    public List<UMLClass> getClasses(){
+        return this.tridy;
+    }
+
+    public boolean isInitialized(){
+        return initialized;
     }
 }

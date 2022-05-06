@@ -17,6 +17,7 @@ public class UMLClass extends UMLClassifier {
     private List<UMLRelation> relace;
     private double posX;
     private double posY;
+    private double seqPos;
 
 // ----- Constructors -----
 
@@ -34,6 +35,7 @@ public class UMLClass extends UMLClassifier {
         this.abstraktni = false;
         this.posX = 70.0;
         this.posY = 70.0;
+        this.seqPos = 20.0;
     }
 
 //  ----- Methods -----
@@ -162,6 +164,10 @@ public class UMLClass extends UMLClassifier {
         return this.posY;
     }
 
+    public double getSeqPos(){
+        return this.seqPos;
+    }
+
     /**
      * setXposition(double position)
      * Setter pro X pozici tridy
@@ -180,6 +186,10 @@ public class UMLClass extends UMLClassifier {
      */
     public void setYposition(double position) {
         this.posY = position;
+    }
+
+    public void setSeqPos(double position){
+        this.seqPos = position;
     }
 
     /**

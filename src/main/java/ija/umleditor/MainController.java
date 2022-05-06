@@ -29,6 +29,7 @@ import static ija.umleditor.Main.classDiagram;
  * MainController je hlavní třída pro ovládání GUI
  *
  * @author  Lukáš Václavek (xvacla32)
+ * @author  Roman Marek (xmarek74)
  */
 public class MainController {
 
@@ -1135,6 +1136,10 @@ public class MainController {
                 sq.nameOfSeqDiagram.setText(classDiagram.findSeqDiagram(chooseSeqDiagram.getValue()).getName());
                 if (!chooseClass.getItems().isEmpty()){
                     sq.loadClasses();
+                }
+                if (classDiagram.findSeqDiagram(chooseSeqDiagram.getValue()).isInitialized()){
+                    sq.loadSavedDiagram(nameOfNewSeqDiagram.getText());
+                    System.out.println("resr");
                 }
                 Stage stage = new Stage();
                 stage.setTitle("Sequence diagram");

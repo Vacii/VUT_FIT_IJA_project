@@ -178,7 +178,6 @@ public class ClassDiagram extends Element {
     }
 
     public SequenceDiagram createSeqDiagram(String name) {
-        System.out.println(sequenceDiagrams);
         SequenceDiagram obj;
         for (int i = 0; i < this.sequenceDiagrams.size(); i++) {
             obj = this.sequenceDiagrams.get(i);
