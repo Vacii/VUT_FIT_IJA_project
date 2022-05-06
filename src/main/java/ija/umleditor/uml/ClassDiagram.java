@@ -164,7 +164,6 @@ public class ClassDiagram extends Element {
 
     public UMLRelation findRelation(UMLClass classA, UMLClass classB){
         for (int i = 0; i < relace.size(); i++){
-            //TODO musi byt spravne postupne (prvni firstClass) opravit jestli bude cas
             if (relace.get(i).getFirstClass().equals(classA) && relace.get(i).getSecondClass().equals(classB)){
                 return relace.get(i);
             }
@@ -179,6 +178,7 @@ public class ClassDiagram extends Element {
     }
 
     public SequenceDiagram createSeqDiagram(String name) {
+        System.out.println(sequenceDiagrams);
         SequenceDiagram obj;
         for (int i = 0; i < this.sequenceDiagrams.size(); i++) {
             obj = this.sequenceDiagrams.get(i);
@@ -201,7 +201,6 @@ public class ClassDiagram extends Element {
     }
 
     public void removeSeqDiagram(String name){
-        //tady ne potreba mazat diagram
-        this.sequenceDiagrams.remove(name);
+        this.sequenceDiagrams.remove(findSeqDiagram(name));
     }
 }

@@ -188,6 +188,8 @@ public class MainController {
         System.exit(0);
     }
 
+    //TODO update seqDia classes
+    //TODO position dost not work correctly
     private void createClassHelpMethod () {
         String name;
 
@@ -195,7 +197,7 @@ public class MainController {
 
         else name = newName.getText();
 
-        if (!name.isEmpty()) {
+        if (!name.isEmpty() && classDiagram.findClass(name) == null) {
             classDiagram.createClass(name);
             VBox vbox = new VBox();
 
@@ -217,8 +219,8 @@ public class MainController {
             titledPane.setPrefWidth(100);
             if (classDiagram.findClass(name) != null) {
                 if (!undoActive) actionsPerformed.add("added class");
-                titledPane.setLayoutX(classDiagram.findClass(name).getXposition() + classCounter);
-                titledPane.setLayoutY(classDiagram.findClass(name).getYposition() + classCounter);
+                titledPane.setLayoutX(classDiagram.findClass(name).getXposition());
+                titledPane.setLayoutY(classDiagram.findClass(name).getYposition());
                 mainPane.getChildren().add(titledPane);
                 classCounter++;
                 chooseClass.getItems().add(name);
@@ -286,7 +288,7 @@ public class MainController {
     @FXML
     private void createInterface(ActionEvent e){
         String name = newName.getText();
-        if (!name.isEmpty()) {
+        if (!name.isEmpty() && classDiagram.findInterface(name) == null) {
             if (classDiagram.createInterface(name) != null){
                 VBox vbox = new VBox();
 
@@ -527,6 +529,7 @@ public class MainController {
 
     //TODO remove deleted class from relations list
     //TODO delete realtion when class deleted
+    //TODO update seqDia classes
     private void deleteClassHelp() {
 
         String nameOfRemovedClass;
@@ -1081,19 +1084,22 @@ public class MainController {
     private void drawRelation(UMLRelation relation){
         Line line = new Line();
         line.setId(relation.getFirstClass().getName() + relation.getSecondClass().getName() + "Relation");
-        line.setStartX(relation.getFirstClass().getXposition() + 80);
-        line.setStartY(relation.getFirstClass().getYposition() + 80);
-        line.setEndX(relation.getSecondClass().getXposition() + 80);
-        line.setEndY(relation.getSecondClass().getYposition() + 80);
+        line.setStartX(relation.getFirstClass().getXposition() + 120);
+        line.setStartY(relation.getFirstClass().getYposition() + 120);
+        line.setEndX(relation.getSecondClass().getXposition() + 120);
+        line.setEndY(relation.getSecondClass().getYposition() + 120);
         mainPane.getChildren().add(0,line);
     }
 
-    //TODO relations can be deleted only when the first class is seleceted same way as when created
     @FXML
     private void deleteRelation(ActionEvent e){
         if (classDiagram.findRelation(classDiagram.findClass(firstClassForRelation.getValue()), classDiagram.findClass(secondClassForRelation.getValue())) != null){
             classDiagram.deleteRelation(classDiagram.findRelation(classDiagram.findClass(firstClassForRelation.getValue()), classDiagram.findClass(secondClassForRelation.getValue())));
             mainPane.getChildren().remove(mainPane.lookup("#" + firstClassForRelation.getValue() + secondClassForRelation.getValue() + "Relation"));
+        }
+        else if(classDiagram.findRelation(classDiagram.findClass(secondClassForRelation.getValue()), classDiagram.findClass(firstClassForRelation.getValue())) != null){
+            classDiagram.deleteRelation(classDiagram.findRelation(classDiagram.findClass(secondClassForRelation.getValue()), classDiagram.findClass(firstClassForRelation.getValue())));
+            mainPane.getChildren().remove(mainPane.lookup("#" + secondClassForRelation.getValue() + firstClassForRelation.getValue() + "Relation"));
         }
     }
 
@@ -1106,14 +1112,12 @@ public class MainController {
 
     /*
     * SEQUENCE DIAGRAM*/
-    //TODO add classes to SeqDiagram backend
     @FXML
     private void createSeqDiagram(ActionEvent e){
         if (!nameOfNewSeqDiagram.getText().isEmpty()){
-            SequenceDiagram seqDiagram = classDiagram.createSeqDiagram(nameOfNewSeqDiagram.getText());
-            if (seqDiagram != null) {
-                chooseSeqDiagram.getItems().add(seqDiagram.getName());
-                chooseSeqDiagram.setValue(seqDiagram.getName());
+            if (classDiagram.createSeqDiagram(nameOfNewSeqDiagram.getText()) != null) {
+                chooseSeqDiagram.getItems().add(classDiagram.findSeqDiagram(nameOfNewSeqDiagram.getText()).getName());
+                chooseSeqDiagram.setValue(classDiagram.findSeqDiagram(nameOfNewSeqDiagram.getText()).getName());
             }
             else {
                 System.out.println("Sequence diagram " + nameOfNewSeqDiagram.getText() + " has not been created!");
@@ -1129,7 +1133,9 @@ public class MainController {
                 Parent root = (Parent) loader.load();
                 SequenceController sq = loader.getController();
                 sq.nameOfSeqDiagram.setText(classDiagram.findSeqDiagram(chooseSeqDiagram.getValue()).getName());
-//            sq.loadClasses();
+                if (!chooseClass.getItems().isEmpty()){
+                    sq.loadClasses();
+                }
                 Stage stage = new Stage();
                 stage.setTitle("Sequence diagram");
                 stage.setScene( new Scene(root));
@@ -1143,7 +1149,6 @@ public class MainController {
         }
     }
 
-    //TODO delete backend data
     @FXML
     private void deleteSeqDiagram(ActionEvent e){
         if (!chooseSeqDiagram.getValue().isEmpty()) {

@@ -38,7 +38,7 @@
             </MenuBar>
             <ChoiceBox fx:id="chooseClass" layoutX="21.0" layoutY="97.0" prefWidth="150.0" />
             <Button layoutX="71.0" layoutY="135.0" mnemonicParsing="false" onAction="#showClass" text="Create" />
-            <Button fx:id="classLoadBtn" layoutX="26.0" layoutY="531.0" mnemonicParsing="false" onAction="#loadClasses" text="Temp load of classes" />
+            <Button fx:id="classLoadBtn" layoutX="45.0" layoutY="531.0" mnemonicParsing="false" onAction="#loadClasses" text="Update classes" />
             <Label layoutX="8.0" layoutY="40.0" text="Sequence diagram mode" textFill="WHITE">
                <font>
                   <Font name="Arial" size="15.0" />

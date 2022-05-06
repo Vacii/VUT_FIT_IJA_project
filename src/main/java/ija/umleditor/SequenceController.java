@@ -33,30 +33,25 @@ public class SequenceController {
     private double XpositionOfClass;
     private double YpositionOfClass;
 
+    //TODO add classes to SeqDiagram backend
     @FXML
     private void showClass(ActionEvent e){
         String name = chooseClass.getValue();
-        if (!name.isEmpty()){
-            VBox vbox = new VBox();
-            TitledPane titledPane = new TitledPane(name, vbox);
-            titledPane.setText(name);
-            titledPane.setId(name);
-            titledPane.setCollapsible(false);
-//            titledPane.setPrefHeight(100);
-//            titledPane.setPrefWidth(100);
+        if (name != null && classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).findClass(name) == null){
+            Label label = new Label();
+            label.setText(name);
+            label.setId(name + "label");
             if (classDiagram.findClass(name) != null) {
-                titledPane.setLayoutX(0);
-                titledPane.setLayoutY(0);
-                classPane.getChildren().add(titledPane);
+                label.setLayoutX(20);
+                label.setLayoutY(20);
+                classPane.getChildren().add(label);
+                classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).addClass(classDiagram.findClass(name));
             }
-            titledPane.setOnMousePressed(event -> {
-                XpositionOfClass = event.getSceneX() - titledPane.getTranslateX();
-                YpositionOfClass = event.getSceneY() - titledPane.getTranslateY();
+            label.setOnMousePressed(event -> {
+                XpositionOfClass = event.getSceneX() - label.getTranslateX();
             });
-            //TODO nastavovat pozice i u trid nactenych ze souboru
-            titledPane.setOnMouseDragged(event -> {
-                titledPane.setTranslateX(event.getSceneX() - XpositionOfClass);
-                titledPane.setTranslateY(event.getSceneY() - YpositionOfClass);
+            label.setOnMouseDragged(event -> {
+                label.setTranslateX(event.getSceneX() - XpositionOfClass);
             });
         }
     }
