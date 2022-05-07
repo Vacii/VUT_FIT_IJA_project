@@ -28,6 +28,14 @@ public class SequenceDiagram extends Element{
         return true;
     }
 
+    public boolean removeCleass(UMLClass classA){
+        if (tridy.contains(classA)){
+            tridy.remove(classA);
+            return true;
+        }
+        return false;
+    }
+
     public UMLClass findClass(String name){
         UMLClass obj;
         for (int i = 0; i < this.tridy.size(); i++) {

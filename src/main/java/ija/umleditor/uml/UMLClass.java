@@ -15,6 +15,8 @@ public class UMLClass extends UMLClassifier {
     private List<UMLAttribute> atributy;
     private List<UMLOperation> operace;
     private List<UMLRelation> relace;
+    private List<Double> heightsOfCom;
+    private List<Double> posOfCom;
     private double posX;
     private double posY;
     private double seqPos;
@@ -32,6 +34,8 @@ public class UMLClass extends UMLClassifier {
         this.atributy = new ArrayList<>();
         this.operace = new ArrayList<>();
         this.relace = new ArrayList<>();
+        this.heightsOfCom = new ArrayList<>();
+        this.posOfCom = new ArrayList<>();
         this.abstraktni = false;
         this.posX = 70.0;
         this.posY = 70.0;
@@ -234,4 +238,28 @@ public class UMLClass extends UMLClassifier {
         this.relace.remove(relation);
     }
 
+    public List<Double> getHeightsOfCom() {
+        return heightsOfCom;
+    }
+
+    public void addHeight(double height) {
+        this.heightsOfCom.add(height);
+    }
+
+    public void removeHeightsOfCom(){
+        this.heightsOfCom.removeAll(getHeightsOfCom());
+    }
+
+    public List<Double> getPosOfCom() {
+        return posOfCom;
+    }
+
+    public void addPosOfCom(double pos) {
+        this.posOfCom.add(pos);
+    }
+
+    public void setPositionOfCom(int index,double pos){
+        this.posOfCom.add(index,pos);
+        this.posOfCom.remove(index + 1);
+    }
 }

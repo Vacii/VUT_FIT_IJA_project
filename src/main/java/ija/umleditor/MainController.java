@@ -117,26 +117,6 @@ public class MainController {
 
 
 
-    //Button that switches sequence diagram view to main (class diagram view)
-    @FXML
-    private void switchToMainScene(ActionEvent event) throws IOException {
-        root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    //Button that switches class diagram view to sequence diagram view
-    @FXML
-    private void switchToSequenceScene(ActionEvent event) throws IOException {
-        root = FXMLLoader.load(getClass().getResource("sequenceView.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-    }
-
     //Select JSON file to be loaded
     @FXML
     private void loadJsonFile(ActionEvent event) throws IOException {
@@ -228,6 +208,7 @@ public class MainController {
                 chooseClass.setValue(name);
                 firstClassForRelation.getItems().add(name);
                 secondClassForRelation.getItems().add(name);
+
             }
 
             titledPane.setOnMousePressed(event -> {
@@ -1126,6 +1107,7 @@ public class MainController {
         }
     }
 
+    //TODO do not allow to open multiple windows
     @FXML
     private void loadSeqDiagram(ActionEvent event){
         if (!(chooseSeqDiagram.getValue() == null)){
@@ -1138,8 +1120,7 @@ public class MainController {
                     sq.loadClasses();
                 }
                 if (classDiagram.findSeqDiagram(chooseSeqDiagram.getValue()).isInitialized()){
-                    sq.loadSavedDiagram(nameOfNewSeqDiagram.getText());
-                    System.out.println("resr");
+                    sq.loadSavedDiagram(chooseSeqDiagram.getValue());
                 }
                 Stage stage = new Stage();
                 stage.setTitle("Sequence diagram");
@@ -1154,6 +1135,7 @@ public class MainController {
         }
     }
 
+    //TODO pos of loaded classes are same after delete and create of the same named deqDia
     @FXML
     private void deleteSeqDiagram(ActionEvent e){
         if (!chooseSeqDiagram.getValue().isEmpty()) {

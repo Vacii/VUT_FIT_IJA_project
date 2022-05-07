@@ -7,6 +7,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
@@ -37,7 +38,7 @@
               </menus>
             </MenuBar>
             <ChoiceBox fx:id="chooseClass" layoutX="21.0" layoutY="97.0" prefWidth="150.0" />
-            <Button layoutX="71.0" layoutY="135.0" mnemonicParsing="false" onAction="#showClass" text="Create" />
+            <Button layoutX="28.0" layoutY="135.0" mnemonicParsing="false" onAction="#showClass" text="Create" />
             <Button fx:id="classLoadBtn" layoutX="45.0" layoutY="531.0" mnemonicParsing="false" onAction="#loadClasses" text="Update classes" />
             <Label layoutX="8.0" layoutY="40.0" text="Sequence diagram mode" textFill="WHITE">
                <font>
@@ -45,6 +46,23 @@
                </font></Label>
             <Label fx:id="nameOfSeqDiagram" layoutX="118.0" layoutY="63.0" text="Label" textFill="#00ffe3" />
             <Label layoutX="10.0" layoutY="64.0" text="Name of diagram:" />
+            <Button layoutX="121.0" layoutY="192.0" mnemonicParsing="false" onAction="#createCom" text="Add" />
+            <TextField fx:id="lenghtOfCom" layoutX="15.0" layoutY="192.0" prefHeight="25.0" prefWidth="87.0" promptText="Lenght" />
+            <Label layoutX="51.0" layoutY="171.0" text="Communication" textFill="WHITE">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="72.0" layoutY="238.0" text="Message" textFill="WHITE">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font>
+            </Label>
+            <ChoiceBox fx:id="chooseFirstClassForMsg" layoutX="21.0" layoutY="260.0" prefWidth="150.0" />
+            <ChoiceBox fx:id="chooseMsgType" layoutX="21.0" layoutY="308.0" prefWidth="150.0" />
+            <ChoiceBox fx:id="chooseMsgOperation" layoutX="21.0" layoutY="343.0" prefWidth="150.0" />
+            <ChoiceBox fx:id="chooseSecondClassForMsg" layoutX="22.0" layoutY="405.0" prefWidth="150.0" />
+            <Button layoutX="111.0" layoutY="136.0" mnemonicParsing="false" onAction="#deleteClass" text="Delete" />
          </children>
       </AnchorPane>
    </left>
