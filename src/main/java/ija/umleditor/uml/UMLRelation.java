@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import static ija.umleditor.Main.classDiagram;
+
 public class UMLRelation {
     private double XpositionOfRelationStart;
     private double XpositionOfRelationEnd;
@@ -14,29 +16,58 @@ public class UMLRelation {
     private List<UMLClass> classes;
     private UMLClass classA;
     private UMLClass classB;
+
+    private List<UMLInterface> interfaces;
+    private UMLInterface interfaceA;
+    private UMLInterface interfaceB;
+
     private String name;
 
-    public UMLRelation(UMLClass classA, UMLClass classB, String name){
+    public UMLRelation(String classA, String classB, String name){
         this.name = name;
         this.classes = new ArrayList<>();
-        this.XpositionOfRelationStart = classA.getXposition();
-        this.YpositionOfRelationStart = classA.getYposition();
-        this.XpositionOfRelationEnd = classB.getXposition();
-        this.YpositionOfRelationEnd = classB.getYposition();
-        this.classA = classA;
-        this.classB = classB;
-        classes.add(classA);
-        classes.add(classB);
-        classA.setRelation(this);
-        classB.setRelation(this);
+        this.interfaces = new ArrayList<>();
+
+        if (classDiagram.findClass(classA) != null){
+            this.XpositionOfRelationStart = classDiagram.findClass(classA).getXposition();
+            this.YpositionOfRelationStart = classDiagram.findClass(classA).getYposition();
+            this.classA = classDiagram.findClass(classA);
+            this.classes.add(classDiagram.findClass(classA));
+        }
+        else{
+            this.XpositionOfRelationStart = classDiagram.findInterface(classA).getXposition();
+            this.YpositionOfRelationStart = classDiagram.findInterface(classA).getYposition();
+            this.interfaceA = classDiagram.findInterface(classA);
+            this.interfaces.add(classDiagram.findInterface(classA));
+        }
+        if (classDiagram.findClass(classB) != null){
+            this.XpositionOfRelationEnd = classDiagram.findClass(classB).getXposition();
+            this.YpositionOfRelationEnd = classDiagram.findClass(classB).getYposition();
+            this.classB = classDiagram.findClass(classB);
+            this.classes.add(classDiagram.findClass(classB));
+        }
+        else{
+            this.XpositionOfRelationStart = classDiagram.findInterface(classB).getXposition();
+            this.YpositionOfRelationStart = classDiagram.findInterface(classB).getYposition();
+            this.interfaceB = classDiagram.findInterface(classB);
+            this.interfaces.add(classDiagram.findInterface(classB));
+        }
     }
 
     public UMLClass getFirstClass(){
         return classA;
     }
 
+    public UMLInterface getFirstInterface(){
+        return interfaceA;
+    }
+
     public UMLClass getSecondClass(){
         return classB;
+    }
+
+    public UMLInterface getSecondInterface(){
+        return interfaceB;
     }
 
     public String getName(){
@@ -59,6 +90,10 @@ public class UMLRelation {
 
     public List<UMLClass> getClasses(){
         return classes;
+    }
+
+    public List<UMLInterface> getInterfaces(){
+        return interfaces;
     }
 
     public double getXpositionOfRelationStart() {

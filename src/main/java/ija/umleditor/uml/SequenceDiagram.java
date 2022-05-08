@@ -10,6 +10,7 @@ public class SequenceDiagram extends Element{
     private List<UMLClassifier> klasifikatory;
     private List<UMLClass> zpravy;
     private boolean initialized;
+    private boolean isOpened;
 
     public SequenceDiagram(String name) {
         super(name);
@@ -17,6 +18,7 @@ public class SequenceDiagram extends Element{
         this.zpravy= new ArrayList<>();
         this.klasifikatory = new ArrayList<>();
         this.initialized = false;
+        this.isOpened = false;
     }
 
     public boolean addClass(UMLClass classA) {
@@ -53,5 +55,13 @@ public class SequenceDiagram extends Element{
 
     public boolean isInitialized(){
         return initialized;
+    }
+
+    public boolean isOpened() {
+        return isOpened;
+    }
+
+    public void setOpened(boolean opened) {
+        isOpened = opened;
     }
 }

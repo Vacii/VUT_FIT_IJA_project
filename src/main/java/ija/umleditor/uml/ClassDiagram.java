@@ -97,7 +97,7 @@ public class ClassDiagram extends Element {
         return inter;
     }
 
-    public UMLRelation createRelation(UMLClass classA, UMLClass classB, String name){
+    public UMLRelation createRelation(String classA, String classB, String name){
         UMLRelation obj;
         for (int i = 0; i < this.relace.size(); i++) {
             obj = this.relace.get(i);
@@ -106,8 +106,19 @@ public class ClassDiagram extends Element {
             }
         }
         UMLRelation rel = new UMLRelation(classA, classB, name);
-        classA.addRelation(rel);
-        classB.addRelation(rel);
+        if(findClass(classA) != null){
+            findClass(classA).addRelation(rel);
+        }
+        else{
+            findInterface(classA).addRelation(rel);
+        }
+        if(findClass(classB) != null){
+            findClass(classB).addRelation(rel);
+        }
+        else{
+            findInterface(classB).addRelation(rel);
+        }
+
         this.relace.add(rel);
         return rel;
     }
@@ -158,8 +169,17 @@ public class ClassDiagram extends Element {
         this.tridy.remove(aClass);
     }
 
+    public void deleteInterface(UMLInterface aInterface) {
+        this.klasifikatory.remove(aInterface);
+        this.rozhrani.remove(aInterface);
+    }
+
     public List<UMLRelation> getClassRelations(String name) {
         return findClass(name).getRaletions();
+    }
+
+    public List<UMLRelation> getInterfaceRelations(String name) {
+        return findInterface(name).getRelations();
     }
 
     public UMLRelation findRelation(UMLClass classA, UMLClass classB){

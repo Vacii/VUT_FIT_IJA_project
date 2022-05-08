@@ -68,7 +68,7 @@ public class MainController {
     @FXML
     private TextField typeText;
 
-    //TODO classes can be mover outside of mainPane
+    //TODO classes can be mover outside of mainPane - SplitPane is probably better choice
     @FXML
     public AnchorPane mainPane;
 
@@ -169,7 +169,7 @@ public class MainController {
         System.exit(0);
     }
 
-    //TODO update seqDia classes
+    //TODO update seqDia classes?
     //TODO position dost not work correctly
     private void createClassHelpMethod () {
         String name;
@@ -215,7 +215,6 @@ public class MainController {
                 XpositionOfClass = event.getSceneX() - titledPane.getTranslateX();
                 YpositionOfClass = event.getSceneY() - titledPane.getTranslateY();
             });
-            //TODO nastavovat pozice i u trid nactenych ze souboru
             titledPane.setOnMouseDragged(event -> {
                 titledPane.setTranslateX(event.getSceneX() - XpositionOfClass);
                 titledPane.setTranslateY(event.getSceneY() - YpositionOfClass);
@@ -224,7 +223,15 @@ public class MainController {
 
                 List<UMLRelation> relations = classDiagram.getClassRelations(name);
                 for (int i = 0; i < relations.size(); i++){
-                    mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondClass().getName() + "Relation")));
+                    if(relations.get(i).getFirstClass() != null && relations.get(i).getSecondClass() != null){
+                        mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondClass().getName() + "Relation")));
+                    }
+                    else if (relations.get(i).getFirstInterface() != null){
+                        mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondClass().getName() + "Relation")));
+                    }
+                    else{
+                        mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondInterface().getName() + "Relation")));
+                    }
                     drawRelation(relations.get(i));
                 }
             });
@@ -285,8 +292,8 @@ public class MainController {
                 titledPane.setPrefHeight(60);
                 titledPane.setPrefWidth(100);
                 if (classDiagram.findInterface(name) != null) {
-                    titledPane.setLayoutX(classDiagram.findInterface(name).getXposition() + classCounter*5);
-                    titledPane.setLayoutY(classDiagram.findInterface(name).getYposition() + classCounter*5);
+                    titledPane.setLayoutX(classDiagram.findInterface(name).getXposition());
+                    titledPane.setLayoutY(classDiagram.findInterface(name).getYposition());
                     mainPane.getChildren().add(titledPane);
                     classCounter++;
                     chooseClass.getItems().add(name);
@@ -304,6 +311,21 @@ public class MainController {
                     titledPane.setTranslateY(event.getSceneY() - YpositionOfClass);
                     classDiagram.findInterface(name).setXposition(event.getSceneX() - XpositionOfClass);
                     classDiagram.findInterface(name).setYposition(event.getSceneY() - YpositionOfClass);
+
+                    List<UMLRelation> relations = classDiagram.getInterfaceRelations(name);
+                    for (int i = 0; i < relations.size(); i++){
+                        if(relations.get(i).getFirstInterface() != null && relations.get(i).getSecondInterface() != null){
+                            mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondInterface().getName() + "Relation")));
+                        }
+                        else if (relations.get(i).getFirstClass() != null){
+                            mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondInterface().getName() + "Relation")));
+                        }
+                        else{
+                            mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondClass().getName() + "Relation")));
+                        }
+
+                        drawRelation(relations.get(i));
+                    }
                 });
                 if (!operatorsLoaded){
                     loadOperatorsToChoiceBox();
@@ -408,6 +430,7 @@ public class MainController {
     }
 
     //TODO vypisovat tridy na spravne pozice, tusim se to neparsuje
+    //TODO nacitat a ukladat interface
     private void showClassToGUI(ClassDiagram d, UMLClass cls) {
         VBox box = new VBox();
 
@@ -424,8 +447,6 @@ public class MainController {
         VBox methods = new VBox();
         box.getChildren().add(methods);
         methods.setId(name + "Methods");
-
-        System.out.println(cls.getXposition() + "" + cls.getYposition());
 
         TitledPane titledPane = new TitledPane(cls.getName(), box);
         titledPane.setId(cls.getName());
@@ -493,7 +514,15 @@ public class MainController {
 
             List<UMLRelation> relations = classDiagram.getClassRelations(name);
             for (int i = 0; i < relations.size(); i++){
-                mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondClass().getName() + "Relation")));
+                if(relations.get(i).getFirstClass() != null && relations.get(i).getSecondClass() != null){
+                    mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondClass().getName() + "Relation")));
+                }
+                else if (relations.get(i).getFirstInterface() != null){
+                    mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondClass().getName() + "Relation")));
+                }
+                else{
+                    mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondInterface().getName() + "Relation")));
+                }
                 drawRelation(relations.get(i));
             }
         });
@@ -511,54 +540,83 @@ public class MainController {
 
     //TODO remove deleted class from relations list
     //TODO delete realtion when class deleted
-    //TODO update seqDia classes
+    //TODO update seqDia classes?
     private void deleteClassHelp() {
 
         String nameOfRemovedClass;
 
-        if (undoActive == true) nameOfRemovedClass = classesAdded.get(classesAdded.size() - 1).getName();
+        if (undoActive) nameOfRemovedClass = classesAdded.get(classesAdded.size() - 1).getName();
 
         else nameOfRemovedClass = chooseClass.getValue();
         //TODO relace
 
-        if (!classDiagram.findClass(nameOfRemovedClass).getAttributes().isEmpty()) {
+        if (classDiagram.findClass(nameOfRemovedClass) != null){
 
-            List<UMLAttribute> arr = classDiagram.findClass(nameOfRemovedClass).getAttributes();
+            if (!classDiagram.findClass(nameOfRemovedClass).getAttributes().isEmpty()) {
 
-            for (int i = 0; i < arr.size(); i++) {
+                List<UMLAttribute> arr = classDiagram.findClass(nameOfRemovedClass).getAttributes();
 
-                UMLAttribute attribute = arr.get(i);
-                classDiagram.findClass(nameOfRemovedClass).removeAttribute(attribute);
-                attributesOfClassesDeleted.add(attribute);
-                i--;
-                if (classDiagram.findClass(nameOfRemovedClass).getAttributes().isEmpty()) break;
+                for (int i = 0; i < arr.size(); i++) {
+
+                    UMLAttribute attribute = arr.get(i);
+                    classDiagram.findClass(nameOfRemovedClass).removeAttribute(attribute);
+                    attributesOfClassesDeleted.add(attribute);
+                    i--;
+                    if (classDiagram.findClass(nameOfRemovedClass).getAttributes().isEmpty()) break;
+                }
+
             }
 
-        }
+            if (!classDiagram.findClass(nameOfRemovedClass).getMethods().isEmpty()) {
 
-        if (!classDiagram.findClass(nameOfRemovedClass).getMethods().isEmpty()) {
+                List<UMLOperation> arr2 = classDiagram.findClass(nameOfRemovedClass).getMethods();
 
-            List<UMLOperation> arr2 = classDiagram.findClass(nameOfRemovedClass).getMethods();
+                for (int i = 0; i < arr2.size(); i++) {
 
-            for (int i = 0; i < arr2.size(); i++) {
-
-                UMLOperation operation = arr2.get(i);
-                classDiagram.findClass(nameOfRemovedClass).removeMethod(operation);
-                methodsOfClassesDeleted.add(operation);
-                i--;
-                if (classDiagram.findClass(nameOfRemovedClass).getMethods().isEmpty()) break;
+                    UMLOperation operation = arr2.get(i);
+                    classDiagram.findClass(nameOfRemovedClass).removeMethod(operation);
+                    methodsOfClassesDeleted.add(operation);
+                    i--;
+                    if (classDiagram.findClass(nameOfRemovedClass).getMethods().isEmpty()) break;
+                }
             }
+            classesDeleted.add(classDiagram.findClass(nameOfRemovedClass)); //UNDO
+            classDiagram.deleteClass(classDiagram.findClass(nameOfRemovedClass));
+            mainPane.getChildren().remove(mainPane.lookup("#" + nameOfRemovedClass));
+            chooseClass.getItems().remove(nameOfRemovedClass);
+
+            if(!undoActive) actionsPerformed.add("removed class");
+
+            numberOfAttributesDeleted.add(attributesOfClassesDeleted.size());
+            numberOfMethodsDeleted.add(methodsOfClassesDeleted.size());
         }
-        classesDeleted.add(classDiagram.findClass(nameOfRemovedClass)); //UNDO
-        classDiagram.deleteClass(classDiagram.findClass(nameOfRemovedClass));
-        mainPane.getChildren().remove(mainPane.lookup("#" + nameOfRemovedClass));
-        chooseClass.getItems().remove(nameOfRemovedClass);
+        else{
+            if (!classDiagram.findInterface(nameOfRemovedClass).getMethods().isEmpty()) {
 
-        if(!undoActive) actionsPerformed.add("removed class");
+                List<UMLOperation> arr2 = classDiagram.findInterface(nameOfRemovedClass).getMethods();
 
-        numberOfAttributesDeleted.add(attributesOfClassesDeleted.size());
-        numberOfMethodsDeleted.add(methodsOfClassesDeleted.size());
+                for (int i = 0; i < arr2.size(); i++) {
 
+                    UMLOperation operation = arr2.get(i);
+                    classDiagram.findInterface(nameOfRemovedClass).removeMethod(operation);
+                    //TODO Undo needs check
+//                    methodsOfClassesDeleted.add(operation);
+                    i--;
+                    if (classDiagram.findInterface(nameOfRemovedClass).getMethods().isEmpty()) break;
+                }
+            }
+//            classesDeleted.add(classDiagram.findClass(nameOfRemovedClass)); //UNDO
+            classDiagram.deleteInterface(classDiagram.findInterface(nameOfRemovedClass));
+            mainPane.getChildren().remove(mainPane.lookup("#" + nameOfRemovedClass));
+            chooseClass.getItems().remove(nameOfRemovedClass);
+
+            if(!undoActive) actionsPerformed.add("removed class");
+
+            numberOfAttributesDeleted.add(attributesOfClassesDeleted.size());
+            numberOfMethodsDeleted.add(methodsOfClassesDeleted.size());
+        }
+        firstClassForRelation.getItems().remove(nameOfRemovedClass);
+        secondClassForRelation.getItems().remove(nameOfRemovedClass);
     }
 
     @FXML
@@ -596,7 +654,7 @@ public class MainController {
                 type = typeText.getText();
             }
 
-            if ((!name.isEmpty() && !type.isEmpty()) && chosenClass != null && !listOfAttributes.contains(name)) {
+            if ((!name.isEmpty() && !type.isEmpty()) && chosenClass != null && !chosenClass.getNamesOfAttributes().contains(name)) {
 
                 if (!undoActive) actionsPerformed.add("added attribute");
                 UMLAttribute newAttribute = new UMLAttribute(name, classDiagram.classifierForName(type));
@@ -626,8 +684,7 @@ public class MainController {
             UMLClass chosenClass = classDiagram.findClass(chooseClass.getValue());
             String name = attAndMethText.getText();
             String type = typeText.getText();
-            //TODO listOfMethods tady znamena, ze ruzne tridy nesmi mit stejny nazev metod, to stejne u atributu
-            if ((!name.isEmpty() && !type.isEmpty()) && !listOfMethods.contains(name)) {
+            if ((!name.isEmpty() && !type.isEmpty()) && !chosenClass.getNamesOfMethods().contains(name)) {
                 if (!undoActive) actionsPerformed.add("added method");
                 UMLOperation newMethod = new UMLOperation(name, classDiagram.classifierForName(type));
                 chosenClass.addMethod(newMethod);
@@ -641,12 +698,10 @@ public class MainController {
             }
         }
         else if(chooseClass.getValue() != null && (classDiagram.findInterface(chooseClass.getValue()) != null)){
-            System.out.println("tady");
             UMLInterface chosenInterface = classDiagram.findInterface(chooseClass.getValue());
             String name = attAndMethText.getText();
             String type = typeText.getText();
-            if ((!name.isEmpty() && !type.isEmpty())) {
-
+            if ((!name.isEmpty() && !type.isEmpty()) && !chosenInterface.getNamesOfMethods().contains(name)) {
 //                if (!undoActive) actionsPerformed.add("added method");
                 UMLOperation newMethod = new UMLOperation(name, classDiagram.classifierForName(type));
                 chosenInterface.addMethod(newMethod);
@@ -688,7 +743,6 @@ public class MainController {
                 type = typeText.getText();
             }
 
-            System.out.println(chosenClass);
             List<UMLOperation> operationList = chosenClass.getMethods();
             for (UMLOperation operation : operationList) {
 
@@ -1035,9 +1089,7 @@ public class MainController {
                 deleteClassHelp();
                 classesAdded.remove(classesAdded.size() - 1);
             }
-            System.out.println(actionsPerformed);
             actionsPerformed.remove(actionsPerformed.size() - 1);
-            System.out.println(actionsPerformed);
             undoActive = false;
         }
     }
@@ -1045,19 +1097,37 @@ public class MainController {
     //TODO relations can be created only between 2 classes, not interface
     //TODO show names of realtions
     @FXML
-    private void createRelation(ActionEvent e) throws IOException {
+    private void createRelation(ActionEvent e){
         String newRelName = relationName.getText();
-        if (classDiagram.findInterface(firstClassForRelation.getValue()) != null || classDiagram.findInterface(secondClassForRelation.getValue()) != null){
-            System.out.println("Interface relations are not inplemented yet!");
-        }
-        else if (classDiagram.findRelation(classDiagram.findClass(firstClassForRelation.getValue()), classDiagram.findClass(secondClassForRelation.getValue())) == null){
+        if (classDiagram.findInterface(firstClassForRelation.getValue()) != null && classDiagram.findInterface(secondClassForRelation.getValue()) != null){
             if (!newRelName.isEmpty() && !Objects.equals(firstClassForRelation.getValue(), secondClassForRelation.getValue())) {
-                UMLClass firstClass = classDiagram.findClass(firstClassForRelation.getValue());
-                UMLClass secondClass = classDiagram.findClass(secondClassForRelation.getValue());
-                UMLRelation relace = classDiagram.createRelation(firstClass, secondClass, newRelName);
+                UMLRelation relace = classDiagram.createRelation(firstClassForRelation.getValue(), secondClassForRelation.getValue(), newRelName);
                 if (relace != null) {
                     drawRelation(relace);
-                    System.out.println(relace.getName());
+                }
+            }
+        }
+        else if (classDiagram.findClass(firstClassForRelation.getValue()) != null && classDiagram.findClass(secondClassForRelation.getValue()) != null){
+            if (!newRelName.isEmpty() && !Objects.equals(firstClassForRelation.getValue(), secondClassForRelation.getValue())) {
+                UMLRelation relace = classDiagram.createRelation(firstClassForRelation.getValue(), secondClassForRelation.getValue(), newRelName);
+                if (relace != null) {
+                    drawRelation(relace);
+                }
+            }
+        }
+        else if (classDiagram.findClass(firstClassForRelation.getValue()) != null && classDiagram.findInterface(secondClassForRelation.getValue()) != null){
+            if (!newRelName.isEmpty()) {
+                UMLRelation relace = classDiagram.createRelation(firstClassForRelation.getValue(), secondClassForRelation.getValue(), newRelName);
+                if (relace != null) {
+                    drawRelation(relace);
+                }
+            }
+        }
+        else if (classDiagram.findInterface(firstClassForRelation.getValue()) != null && classDiagram.findClass(secondClassForRelation.getValue()) != null){
+            if (!newRelName.isEmpty()) {
+                UMLRelation relace = classDiagram.createRelation(firstClassForRelation.getValue(), secondClassForRelation.getValue(), newRelName);
+                if (relace != null) {
+                    drawRelation(relace);
                 }
             }
         }
@@ -1065,11 +1135,34 @@ public class MainController {
 
     private void drawRelation(UMLRelation relation){
         Line line = new Line();
-        line.setId(relation.getFirstClass().getName() + relation.getSecondClass().getName() + "Relation");
-        line.setStartX(relation.getFirstClass().getXposition() + 120);
-        line.setStartY(relation.getFirstClass().getYposition() + 120);
-        line.setEndX(relation.getSecondClass().getXposition() + 120);
-        line.setEndY(relation.getSecondClass().getYposition() + 120);
+        if (relation.getFirstClass() != null){
+            line.setStartX(relation.getFirstClass().getXposition() + 120);
+            line.setStartY(relation.getFirstClass().getYposition() + 120);
+            if (relation.getSecondClass() != null){
+                line.setId(relation.getFirstClass().getName() + relation.getSecondClass().getName() + "Relation");
+            }
+        }
+        else{
+            line.setStartX(relation.getFirstInterface().getXposition() + 120);
+            line.setStartY(relation.getFirstInterface().getYposition() + 120);
+            if (relation.getSecondInterface() != null){
+                line.setId(relation.getFirstInterface().getName() + relation.getSecondInterface().getName() + "Relation");
+            }
+        }
+        if (relation.getSecondClass() != null){
+            line.setEndX(relation.getSecondClass().getXposition() + 120);
+            line.setEndY(relation.getSecondClass().getYposition() + 120);
+            if (relation.getFirstInterface() != null){
+                line.setId(relation.getFirstInterface().getName() + relation.getSecondClass().getName() + "Relation");
+            }
+        }
+        else {
+            line.setEndX(relation.getSecondInterface().getXposition() + 120);
+            line.setEndY(relation.getSecondInterface().getYposition() + 120);
+            if (relation.getFirstClass() != null){
+                line.setId(relation.getFirstClass().getName() + relation.getSecondInterface().getName() + "Relation");
+            }
+        }
         mainPane.getChildren().add(0,line);
     }
 
@@ -1111,6 +1204,10 @@ public class MainController {
     @FXML
     private void loadSeqDiagram(ActionEvent event){
         if (!(chooseSeqDiagram.getValue() == null)){
+            if (classDiagram.findSeqDiagram(nameOfNewSeqDiagram.getText()).isOpened()) {
+                System.out.println("Diagram is already opened!");
+                return;
+            }
             try{
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("SequenceView.fxml"));
                 Parent root = (Parent) loader.load();
@@ -1124,6 +1221,7 @@ public class MainController {
                 }
                 Stage stage = new Stage();
                 stage.setTitle("Sequence diagram");
+                stage.setOnCloseRequest(e -> classDiagram.findSeqDiagram(nameOfNewSeqDiagram.getText()).setOpened(false));
                 stage.setScene( new Scene(root));
                 stage.show();
             } catch (Exception e){

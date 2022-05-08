@@ -13,7 +13,9 @@ import java.util.Collections;
 public class UMLClass extends UMLClassifier {
     private boolean abstraktni;
     private List<UMLAttribute> atributy;
+    private List<String> jmenaAtributu;
     private List<UMLOperation> operace;
+    private List<String> jmenaOperaci;
     private List<UMLRelation> relace;
     private List<Double> heightsOfCom;
     private List<Double> posOfCom;
@@ -32,14 +34,16 @@ public class UMLClass extends UMLClassifier {
     public UMLClass(java.lang.String name) {
         super(name);
         this.atributy = new ArrayList<>();
+        this.jmenaAtributu = new ArrayList<>();
         this.operace = new ArrayList<>();
+        this.jmenaOperaci = new ArrayList<>();
         this.relace = new ArrayList<>();
         this.heightsOfCom = new ArrayList<>();
         this.posOfCom = new ArrayList<>();
         this.abstraktni = false;
         this.posX = 70.0;
         this.posY = 70.0;
-        this.seqPos = 20.0;
+        this.seqPos = 40.0;
     }
 
 //  ----- Methods -----
@@ -57,23 +61,26 @@ public class UMLClass extends UMLClassifier {
             return false;
         }
         this.atributy.add(attr);
+        this.jmenaAtributu.add(attr.getName());
         return true;
     }
 
 
     public boolean addMethod(UMLOperation operation) {
 
-        if (this.operace.contains(operation))
+        if (this.operace.contains(operation)) {
             return false;
+        }
 
         this.operace.add(operation);
+        this.jmenaOperaci.add(operation.getName());
         return true;
     }
 
     public boolean addRelation(UMLRelation relace){
-        if (this.relace.contains(relace))
+        if (this.relace.contains(relace)){
             return false;
-
+        }
         this.relace.add(relace);
         return true;
     }
@@ -83,6 +90,10 @@ public class UMLClass extends UMLClassifier {
         return Collections.unmodifiableList(this.operace);
     }
 
+    public List<String> getNamesOfMethods(){
+        return this.jmenaOperaci;
+    }
+
     /**
      * getAttributes()
      *
@@ -90,6 +101,10 @@ public class UMLClass extends UMLClassifier {
      */
     public List<UMLAttribute> getAttributes() {
         return Collections.unmodifiableList(this.atributy);
+    }
+
+    public List<String> getNamesOfAttributes(){
+        return this.jmenaAtributu;
     }
 
     /**
@@ -228,10 +243,6 @@ public class UMLClass extends UMLClassifier {
 
     public List<UMLRelation> getRaletions(){
         return this.relace;
-    }
-
-    public void setRelation(UMLRelation relation){
-        this.relace.add(relation);
     }
 
     public void removeReltion(UMLRelation relation){

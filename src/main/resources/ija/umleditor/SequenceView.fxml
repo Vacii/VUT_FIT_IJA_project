@@ -69,7 +69,7 @@
    <center>
       <ScrollPane fx:id="sequencePane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <content>
-            <AnchorPane fx:id="classPane" prefHeight="64.0" prefWidth="597.0" />
+            <AnchorPane fx:id="classPane" prefHeight="556.0" prefWidth="555.0" />
          </content>
       </ScrollPane>
    </center>

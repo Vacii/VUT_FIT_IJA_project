@@ -6,6 +6,7 @@ import java.util.List;
 
 public class UMLInterface extends UMLClassifier{
     private List<UMLOperation> operace;
+    private List<String> jmenaOperaci;
     private List<UMLRelation> relace;
     private double posX;
     private double posY;
@@ -21,6 +22,7 @@ public class UMLInterface extends UMLClassifier{
     public UMLInterface(java.lang.String name) {
         super(name);
         this.operace = new ArrayList<>();
+        this.jmenaOperaci = new ArrayList<>();
         this.relace = new ArrayList<>();
         this.posX = 70.0;
         this.posY = 70.0;
@@ -34,6 +36,7 @@ public class UMLInterface extends UMLClassifier{
             return false;
 
         this.operace.add(operation);
+        this.jmenaOperaci.add(operation.getName());
         return true;
     }
 
@@ -48,6 +51,10 @@ public class UMLInterface extends UMLClassifier{
     public List<UMLOperation> getMethods() {
 
         return Collections.unmodifiableList(this.operace);
+    }
+
+    public List<String> getNamesOfMethods(){
+        return this.jmenaOperaci;
     }
 
 
@@ -107,5 +114,13 @@ public class UMLInterface extends UMLClassifier{
             }
         }
         return false;
+    }
+
+    public void removeReltion(UMLRelation relation){
+        this.relace.remove(relation);
+    }
+
+    public List<UMLRelation> getRelations() {
+        return this.relace;
     }
 }

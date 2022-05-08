@@ -36,7 +36,7 @@ public class RelationController {
         if (!newRelName.isEmpty()) {
             UMLClass firstClass = classDiagram.findClass(firstClassForRelation.getValue());
             UMLClass secondClass = classDiagram.findClass(secondClassForRelation.getValue());
-            UMLRelation relace = classDiagram.createRelation(firstClass, secondClass, newRelName);
+//            UMLRelation relace = classDiagram.createRelation(firstClass, secondClass, newRelName);
             Line line = new Line();
 //            line.setStartX(firstClass.getXposition());
 //            line.setStartY(firstClass.getYposition());

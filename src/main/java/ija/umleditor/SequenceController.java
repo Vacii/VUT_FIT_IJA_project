@@ -56,7 +56,7 @@ public class SequenceController {
     private double pubHeight;
     private double comPosition;
     private double XpositionOfClass;
-    private double YpositionOfClass;
+    private double newXpositionOfClass;
 
     @FXML
     private void showClass(ActionEvent e){
@@ -130,11 +130,13 @@ public class SequenceController {
             }
         }
         chooseClass.setValue(classes.get(0).getName());
+        classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).setOpened(true);
     }
 
     @FXML
     private void closeSeqView(ActionEvent e){
         Stage stage = (Stage) classLoadBtn.getScene().getWindow();
+        classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).setOpened(false);
         stage.close();
     }
 
@@ -148,7 +150,7 @@ public class SequenceController {
         line.getStrokeDashArray().addAll(25d, 10d);
         classPane.getChildren().add(0,line);
     }
-
+    //TODO rectangles could be loaded better in future. (automaticaly when message is created)
     private void drawComRectangle(UMLClass aClass, double classHeight, Rectangle rectangle){
         //TODO add counter, ID is same for all of them right now
         rectangle.setId(aClass.getName() + "Communication");
@@ -190,14 +192,13 @@ public class SequenceController {
                 }
             }
 
-            label.setOnMousePressed(event -> {
-                XpositionOfClass = event.getSceneX() - label.getTranslateX();
+            label.setOnMousePressed(event1 -> {
+                XpositionOfClass = event1.getSceneX() - label.getTranslateX();
             });
-            label.setOnMouseDragged(event -> {
-                label.setTranslateX(event.getSceneX() - XpositionOfClass);
-                //TODO temp position setting
-                obj.setSeqPos(event.getSceneX() - XpositionOfClass + 26);
-
+            label.setOnMouseDragged(event1 -> {
+                label.setTranslateX(event1.getSceneX() - XpositionOfClass);
+                //TODO idk whats wrong
+                obj.setSeqPos(event1.getSceneX() - XpositionOfClass);
                 classPane.getChildren().remove(classPane.lookup(("#" + obj.getName() + "DashedLine")));
                 drawDashedLine(obj.getName());
 
