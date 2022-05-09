@@ -57,6 +57,11 @@ public class MainController {
     private ArrayList<UMLClass> classOfMethodDeleted = new ArrayList<>();
     private ArrayList<UMLOperation> methodsAdded = new ArrayList<>();
     private ArrayList<UMLClass> classOfMethodAdded = new ArrayList<>();
+    //edit
+    private ArrayList<UMLAttribute> editedAttributes = new ArrayList<>();
+    private ArrayList<UMLClass> classOfEditedAttribute = new ArrayList<>();
+    private ArrayList<UMLOperation> editedMethods = new ArrayList<>();
+    private ArrayList<UMLClass> classOfEditedMethod = new ArrayList<>();
     /**************/
 
     @FXML
@@ -85,6 +90,7 @@ public class MainController {
     private boolean operatorsLoaded = false;
     private boolean undoActive = false;
     private boolean classDeleteActive = false;
+    private boolean editingClass = false;
 
     private ArrayList<String> listOfAttributes = new ArrayList<>();
     private ArrayList<String> listOfMethods = new ArrayList<>();
@@ -108,6 +114,8 @@ public class MainController {
     private TextField editType;
     @FXML
     private TextField editName;
+    @FXML
+    private TextField editClassText;
 
 //  Sequence diagram
     @FXML
@@ -175,6 +183,8 @@ public class MainController {
         String name;
 
         if (undoActive) name = classesDeleted.get(classesDeleted.size()-1).getName();
+
+        else if (editingClass) name = editClassText.getText();
 
         else name = newName.getText();
 
@@ -857,6 +867,8 @@ public class MainController {
                         VBox attributes = (VBox) mainPane.lookup("#" + currentClass.getName() + "Attributes");
                         attributes.getChildren().remove(attributes.lookup("#" + name + "Attr"));
                         chooseAttribute.getItems().remove(name + ":" + type);
+                        //uložit old atribut do pole při undo
+                        editedAttributes.add(attribute); //po zavolání funkce bude zeditovaný prvek na předposledním místě
                         break;
 
                     }
@@ -872,7 +884,9 @@ public class MainController {
                 attribute.setId(newName + "Attr");
                 attributes.getChildren().add(attribute);
                 chooseAttribute.getItems().add(newName + ":" + newType);
-
+                actionsPerformed.add("edited attribute");
+                editedAttributes.add(newAttribute); //na posledním místě v listu je nový zeditovaný prvek
+                classOfEditedAttribute.add(currentClass);
             }
 
         }
@@ -902,14 +916,16 @@ public class MainController {
                 String compareType = operation.getType().toString().replaceAll("\\([^\\)]*\\)\\s*", "");
                 String compareName = operation.getName();
 
-                //remove if the attributes are matching
+                //remove if the methods are matching
                 if(name.equals(compareName) && type.equals(compareType)) {
 
                     removed = true;
                     currentClass.removeMethod(operation);
+                    listOfMethods.remove(operation.getName());
                     VBox methods = (VBox) mainPane.lookup("#" + currentClass.getName() + "Methods");
                     methods.getChildren().remove(methods.lookup("#" + name + "Meth"));
                     chooseMethod.getItems().remove(name + ":" + type);
+                    editedMethods.add(operation); //předposlední prvek bude operace před editem
                     break;
 
                 }
@@ -919,14 +935,66 @@ public class MainController {
 
                 UMLOperation newOperation = new UMLOperation(newName, classDiagram.classifierForName(newType));
                 currentClass.addMethod(newOperation);
+                listOfMethods.add(newOperation.getName());
                 VBox methods = (VBox) mainPane.lookup("#" + currentClass.getName() + "Methods");
                 Text method = new Text(chooseOperator.getValue() + newName + ":" + newType);
                 method.setId(newName + "Meth");
                 methods.getChildren().add(method);
+                editedMethods.add(newOperation); //nový prvek (po editu) bude poslední v listu
                 chooseMethod.getItems().add(newName + ":" + newType);
+                classOfEditedMethod.add(currentClass);
+            }
+        }
 
+    }
+
+    @FXML
+    private void editClass (ActionEvent e) {
+
+        //classa, kterou vyberu se musí vymazat - s tím i atributy + metody, který si uložím bokem
+        //potom vytvořím classu s novým jménem, ale přidělím mu ty uložený atributy + metody
+
+        if (chooseClass.getValue() != null) {
+
+
+            String className = chooseClass.getValue();
+            UMLClass classToEdit = classDiagram.findClass(className);
+            String newClassName = editClassText.getText();
+
+            List<UMLAttribute> attributesOfClass = new ArrayList<>();
+            List<UMLOperation> operationsOfClass = new ArrayList<>();
+
+            for (UMLAttribute attribute : classToEdit.getAttributes()) attributesOfClass.add(attribute);
+
+            for (UMLOperation operation : classToEdit.getMethods())  operationsOfClass.add(operation);
+
+
+
+            deleteClassHelp(); //odstraní classu a všechny její věci
+
+            //teď založit classu se stejnýma atributama + metodama a displaynout do GUI
+
+            UMLClass newClass = classDiagram.createClass(newClassName);
+
+            for (UMLAttribute attribute : attributesOfClass) {
+
+                UMLAttribute attributeObject = new UMLAttribute(attribute.getName(), classDiagram.classifierForName(attribute.getType().toString()));
+                newClass.addAttribute(attributeObject);
 
             }
+
+            for (UMLOperation operation : operationsOfClass) {
+
+                UMLOperation operationObject = UMLOperation.create(operation.getName(), classDiagram.classifierForName(operation.getType().toString()));
+                newClass.addMethod(operationObject);
+
+            }
+
+            //TODO RELACE
+
+            showClassToGUI(classDiagram, newClass);
+
+
         }
 
     }
@@ -1031,6 +1099,7 @@ public class MainController {
 
             //1. attribute was removed - needs to be added
             undoActive = true;
+            System.out.println(actionsPerformed);
 
             if (actionsPerformed.get(actionsPerformed.size() - 1).equals("removed attribute")) {
 
@@ -1050,7 +1119,7 @@ public class MainController {
 
             }
 
-            //3. method was removed - needs to be added
+            //3. method was removed - needs to be added - TODO
 
             else if (actionsPerformed.get(actionsPerformed.size() - 1).equals("removed method")) {
 
@@ -1060,7 +1129,7 @@ public class MainController {
 
             }
 
-            //4. method was added - needs to be removed
+            //4. method was added - needs to be removed - TODO
 
             else if (actionsPerformed.get(actionsPerformed.size() - 1).equals("added method")) {
 
@@ -1089,6 +1158,66 @@ public class MainController {
                 deleteClassHelp();
                 classesAdded.remove(classesAdded.size() - 1);
             }
+
+            //7. attribute was edited - we need to get old data - before attribute was changed and set it as current
+            //basically im removing new one and adding old one
+
+            else if (actionsPerformed.get(actionsPerformed.size() - 1).equals("edited attribute")) {
+
+                //remove
+                UMLAttribute attributeToRemove = editedAttributes.get(editedAttributes.size() -1);
+                UMLClass classOfAttributeToRemove = classOfEditedAttribute.get(classOfEditedAttribute.size() - 1);
+                listOfAttributes.remove(attributeToRemove.getName());
+
+                VBox attributes = (VBox) mainPane.lookup("#" + classOfAttributeToRemove.getName() + "Attributes");
+                attributes.getChildren().remove(attributes.lookup("#" + attributeToRemove.getName() + "Attr"));
+                chooseAttribute.getItems().remove(attributeToRemove.getName() + ":" + attributeToRemove.getType().toString().replaceAll("\\([^\\)]*\\)\\s*", ""));
+                //add
+
+                UMLAttribute newAttribute = new UMLAttribute(editedAttributes.get(editedAttributes.size() - 2).getName(),
+                        classDiagram.classifierForName(editedAttributes.get(editedAttributes.size() - 2).getType().toString()));
+                classOfAttributeToRemove.addAttribute(newAttribute);
+                VBox attributes2 = (VBox) mainPane.lookup("#" + classOfAttributeToRemove.getName() + "Attributes");
+                Text attribute = new Text(chooseOperator.getValue() + newAttribute.getName() + ":" + newAttribute.getType().toString().replaceAll("\\([^\\)]*\\)\\s*", ""));
+                attribute.setId(newAttribute.getName() + "Attr");
+                attributes2.getChildren().add(attribute);
+                chooseAttribute.getItems().add(newAttribute.getName() + ":" + newAttribute.getType().toString().replaceAll("\\([^\\)]*\\)\\s*", ""));
+                listOfAttributes.add(newAttribute.getName());
+
+                for (int i = 0; i < 2; i++) editedAttributes.remove(editedAttributes.size() -1);
+                classOfEditedAttribute.remove(classOfEditedAttribute.size() -1);
+
+            }
+
+
+            //8. method was edited - same as above only for methods - not working now cuz need to fix methods above first
+
+            else if (actionsPerformed.get(actionsPerformed.size() - 1).equals("edited method")) {
+
+                //remove
+                UMLOperation operationToRemove = editedMethods.get(editedMethods.size() - 1);
+                UMLClass classOfMethodToRemove = classOfEditedMethod.get(classOfEditedMethod.size() - 1);
+                listOfMethods.remove(operationToRemove.getName());
+                VBox methods = (VBox) mainPane.lookup("#" + classOfMethodToRemove.getName() + "Methods");
+                methods.getChildren().remove(methods.lookup("#" + operationToRemove.getName() + "Meth"));
+                chooseMethod.getItems().remove(operationToRemove.getName() + ":" + operationToRemove.getType().toString().replaceAll("\\([^\\)]*\\)\\s*", ""));
+
+                //add
+                UMLOperation newOperation = new UMLOperation(editedMethods.get(editedMethods.size() - 2).getName(),
+                        classDiagram.classifierForName(editedMethods.get(editedMethods.size() - 2).getType().toString()));
+                classOfMethodToRemove.addMethod(newOperation);
+                VBox methods2 = (VBox) mainPane.lookup("#" + classOfMethodToRemove.getName() + "Methods");
+                Text method = new Text(chooseOperator.getValue() + newOperation.getName() + ":" + newOperation.getType().toString().replaceAll("\\([^\\)]*\\)\\s*", ""));
+                method.setId(newOperation.getName() + "Meth");
+                methods2.getChildren().add(method);
+                chooseMethod.getItems().add(newOperation.getName() + ":" + newOperation.getType().toString().replaceAll("\\([^\\)]*\\)\\s*", ""));
+                listOfMethods.add(newOperation.getName());
+
+                for (int i = 0; i < 2; i++) editedMethods.remove(editedMethods.size() -1); //removes both old and new edited methods
+                classOfEditedMethod.remove(classOfEditedMethod.size() -1);
+            }
+
+            //9. TODO - class was edited
             actionsPerformed.remove(actionsPerformed.size() - 1);
             undoActive = false;
         }

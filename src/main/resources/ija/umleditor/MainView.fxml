@@ -74,27 +74,34 @@
                  </font>
              </Label>
              <Button layoutX="107.0" layoutY="576.0" mnemonicParsing="false" onAction="#deleteRelation" prefHeight="26.0" prefWidth="62.0" text="Delete" />
-            <Label alignment="CENTER" layoutX="69.0" layoutY="623.0" prefHeight="16.0" prefWidth="50.0" text="Edit" textFill="WHITE">
+            <Label alignment="CENTER" layoutX="70.0" layoutY="610.0" prefHeight="16.0" prefWidth="50.0" text="Edit" textFill="WHITE">
                <font>
                   <Font name="Arial" size="13.0" />
                </font>
             </Label>
-            <ChoiceBox fx:id="chooseMethod" layoutX="106.0" layoutY="664.0" prefHeight="26.0" prefWidth="70.0" />
-            <ChoiceBox fx:id="chooseAttribute" layoutX="15.0" layoutY="664.0" prefHeight="26.0" prefWidth="70.0" />
-            <Label alignment="CENTER" layoutX="116.0" layoutY="639.0" prefHeight="16.0" prefWidth="50.0" text="Methods" textFill="WHITE">
+            <ChoiceBox fx:id="chooseMethod" layoutX="103.0" layoutY="729.0" prefHeight="26.0" prefWidth="70.0" />
+            <ChoiceBox fx:id="chooseAttribute" layoutX="20.0" layoutY="729.0" prefHeight="26.0" prefWidth="70.0" />
+            <Label alignment="CENTER" layoutX="113.0" layoutY="710.0" prefHeight="16.0" prefWidth="50.0" text="Methods" textFill="WHITE">
                <font>
                   <Font name="Arial" size="13.0" />
                </font>
             </Label>
-            <Label alignment="CENTER" layoutX="19.0" layoutY="639.0" prefHeight="16.0" prefWidth="62.0" text="Attributes" textFill="WHITE">
+            <Label alignment="CENTER" layoutX="24.0" layoutY="710.0" prefHeight="16.0" prefWidth="62.0" text="Attributes" textFill="WHITE">
                <font>
                   <Font name="Arial" size="13.0" />
                </font>
             </Label>
-            <TextField fx:id="editName" layoutX="15.0" layoutY="706.0" prefHeight="26.0" prefWidth="71.0" promptText="New name" />
-            <TextField fx:id="editType" layoutX="103.0" layoutY="706.0" prefHeight="26.0" prefWidth="71.0" promptText="New type" />
-            <Button layoutX="7.0" layoutY="746.0" mnemonicParsing="false" onAction="#editAttribute" prefHeight="26.0" prefWidth="85.0" text="Edit attribute" />
-            <Button layoutX="101.0" layoutY="746.0" mnemonicParsing="false" onAction="#editMethod" prefHeight="26.0" prefWidth="85.0" text="Edit method" />
+            <TextField fx:id="editName" layoutX="19.0" layoutY="763.0" prefHeight="26.0" prefWidth="71.0" promptText="New name" />
+            <TextField fx:id="editType" layoutX="103.0" layoutY="763.0" prefHeight="26.0" prefWidth="71.0" promptText="New type" />
+            <Button layoutX="8.0" layoutY="797.0" mnemonicParsing="false" onAction="#editAttribute" prefHeight="26.0" prefWidth="85.0" text="Edit attribute" />
+            <Button layoutX="98.0" layoutY="797.0" mnemonicParsing="false" onAction="#editMethod" prefHeight="26.0" prefWidth="85.0" text="Edit method" />
+            <TextField fx:id="editClassText" layoutX="15.0" layoutY="645.0" prefHeight="26.0" prefWidth="167.0" promptText="Enter new class name" />
+            <Label alignment="CENTER" layoutX="70.0" layoutY="630.0" prefHeight="16.0" prefWidth="50.0" text="Class" textFill="WHITE">
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font>
+            </Label>
+            <Button layoutX="58.0" layoutY="678.0" mnemonicParsing="false" onAction="#editClass" prefHeight="23.0" prefWidth="78.0" text="Edit class" />
          </children>
       </AnchorPane>
    </left>
