@@ -97,7 +97,7 @@ public class ClassDiagram extends Element {
         return inter;
     }
 
-    public UMLRelation createRelation(String classA, String classB, String name){
+    public UMLRelation createRelation(String classA, String classB, String name, String type){
         UMLRelation obj;
         for (int i = 0; i < this.relace.size(); i++) {
             obj = this.relace.get(i);
@@ -105,7 +105,7 @@ public class ClassDiagram extends Element {
                 return null;
             }
         }
-        UMLRelation rel = new UMLRelation(classA, classB, name);
+        UMLRelation rel = new UMLRelation(classA, classB, name, type);
         if(findClass(classA) != null){
             findClass(classA).addRelation(rel);
         }
@@ -182,10 +182,31 @@ public class ClassDiagram extends Element {
         return findInterface(name).getRelations();
     }
 
-    public UMLRelation findRelation(UMLClass classA, UMLClass classB){
+    public UMLRelation findRelation(String classA, String classB){
         for (int i = 0; i < relace.size(); i++){
-            if (relace.get(i).getFirstClass().equals(classA) && relace.get(i).getSecondClass().equals(classB)){
-                return relace.get(i);
+            if (relace.get(i).getFirstClass() != null){
+                if (relace.get(i).getSecondClass() != null){
+                    if(relace.get(i).getFirstClass().getName().equals(classA) && relace.get(i).getSecondClass().getName().equals(classB)){
+                        return relace.get(i);
+                    }
+                }
+                else {
+                    if(relace.get(i).getFirstClass().getName().equals(classA) && relace.get(i).getSecondInterface().getName().equals(classB)){
+                        return relace.get(i);
+                    }
+                }
+            }
+            else if(relace.get(i).getFirstInterface() != null){
+                if (relace.get(i).getSecondInterface() != null){
+                    if (relace.get(i).getFirstInterface().getName().equals(classA) && relace.get(i).getSecondInterface().getName().equals(classB)){
+                        return relace.get(i);
+                    }
+                }
+                else {
+                    if (relace.get(i).getFirstInterface().getName().equals(classA) && relace.get(i).getSecondClass().getName().equals(classB)){
+                        return relace.get(i);
+                    }
+                }
             }
         }
         return null;
@@ -193,8 +214,17 @@ public class ClassDiagram extends Element {
 
     public void deleteRelation(UMLRelation relation){
         this.relace.remove(relation);
-        relation.getFirstClass().removeReltion(relation);
-        relation.getSecondClass().removeReltion(relation);
+        if (relation.getFirstClass() != null){
+            relation.getFirstClass().removeReltion(relation);
+        } else{
+            relation.getFirstInterface().removeReltion(relation);
+        }
+
+        if (relation.getSecondClass() != null){
+            relation.getSecondClass().removeReltion(relation);
+        } else {
+            relation.getSecondInterface().removeReltion(relation);
+        }
     }
 
     public SequenceDiagram createSeqDiagram(String name) {

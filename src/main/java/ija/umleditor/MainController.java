@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -183,6 +184,7 @@ public class MainController {
 
     //TODO update seqDia classes?
     //TODO position dost not work correctly
+    //TODO check if all funcionality is equal in imported classes/interfaces
     private void createClassHelpMethod () {
         String name;
 
@@ -235,14 +237,18 @@ public class MainController {
 
                 List<UMLRelation> relations = classDiagram.getClassRelations(name);
                 for (int i = 0; i < relations.size(); i++){
+                    relations.get(i).updateRelationNamePosition();
                     if(relations.get(i).getFirstClass() != null && relations.get(i).getSecondClass() != null){
-                        mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondClass().getName() + "Relation")));
+                        mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondClass().getName() + "Relation"));
+                        mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondClass().getName() + "RelationName"));
                     }
                     else if (relations.get(i).getFirstInterface() != null){
-                        mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondClass().getName() + "Relation")));
+                        mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondClass().getName() + "Relation"));
+                        mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondClass().getName() + "RelationName"));
                     }
                     else{
-                        mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondInterface().getName() + "Relation")));
+                        mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondInterface().getName() + "Relation"));
+                        mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondInterface().getName() + "RelationName"));
                     }
                     drawRelation(relations.get(i));
                 }
@@ -326,14 +332,19 @@ public class MainController {
 
                     List<UMLRelation> relations = classDiagram.getInterfaceRelations(name);
                     for (int i = 0; i < relations.size(); i++){
+                        relations.get(i).updateRelationNamePosition();
                         if(relations.get(i).getFirstInterface() != null && relations.get(i).getSecondInterface() != null){
-                            mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondInterface().getName() + "Relation")));
+                            mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondInterface().getName() + "Relation"));
+                            mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondInterface().getName() + "RelationName"));
+
                         }
                         else if (relations.get(i).getFirstClass() != null){
-                            mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondInterface().getName() + "Relation")));
+                            mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondInterface().getName() + "Relation"));
+                            mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondInterface().getName() + "RelationName"));
                         }
                         else{
-                            mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondClass().getName() + "Relation")));
+                            mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondClass().getName() + "Relation"));
+                            mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondClass().getName() + "RelationName"));
                         }
 
                         drawRelation(relations.get(i));
@@ -1293,7 +1304,7 @@ public class MainController {
         String newRelName = relationName.getText();
         if (classDiagram.findInterface(firstClassForRelation.getValue()) != null && classDiagram.findInterface(secondClassForRelation.getValue()) != null){
             if (!newRelName.isEmpty() && !Objects.equals(firstClassForRelation.getValue(), secondClassForRelation.getValue())) {
-                UMLRelation relace = classDiagram.createRelation(firstClassForRelation.getValue(), secondClassForRelation.getValue(), newRelName);
+                UMLRelation relace = classDiagram.createRelation(firstClassForRelation.getValue(), secondClassForRelation.getValue(), newRelName, chooseRelationType.getValue());
                 if (relace != null) {
                     drawRelation(relace);
                 }
@@ -1301,7 +1312,7 @@ public class MainController {
         }
         else if (classDiagram.findClass(firstClassForRelation.getValue()) != null && classDiagram.findClass(secondClassForRelation.getValue()) != null){
             if (!newRelName.isEmpty() && !Objects.equals(firstClassForRelation.getValue(), secondClassForRelation.getValue())) {
-                UMLRelation relace = classDiagram.createRelation(firstClassForRelation.getValue(), secondClassForRelation.getValue(), newRelName);
+                UMLRelation relace = classDiagram.createRelation(firstClassForRelation.getValue(), secondClassForRelation.getValue(), newRelName, chooseRelationType.getValue());
                 if (relace != null) {
                     drawRelation(relace);
                 }
@@ -1309,7 +1320,7 @@ public class MainController {
         }
         else if (classDiagram.findClass(firstClassForRelation.getValue()) != null && classDiagram.findInterface(secondClassForRelation.getValue()) != null){
             if (!newRelName.isEmpty()) {
-                UMLRelation relace = classDiagram.createRelation(firstClassForRelation.getValue(), secondClassForRelation.getValue(), newRelName);
+                UMLRelation relace = classDiagram.createRelation(firstClassForRelation.getValue(), secondClassForRelation.getValue(), newRelName, chooseRelationType.getValue());
                 if (relace != null) {
                     drawRelation(relace);
                 }
@@ -1317,7 +1328,7 @@ public class MainController {
         }
         else if (classDiagram.findInterface(firstClassForRelation.getValue()) != null && classDiagram.findClass(secondClassForRelation.getValue()) != null){
             if (!newRelName.isEmpty()) {
-                UMLRelation relace = classDiagram.createRelation(firstClassForRelation.getValue(), secondClassForRelation.getValue(), newRelName);
+                UMLRelation relace = classDiagram.createRelation(firstClassForRelation.getValue(), secondClassForRelation.getValue(), newRelName, chooseRelationType.getValue());
                 if (relace != null) {
                     drawRelation(relace);
                 }
@@ -1327,11 +1338,13 @@ public class MainController {
 
     private void drawRelation(UMLRelation relation){
         Line line = new Line();
+        Label label = new Label();
         if (relation.getFirstClass() != null){
             line.setStartX(relation.getFirstClass().getXposition() + 120);
             line.setStartY(relation.getFirstClass().getYposition() + 120);
             if (relation.getSecondClass() != null){
                 line.setId(relation.getFirstClass().getName() + relation.getSecondClass().getName() + "Relation");
+                label.setId(relation.getFirstClass().getName() + relation.getSecondClass().getName() + "RelationName");
             }
         }
         else{
@@ -1339,6 +1352,7 @@ public class MainController {
             line.setStartY(relation.getFirstInterface().getYposition() + 120);
             if (relation.getSecondInterface() != null){
                 line.setId(relation.getFirstInterface().getName() + relation.getSecondInterface().getName() + "Relation");
+                label.setId(relation.getFirstInterface().getName() + relation.getSecondInterface().getName() + "RelationName");
             }
         }
         if (relation.getSecondClass() != null){
@@ -1346,6 +1360,7 @@ public class MainController {
             line.setEndY(relation.getSecondClass().getYposition() + 120);
             if (relation.getFirstInterface() != null){
                 line.setId(relation.getFirstInterface().getName() + relation.getSecondClass().getName() + "Relation");
+                label.setId(relation.getFirstInterface().getName() + relation.getSecondClass().getName() + "RelationName");
             }
         }
         else {
@@ -1353,26 +1368,49 @@ public class MainController {
             line.setEndY(relation.getSecondInterface().getYposition() + 120);
             if (relation.getFirstClass() != null){
                 line.setId(relation.getFirstClass().getName() + relation.getSecondInterface().getName() + "Relation");
+                label.setId(relation.getFirstClass().getName() + relation.getSecondInterface().getName() + "RelationName");
             }
         }
+        label.setLayoutX(relation.getXpositionOfText());
+        label.setLayoutY(relation.getYpositionOfText() - 20);
+        label.setText(relation.getName());
+
+        switch (relation.getType()){
+            case "Asociation (black)":
+                line.setStroke(Color.BLACK);
+                break;
+            case "Inheritance (purple)":
+                line.setStroke(Color.PURPLE);
+                break;
+            case "Aggregation (green)":
+                line.setStroke(Color.GREEN);
+                break;
+            case "Composion (blue)":
+                line.setStroke(Color.BLUE);
+                break;
+        }
+
         mainPane.getChildren().add(0,line);
+        mainPane.getChildren().add(1, label);
     }
 
     @FXML
     private void deleteRelation(ActionEvent e){
-        if (classDiagram.findRelation(classDiagram.findClass(firstClassForRelation.getValue()), classDiagram.findClass(secondClassForRelation.getValue())) != null){
-            classDiagram.deleteRelation(classDiagram.findRelation(classDiagram.findClass(firstClassForRelation.getValue()), classDiagram.findClass(secondClassForRelation.getValue())));
+        if (classDiagram.findRelation(firstClassForRelation.getValue(), secondClassForRelation.getValue()) != null){
+            classDiagram.deleteRelation(classDiagram.findRelation(firstClassForRelation.getValue(), secondClassForRelation.getValue()));
             mainPane.getChildren().remove(mainPane.lookup("#" + firstClassForRelation.getValue() + secondClassForRelation.getValue() + "Relation"));
+            mainPane.getChildren().remove(mainPane.lookup("#" + firstClassForRelation.getValue() + secondClassForRelation.getValue() + "RelationName"));
         }
-        else if(classDiagram.findRelation(classDiagram.findClass(secondClassForRelation.getValue()), classDiagram.findClass(firstClassForRelation.getValue())) != null){
-            classDiagram.deleteRelation(classDiagram.findRelation(classDiagram.findClass(secondClassForRelation.getValue()), classDiagram.findClass(firstClassForRelation.getValue())));
+        else if(classDiagram.findRelation(secondClassForRelation.getValue(), firstClassForRelation.getValue()) != null){
+            classDiagram.deleteRelation(classDiagram.findRelation(secondClassForRelation.getValue(), firstClassForRelation.getValue()));
             mainPane.getChildren().remove(mainPane.lookup("#" + secondClassForRelation.getValue() + firstClassForRelation.getValue() + "Relation"));
+            mainPane.getChildren().remove(mainPane.lookup("#" + secondClassForRelation.getValue() + firstClassForRelation.getValue() + "RelationName"));
         }
     }
 
     public void loadClassesToRelations(){
-        String[] relationType = {"Asociation", "Inheritance", "Aggregation", "Composion"};
-        chooseRelationType.setValue("Asociation");
+        String[] relationType = {"Asociation (black)", "Inheritance (purple)", "Aggregation (green)", "Composion (blue)"};
+        chooseRelationType.setValue("Asociation (black)");
         chooseRelationType.getItems().addAll(relationType);
     }
 
