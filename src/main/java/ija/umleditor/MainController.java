@@ -99,6 +99,7 @@ public class MainController {
 
     private ArrayList<String> listOfAttributes = new ArrayList<>();
     private ArrayList<String> listOfMethods = new ArrayList<>();
+    private ArrayList<String> relationsToDisplay= new ArrayList<>();
 
     @FXML
     private ChoiceBox<String> firstClassForRelation;
@@ -446,10 +447,67 @@ public class MainController {
 
             }
 
+            JSONObject jsonPositionObject = (JSONObject) jsonObject.get("position");
+            JSONArray keys3 = jsonPositionObject.names();
+
+            for (int j = 0; j < keys3.length(); j++) {
+
+                String key = keys3.getString(j);
+                Integer value = jsonPositionObject.getInt(key);
+
+                //setting position
+                if (key.equals("x")) cls.setXposition(value);
+                else cls.setYposition(value);
+
+            }
+
+            JSONObject jsonRelationObject = (JSONObject) jsonObject.get("relations");
+            JSONArray keys4 = jsonRelationObject.names();
+
+            for (int j = 0; j < keys4.length(); j++) {
+
+                String key =  keys4.getString(j);
+                String value = jsonRelationObject.getString(key);
+
+                //String ve tvaru class1@class2
+
+                relationsToDisplay.add(key + "@" + value);
+
+            }
+
             showClassToGUI(classDiagram, cls);
 
             //printing data to output
         }
+
+        //v tento moment existují všechny classy z jsonu - je třeba je napojit relacema
+
+        for (String nameOfRelation : relationsToDisplay) {
+
+            String [] parts = nameOfRelation.split("@");
+            String relationName = parts[0];
+            String nameOfFirstClass = parts[1];
+            String nameOfSecondClass = parts[2];
+
+
+            // TODO - nejde vytvořit relaci - třídy jsou null, ale už jsou vytvořený a jsou i v classDiagram.getclasses() - how??
+            UMLRelation newRelation = classDiagram.createRelation(nameOfFirstClass, nameOfSecondClass, relationName, "WHATHERE");
+            System.out.println(classDiagram.getClasses());
+
+
+            if (newRelation != null) {
+
+                Line line = new Line();
+
+                line.setStartX(newRelation.getFirstClass().getXposition() + 120);
+                line.setStartY(newRelation.getFirstClass().getYposition() + 120);
+                line.setId(newRelation.getFirstClass().getName() + newRelation.getSecondClass().getName() + "Relation");
+
+            }
+        }
+
+        System.out.println(relationsToDisplay);
+
     }
 
     //TODO vypisovat tridy na spravne pozice, tusim se to neparsuje
