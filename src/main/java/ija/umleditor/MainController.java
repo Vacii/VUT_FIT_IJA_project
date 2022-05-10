@@ -57,11 +57,14 @@ public class MainController {
     private ArrayList<UMLClass> classOfMethodDeleted = new ArrayList<>();
     private ArrayList<UMLOperation> methodsAdded = new ArrayList<>();
     private ArrayList<UMLClass> classOfMethodAdded = new ArrayList<>();
-    //edit
+    //edit attr
     private ArrayList<UMLAttribute> editedAttributes = new ArrayList<>();
     private ArrayList<UMLClass> classOfEditedAttribute = new ArrayList<>();
+    //edit meth
     private ArrayList<UMLOperation> editedMethods = new ArrayList<>();
     private ArrayList<UMLClass> classOfEditedMethod = new ArrayList<>();
+    //edit class
+    private ArrayList<UMLClass> editedClass = new ArrayList<>();
     /**************/
 
     @FXML
@@ -91,6 +94,7 @@ public class MainController {
     private boolean undoActive = false;
     private boolean classDeleteActive = false;
     private boolean editingClass = false;
+    private boolean undoingClass = false;
 
     private ArrayList<String> listOfAttributes = new ArrayList<>();
     private ArrayList<String> listOfMethods = new ArrayList<>();
@@ -183,8 +187,6 @@ public class MainController {
         String name;
 
         if (undoActive) name = classesDeleted.get(classesDeleted.size()-1).getName();
-
-        else if (editingClass) name = editClassText.getText();
 
         else name = newName.getText();
 
@@ -555,7 +557,9 @@ public class MainController {
 
         String nameOfRemovedClass;
 
-        if (undoActive) nameOfRemovedClass = classesAdded.get(classesAdded.size() - 1).getName();
+        if (undoingClass) nameOfRemovedClass = editedClass.get(editedClass.size() - 1).getName();
+
+        else if (undoActive) nameOfRemovedClass = classesAdded.get(classesAdded.size() - 1).getName();
 
         else nameOfRemovedClass = chooseClass.getValue();
         //TODO relace
@@ -570,7 +574,7 @@ public class MainController {
 
                     UMLAttribute attribute = arr.get(i);
                     classDiagram.findClass(nameOfRemovedClass).removeAttribute(attribute);
-                    attributesOfClassesDeleted.add(attribute);
+                    if(!editingClass) attributesOfClassesDeleted.add(attribute);
                     i--;
                     if (classDiagram.findClass(nameOfRemovedClass).getAttributes().isEmpty()) break;
                 }
@@ -585,20 +589,41 @@ public class MainController {
 
                     UMLOperation operation = arr2.get(i);
                     classDiagram.findClass(nameOfRemovedClass).removeMethod(operation);
-                    methodsOfClassesDeleted.add(operation);
+                    if (!editingClass) methodsOfClassesDeleted.add(operation);
                     i--;
                     if (classDiagram.findClass(nameOfRemovedClass).getMethods().isEmpty()) break;
                 }
             }
-            classesDeleted.add(classDiagram.findClass(nameOfRemovedClass)); //UNDO
+
+            //relace
+            UMLClass currentClass = classDiagram.findClass(nameOfRemovedClass);
+            System.out.println(currentClass.getRaletions());
+
+            for (int i = 0; i < currentClass.getRaletions().size(); i++) {
+
+                    UMLRelation relation = currentClass.getRaletions().get(i);
+                    //smazat teď v gui
+                    classDiagram.deleteRelation(relation);
+                    mainPane.getChildren().remove(mainPane.lookup("#" + relation.getFirstClass().getName() + relation.getSecondClass().getName() + "Relation"));
+                    i--;
+                    if (currentClass.getRaletions().isEmpty()) break; //deleted from backend
+
+            }
+
+            System.out.println(currentClass.getRaletions());
+
+            if (!editingClass) classesDeleted.add(classDiagram.findClass(nameOfRemovedClass)); //UNDO
             classDiagram.deleteClass(classDiagram.findClass(nameOfRemovedClass));
             mainPane.getChildren().remove(mainPane.lookup("#" + nameOfRemovedClass));
             chooseClass.getItems().remove(nameOfRemovedClass);
 
-            if(!undoActive) actionsPerformed.add("removed class");
+            if(!undoActive && !editingClass) actionsPerformed.add("removed class");
 
-            numberOfAttributesDeleted.add(attributesOfClassesDeleted.size());
-            numberOfMethodsDeleted.add(methodsOfClassesDeleted.size());
+            if (!editingClass) {
+
+                numberOfAttributesDeleted.add(attributesOfClassesDeleted.size());
+                numberOfMethodsDeleted.add(methodsOfClassesDeleted.size());
+            }
         }
         else{
             if (!classDiagram.findInterface(nameOfRemovedClass).getMethods().isEmpty()) {
@@ -664,7 +689,7 @@ public class MainController {
                 type = typeText.getText();
             }
 
-            if ((!name.isEmpty() && !type.isEmpty()) && chosenClass != null && !chosenClass.getNamesOfAttributes().contains(name)) {
+            if ((!name.isEmpty() && !type.isEmpty()) && chosenClass != null && !listOfAttributes.contains(name)) {
 
                 if (!undoActive) actionsPerformed.add("added attribute");
                 UMLAttribute newAttribute = new UMLAttribute(name, classDiagram.classifierForName(type));
@@ -694,7 +719,9 @@ public class MainController {
             UMLClass chosenClass = classDiagram.findClass(chooseClass.getValue());
             String name = attAndMethText.getText();
             String type = typeText.getText();
-            if ((!name.isEmpty() && !type.isEmpty()) && !chosenClass.getNamesOfMethods().contains(name)) {
+
+
+            if ((!name.isEmpty() && !type.isEmpty()) && !listOfMethods.contains(name)) {
                 if (!undoActive) actionsPerformed.add("added method");
                 UMLOperation newMethod = new UMLOperation(name, classDiagram.classifierForName(type));
                 chosenClass.addMethod(newMethod);
@@ -703,8 +730,10 @@ public class MainController {
                 method.setId(name + "Meth");
                 methods.getChildren().add(method);
                 chooseMethod.getItems().add(method.getText().substring(1));
-                listOfMethods.add(name); //UNDO
+                listOfMethods.add(name);
                 classOfMethodAdded.add(chosenClass); //UNDO
+                methodsAdded.add(newMethod); //UNDO
+
             }
         }
         else if(chooseClass.getValue() != null && (classDiagram.findInterface(chooseClass.getValue()) != null)){
@@ -772,6 +801,7 @@ public class MainController {
                     methods.getChildren().remove(methods.lookup("#" + name + "Meth"));
                     methodsDeleted.add(operation);
                     classOfMethodDeleted.add(chosenClass);
+                    chooseMethod.getItems().remove(name + ":" + type);
                     break;
                 }
             }
@@ -804,8 +834,9 @@ public class MainController {
                 name = attAndMethText.getText();
                 type = typeText.getText();
             }
-            List<UMLAttribute> attributeList = chosenClass.getAttributes();
-            for (UMLAttribute attribute : attributeList) {
+            System.out.println(classDiagram.getClasses());
+            List<UMLAttribute> attributeList = chosenClass.getAttributes(); //TADY TO DÁVÁ 0 PŘI UNDO Z EDITU CLASSE
+            for (UMLAttribute attribute : chosenClass.getAttributes()) {
 
                 String attributeString = attribute.toString();
                 String [] parts = attributeString.split(":");
@@ -944,6 +975,8 @@ public class MainController {
                 chooseMethod.getItems().add(newName + ":" + newType);
                 classOfEditedMethod.add(currentClass);
             }
+
+            actionsPerformed.add("edited method");
         }
 
     }
@@ -968,10 +1001,11 @@ public class MainController {
 
             for (UMLOperation operation : classToEdit.getMethods())  operationsOfClass.add(operation);
 
+            editedClass.add(classToEdit); // stará třída skrz undo bude předposlední v seznamu
 
-
+            editingClass = true;
             deleteClassHelp(); //odstraní classu a všechny její věci
-
+            editingClass = false;
             //teď založit classu se stejnýma atributama + metodama a displaynout do GUI
 
             UMLClass newClass = classDiagram.createClass(newClassName);
@@ -980,7 +1014,6 @@ public class MainController {
 
                 UMLAttribute attributeObject = new UMLAttribute(attribute.getName(), classDiagram.classifierForName(attribute.getType().toString()));
                 newClass.addAttribute(attributeObject);
-
             }
 
             for (UMLOperation operation : operationsOfClass) {
@@ -993,8 +1026,9 @@ public class MainController {
             //TODO RELACE
 
             showClassToGUI(classDiagram, newClass);
-
-
+            actionsPerformed.add("edited class");
+            editedClass.add(newClass); // skrz undo, nově vytvořená třída je po editu na předposledním místě v listu UNDO
+            chooseClass.getItems().remove(className);
         }
 
     }
@@ -1119,7 +1153,7 @@ public class MainController {
 
             }
 
-            //3. method was removed - needs to be added - TODO
+            //3. method was removed - needs to be added
 
             else if (actionsPerformed.get(actionsPerformed.size() - 1).equals("removed method")) {
 
@@ -1129,7 +1163,7 @@ public class MainController {
 
             }
 
-            //4. method was added - needs to be removed - TODO
+            //4. method was added - needs to be removed
 
             else if (actionsPerformed.get(actionsPerformed.size() - 1).equals("added method")) {
 
@@ -1190,7 +1224,7 @@ public class MainController {
             }
 
 
-            //8. method was edited - same as above only for methods - not working now cuz need to fix methods above first
+            //8. method was edited - same as above only for methods - doesnt change back
 
             else if (actionsPerformed.get(actionsPerformed.size() - 1).equals("edited method")) {
 
@@ -1218,6 +1252,35 @@ public class MainController {
             }
 
             //9. TODO - class was edited
+            // editoval jsem classu - tzn. musím odstranit novou a zobrazit do gui starou
+
+            else if (actionsPerformed.get(actionsPerformed.size() - 1).equals("edited class")) {
+
+                undoingClass = true;
+                deleteClassHelp(); //smažu novou classu
+
+                //přidám starou
+                String nameOfClassToAdd = editedClass.get(editedClass.size() -2).getName();
+                classDiagram.createClass(nameOfClassToAdd);
+
+                //přidat atributy a metody ze staré classy
+                //když volám deleteClassHelp tak se ukládají odstraněný atributy a metody do attributesOfClassesDeleted
+
+                for (int i =0; i < numberOfAttributesDeleted.size(); i++) {
+
+                    classDiagram.findClass(nameOfClassToAdd).addAttribute(attributesOfClassesDeleted.get(attributesOfClassesDeleted.size() -1));
+                    attributesOfClassesDeleted.remove(attributesOfClassesDeleted.size() - 1);
+                }
+
+                System.out.println(classDiagram.findClass(nameOfClassToAdd).getAttributes());
+                classesDeleted.remove(classesDeleted.size() - 1);
+                numberOfMethodsDeleted.remove(numberOfMethodsDeleted.size() -1);
+                numberOfAttributesDeleted.remove(numberOfAttributesDeleted.size() -1);
+
+                for (int i = 0; i < 2; i++) editedClass.remove(editedClass.size() -1);
+                undoingClass = false;
+                showClassToGUI(classDiagram, classDiagram.findClass(nameOfClassToAdd));
+            }
             actionsPerformed.remove(actionsPerformed.size() - 1);
             undoActive = false;
         }
