@@ -1,6 +1,7 @@
 package ija.umleditor;
 
 import ija.umleditor.uml.UMLClass;
+import ija.umleditor.uml.UMLMessage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -66,6 +67,9 @@ public class SequenceController {
     private double comPosition;
     private double XpositionOfClass;
     private double newXpositionOfClass;
+    private double orgTranslateX;
+    private double orgTranslateY;
+
 
     @FXML
     private void showClass(ActionEvent e){
@@ -80,6 +84,13 @@ public class SequenceController {
                 classPane.getChildren().add(label);
                 chooseFirstClassForMsg.getItems().add(name);
                 chooseFirstClassForMsg.setValue(name);
+
+                if (!classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods().isEmpty()){
+                    chooseMsgOperation.getItems().removeAll(chooseMsgOperation.getItems());
+                    chooseMsgOperation.getItems().addAll(classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods());
+                    chooseMsgOperation.setValue(classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods().get(0));
+                }
+
                 chooseSecondClassForMsg.getItems().add(name);
                 drawDashedLine(name);
                 classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).addClass(classDiagram.findClass(name));
@@ -89,13 +100,14 @@ public class SequenceController {
                 }
             }
             label.setOnMousePressed(event -> {
-                XpositionOfClass = event.getSceneX() - label.getTranslateX();
+                XpositionOfClass = event.getSceneX();
+                orgTranslateX = ((Label) (event.getSource())).getTranslateX();
             });
             label.setOnMouseDragged(event -> {
-                label.setTranslateX(event.getSceneX() - XpositionOfClass);
-                //TODO temp position setting
-                classDiagram.findClass(name).setSeqPos(event.getSceneX() - XpositionOfClass + 26);
+                ((Label) (event.getSource())).setTranslateX(orgTranslateX + event.getSceneX() - XpositionOfClass);
 
+                //TODO temp position setting
+                classDiagram.findClass(name).setSeqPos(orgTranslateX + event.getSceneX() - XpositionOfClass);
                 classPane.getChildren().remove(classPane.lookup(("#" + name + "DashedLine")));
                 drawDashedLine(name);
 
@@ -121,6 +133,11 @@ public class SequenceController {
                 classPane.getChildren().add(label);
                 chooseFirstClassForMsg.getItems().add(name);
                 chooseFirstClassForMsg.setValue(name);
+                if (!classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods().isEmpty()){
+                    chooseMsgOperation.getItems().removeAll(chooseMsgOperation.getItems());
+                    chooseMsgOperation.getItems().addAll(classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods());
+                    chooseMsgOperation.setValue(classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods().get(0));
+                }
                 chooseSecondClassForMsg.getItems().add(name);
                 drawDashedLine(name);
                 classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).addClass(classDiagram.findClass(name));
@@ -130,12 +147,13 @@ public class SequenceController {
                 }
             }
             label.setOnMousePressed(event -> {
-                XpositionOfClass = event.getSceneX() - label.getTranslateX();
+                XpositionOfClass = event.getSceneX();
+                orgTranslateX = ((Label) (event.getSource())).getTranslateX();
             });
             label.setOnMouseDragged(event -> {
-                label.setTranslateX(event.getSceneX() - XpositionOfClass);
+                ((Label) (event.getSource())).setTranslateX(orgTranslateX + event.getSceneX() - XpositionOfClass);
                 //TODO temp position setting
-                classDiagram.findClass(name).setSeqPos(event.getSceneX() - XpositionOfClass + 26);
+                classDiagram.findClass(name).setSeqPos(orgTranslateX + event.getSceneX() - XpositionOfClass);
 
                 classPane.getChildren().remove(classPane.lookup(("#" + name + "DashedLine")));
                 drawDashedLine(name);
@@ -167,6 +185,7 @@ public class SequenceController {
                 //Setup default position of class
                 classDiagram.findClass(name).setSeqPos(20);
                 //Remove classes from Choiceboxes
+
                 chooseFirstClassForMsg.getItems().remove(name);
                 chooseSecondClassForMsg.getItems().remove(name);
             }
@@ -201,10 +220,12 @@ public class SequenceController {
         line.getStrokeDashArray().addAll(25d, 10d);
         classPane.getChildren().add(0,line);
     }
+
     //TODO rectangles could be loaded better in future. (automaticaly when message is created)
     private void drawComRectangle(UMLClass aClass, double classHeight, Rectangle rectangle){
         //TODO add counter, ID is same for all of them right now
         rectangle.setId(aClass.getName() + "Communication");
+        System.out.println(classDiagram.findClass(aClass.getName()).getSeqPos());
         rectangle.setX(classDiagram.findClass(aClass.getName()).getSeqPos());
         List<Double> positionsOfCom = classDiagram.findClass(aClass.getName()).getPosOfCom();
         //TODO 0 temporary, that means only 1 rectangle is supported
@@ -228,6 +249,11 @@ public class SequenceController {
             classPane.getChildren().add(label);
             chooseFirstClassForMsg.getItems().add(obj.getName());
             chooseFirstClassForMsg.setValue(obj.getName());
+            if (!classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods().isEmpty()){
+                chooseMsgOperation.getItems().removeAll(chooseMsgOperation.getItems());
+                chooseMsgOperation.getItems().addAll(classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods());
+                chooseMsgOperation.setValue(classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods().get(0));
+            }
             chooseSecondClassForMsg.getItems().add(obj.getName());
 
             if (!typesLoaded){
@@ -244,12 +270,13 @@ public class SequenceController {
             }
 
             label.setOnMousePressed(event1 -> {
-                XpositionOfClass = event1.getSceneX() - label.getTranslateX();
+                XpositionOfClass = event1.getSceneX();
+                orgTranslateX = ((Label) (event1.getSource())).getTranslateX();
             });
             label.setOnMouseDragged(event1 -> {
-                label.setTranslateX(event1.getSceneX() - XpositionOfClass);
+                ((Label) (event1.getSource())).setTranslateX(orgTranslateX + event1.getSceneX() - XpositionOfClass);
                 //TODO idk whats wrong
-                obj.setSeqPos(event1.getSceneX() - XpositionOfClass);
+                obj.setSeqPos(orgTranslateX + event1.getSceneX() - XpositionOfClass);
                 classPane.getChildren().remove(classPane.lookup(("#" + obj.getName() + "DashedLine")));
                 drawDashedLine(obj.getName());
 
@@ -268,6 +295,14 @@ public class SequenceController {
         chooseMsgType.setValue("Synchronous");
         chooseMsgType.getItems().addAll(types);
         typesLoaded = true;
+
+        chooseFirstClassForMsg.setOnAction(event -> {
+            chooseMsgOperation.getItems().removeAll(chooseMsgOperation.getItems());
+            if (!classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods().isEmpty() && (chooseFirstClassForMsg.getItems().size() != 0)){
+                chooseMsgOperation.getItems().addAll(classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods());
+                chooseMsgOperation.setValue(classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods().get(0));
+            }
+        });
     }
 
     @FXML
@@ -284,18 +319,42 @@ public class SequenceController {
             Rectangle rectangle = new Rectangle();
             drawComRectangle(classDiagram.findClass(chooseClass.getValue()), height, rectangle);
 
-            rectangle.setOnMousePressed(e -> {
-                comPosition = e.getSceneY() - rectangle.getTranslateY();
+            rectangle.setOnMousePressed(event1 -> {
+                comPosition = event1.getSceneX();
+                orgTranslateY = ((Rectangle) (event1.getSource())).getTranslateY();
             });
             double finalHeight = height;
-            rectangle.setOnMouseDragged(e -> {
-                rectangle.setTranslateY(e.getSceneY() - comPosition);
+            rectangle.setOnMouseDragged(event1 -> {
+                ((Rectangle) (event1.getSource())).setTranslateY(orgTranslateY + event1.getSceneY() - comPosition);
+                rectangle.setTranslateY(orgTranslateY + event1.getSceneY() - comPosition);
                 //TODO movable rectangle
                 classPane.getChildren().removeAll(classPane.lookupAll(("#" + classDiagram.findClass(chooseClass.getValue()).getName() + "Communication")));
                 drawComRectangle(classDiagram.findClass(chooseClass.getValue()), finalHeight, rectangle);
-                classDiagram.findClass(chooseClass.getValue()).setPositionOfCom(0,e.getSceneY() - comPosition);
+                classDiagram.findClass(chooseClass.getValue()).setPositionOfCom(0,orgTranslateY + event1.getSceneY() - comPosition);
             });
         }
+    }
+
+    @FXML
+    private void createMessage(){
+        if (!chooseFirstClassForMsg.getValue().isEmpty() && !chooseSecondClassForMsg.getValue().isEmpty() && !chooseMsgType.getValue().isEmpty() && !chooseMsgOperation.getValue().isEmpty()){
+            UMLClass firstClass = classDiagram.findClass(chooseFirstClassForMsg.getValue());
+            UMLClass secondClass = classDiagram.findClass(chooseSecondClassForMsg.getValue());
+            UMLMessage message;
+            String name = ("msg" + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCounter());
+            message = classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).createMessage(name, firstClass.getName(),   "Instance " + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getInstaceCounter() + " of " + secondClass.getName(), chooseMsgType.getValue(), chooseMsgOperation.getValue());
+            classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).incInstanceCounter();
+
+            classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).incMsgCounter();
+
+            drawMessage(message);
+
+        }
+    }
+
+    private void drawMessage(UMLMessage message){
+        Line line;
+
     }
 
     @FXML

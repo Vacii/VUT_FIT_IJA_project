@@ -210,8 +210,6 @@ public class MainController {
             titledPane.setCollapsible(false);
             titledPane.setPrefHeight(100);
             titledPane.setPrefWidth(100);
-            titledPane.setLayoutX(classDiagram.findClass(name).getXposition());
-            titledPane.setLayoutY(classDiagram.findClass(name).getYposition());
             if (classDiagram.findClass(name) != null) {
                 if (!undoActive) actionsPerformed.add("added class");
                 titledPane.setLayoutX(classDiagram.findClass(name).getXposition());
@@ -237,9 +235,6 @@ public class MainController {
 
                 classDiagram.findClass(name).setXposition(((TitledPane) (event.getSource())).getLayoutX() + orgTranslateX + event.getSceneX() - XpositionOfClass);
                 classDiagram.findClass(name).setYposition(((TitledPane) (event.getSource())).getLayoutY() + orgTranslateY + event.getSceneY() - YpositionOfClass);
-
-                System.out.println(classDiagram.findClass(name).getXposition());
-                System.out.println(classDiagram.findClass(name).getYposition());
 
                 List<UMLRelation> relations = classDiagram.getClassRelations(name);
                 for (int i = 0; i < relations.size(); i++){
@@ -327,14 +322,16 @@ public class MainController {
                 }
 
                 titledPane.setOnMousePressed(event -> {
-                    XpositionOfClass = event.getSceneX() - titledPane.getTranslateX();
-                    YpositionOfClass = event.getSceneY() - titledPane.getTranslateY();
+                    XpositionOfClass = event.getSceneX();
+                    YpositionOfClass = event.getSceneY();
+                    orgTranslateX = ((TitledPane) (event.getSource())).getTranslateX();
+                    orgTranslateY = ((TitledPane) (event.getSource())).getTranslateY();
                 });
                 titledPane.setOnMouseDragged(event -> {
-                    titledPane.setTranslateX(event.getSceneX() - XpositionOfClass);
-                    titledPane.setTranslateY(event.getSceneY() - YpositionOfClass);
-                    classDiagram.findInterface(name).setXposition(event.getSceneX() - XpositionOfClass);
-                    classDiagram.findInterface(name).setYposition(event.getSceneY() - YpositionOfClass);
+                    ((TitledPane) (event.getSource())).setTranslateX(orgTranslateX + event.getSceneX() - XpositionOfClass);
+                    ((TitledPane) (event.getSource())).setTranslateY(orgTranslateY + event.getSceneY() - YpositionOfClass);
+                    classDiagram.findInterface(name).setXposition(((TitledPane) (event.getSource())).getLayoutX() + orgTranslateX + event.getSceneX() - XpositionOfClass);
+                    classDiagram.findInterface(name).setYposition(((TitledPane) (event.getSource())).getLayoutY() + orgTranslateY + event.getSceneY() - YpositionOfClass);
 
                     List<UMLRelation> relations = classDiagram.getInterfaceRelations(name);
                     for (int i = 0; i < relations.size(); i++){
@@ -540,10 +537,6 @@ public class MainController {
                 String nameOfFirstClass = parts[1];
                 String nameOfSecondClass = parts[2];
 
-                System.out.println(classDiagram.findClass(nameOfFirstClass));
-                System.out.println(classDiagram.findClass(nameOfSecondClass));
-                System.out.println(relationName);
-
                 // TODO - nejde vytvořit relaci - třídy jsou null, ale už jsou vytvořený a jsou i v classDiagram.getclasses() - how??
                 UMLRelation newRelation = classDiagram.createRelation(nameOfFirstClass, nameOfSecondClass, relationName, "Asociation (black)");
 
@@ -557,8 +550,10 @@ public class MainController {
                     label.setLayoutY(newRelation.getYpositionOfText() - 20);
                     label.setText(newRelation.getName());
 
-                    line.setStartX(newRelation.getFirstClass().getXposition() + 120);
-                    line.setStartY(newRelation.getFirstClass().getYposition() + 120);
+                    line.setStartX(newRelation.getFirstClass().getXposition() + 55);
+                    line.setStartY(newRelation.getFirstClass().getYposition() + 55);
+                    line.setEndX(newRelation.getSecondClass().getXposition() + 55);
+                    line.setEndY(newRelation.getSecondClass().getYposition() + 55);
                     line.setId(newRelation.getFirstClass().getName() + newRelation.getSecondClass().getName() + "Relation");
 
                     mainPane.getChildren().add(0, line);
@@ -621,16 +616,41 @@ public class MainController {
         }
 
         titledPane.setOnMousePressed(event -> {
-            XpositionOfClass = event.getSceneX() - titledPane.getTranslateX();
-            YpositionOfClass = event.getSceneY() - titledPane.getTranslateY();
+            XpositionOfClass = event.getSceneX();
+            YpositionOfClass = event.getSceneY();
+            orgTranslateX = ((TitledPane) (event.getSource())).getTranslateX();
+            orgTranslateY = ((TitledPane) (event.getSource())).getTranslateY();
         });
         titledPane.setOnMouseDragged(event -> {
-            titledPane.setTranslateX(event.getSceneX() - XpositionOfClass);
-            titledPane.setTranslateY(event.getSceneY() - YpositionOfClass);
-            classDiagram.findInterface(name).setXposition(event.getSceneX() - XpositionOfClass);
-            classDiagram.findInterface(name).setYposition(event.getSceneY() - YpositionOfClass);
+            ((TitledPane) (event.getSource())).setTranslateX(orgTranslateX + event.getSceneX() - XpositionOfClass);
+            ((TitledPane) (event.getSource())).setTranslateY(orgTranslateY + event.getSceneY() - YpositionOfClass);
 
+            classDiagram.findInterface(name).setXposition(((TitledPane) (event.getSource())).getLayoutX() + orgTranslateX + event.getSceneX() - XpositionOfClass);
+            classDiagram.findInterface(name).setYposition(((TitledPane) (event.getSource())).getLayoutY() + orgTranslateY + event.getSceneY() - YpositionOfClass);
+
+            List<UMLRelation> relations = classDiagram.getInterfaceRelations(name);
+            for (int i = 0; i < relations.size(); i++){
+                relations.get(i).updateRelationNamePosition();
+                if(relations.get(i).getFirstInterface() != null && relations.get(i).getSecondInterface() != null){
+                    mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondInterface().getName() + "Relation"));
+                    mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondInterface().getName() + "RelationName"));
+
+                }
+                else if (relations.get(i).getFirstClass() != null){
+                    mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondInterface().getName() + "Relation"));
+                    mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondInterface().getName() + "RelationName"));
+                }
+                else{
+                    mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondClass().getName() + "Relation"));
+                    mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondClass().getName() + "RelationName"));
+                }
+
+                drawRelation(relations.get(i));
+            }
         });
+        if (!operatorsLoaded){
+            loadOperatorsToChoiceBox();
+        }
 
         //relace ?
     }
@@ -891,7 +911,7 @@ public class MainController {
                 type = typeText.getText();
             }
 
-            if ((!name.isEmpty() && !type.isEmpty()) && chosenClass != null && !chosenClass.getNamesOfMethods().contains(name)) {
+            if ((!name.isEmpty() && !type.isEmpty()) && chosenClass != null && !chosenClass.getNamesOfAttributes().contains(name)) {
 
                 if (!undoActive) actionsPerformed.add("added attribute");
                 UMLAttribute newAttribute = new UMLAttribute(name, classDiagram.classifierForName(type));
@@ -1580,32 +1600,32 @@ public class MainController {
         Line line = new Line();
         Label label = new Label();
         if (relation.getFirstClass() != null){
-            line.setStartX(relation.getFirstClass().getXposition() + 120);
-            line.setStartY(relation.getFirstClass().getYposition() + 120);
+            line.setStartX(relation.getFirstClass().getXposition() + 55);
+            line.setStartY(relation.getFirstClass().getYposition() + 55);
             if (relation.getSecondClass() != null){
                 line.setId(relation.getFirstClass().getName() + relation.getSecondClass().getName() + "Relation");
                 label.setId(relation.getFirstClass().getName() + relation.getSecondClass().getName() + "RelationName");
             }
         }
         else{
-            line.setStartX(relation.getFirstInterface().getXposition() + 120);
-            line.setStartY(relation.getFirstInterface().getYposition() + 120);
+            line.setStartX(relation.getFirstInterface().getXposition() + 55);
+            line.setStartY(relation.getFirstInterface().getYposition() + 55);
             if (relation.getSecondInterface() != null){
                 line.setId(relation.getFirstInterface().getName() + relation.getSecondInterface().getName() + "Relation");
                 label.setId(relation.getFirstInterface().getName() + relation.getSecondInterface().getName() + "RelationName");
             }
         }
         if (relation.getSecondClass() != null){
-            line.setEndX(relation.getSecondClass().getXposition() + 120);
-            line.setEndY(relation.getSecondClass().getYposition() + 120);
+            line.setEndX(relation.getSecondClass().getXposition() + 55);
+            line.setEndY(relation.getSecondClass().getYposition() + 55);
             if (relation.getFirstInterface() != null){
                 line.setId(relation.getFirstInterface().getName() + relation.getSecondClass().getName() + "Relation");
                 label.setId(relation.getFirstInterface().getName() + relation.getSecondClass().getName() + "RelationName");
             }
         }
         else {
-            line.setEndX(relation.getSecondInterface().getXposition() + 120);
-            line.setEndY(relation.getSecondInterface().getYposition() + 120);
+            line.setEndX(relation.getSecondInterface().getXposition() + 55);
+            line.setEndY(relation.getSecondInterface().getYposition() + 55);
             if (relation.getFirstClass() != null){
                 line.setId(relation.getFirstClass().getName() + relation.getSecondInterface().getName() + "Relation");
                 label.setId(relation.getFirstClass().getName() + relation.getSecondInterface().getName() + "RelationName");

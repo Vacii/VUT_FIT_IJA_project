@@ -49,8 +49,8 @@ public class UMLRelation {
             this.XpositionOfRelationEnd = classDiagram.findClass(classB).getXposition();
             this.YpositionOfRelationEnd = classDiagram.findClass(classB).getYposition();
 
-            this.XpositionOfText = XpositionOfRelationStart + 110 + ((XpositionOfRelationEnd - XpositionOfRelationStart)/2);
-            this.YpositionOfText = YpositionOfRelationStart + 110 + ((YpositionOfRelationEnd - YpositionOfRelationStart)/2);
+            this.XpositionOfText = XpositionOfRelationStart + 55 + ((XpositionOfRelationEnd - XpositionOfRelationStart)/2);
+            this.YpositionOfText = YpositionOfRelationStart + 55 + ((YpositionOfRelationEnd - YpositionOfRelationStart)/2);
 
             this.classB = classDiagram.findClass(classB);
             this.classes.add(classDiagram.findClass(classB));
@@ -59,8 +59,8 @@ public class UMLRelation {
             this.XpositionOfRelationEnd = classDiagram.findInterface(classB).getXposition();
             this.YpositionOfRelationEnd = classDiagram.findInterface(classB).getYposition();
 
-            this.XpositionOfText = XpositionOfRelationStart + 110 + ((XpositionOfRelationEnd - XpositionOfRelationStart)/2);
-            this.YpositionOfText = YpositionOfRelationStart + 110 + ((YpositionOfRelationEnd - YpositionOfRelationStart)/2);
+            this.XpositionOfText = XpositionOfRelationStart + 55 + ((XpositionOfRelationEnd - XpositionOfRelationStart)/2);
+            this.YpositionOfText = YpositionOfRelationStart + 55 + ((YpositionOfRelationEnd - YpositionOfRelationStart)/2);
 
             this.interfaceB = classDiagram.findInterface(classB);
             this.interfaces.add(classDiagram.findInterface(classB));
@@ -164,22 +164,22 @@ public class UMLRelation {
     public void updateRelationNamePosition(){
         if (classA != null){
             if (classB != null){
-                this.XpositionOfText = classA.getXposition() + 110 + ((classB.getXposition() - classA.getXposition())/2);
-                this.YpositionOfText = classA.getYposition() + 110 + ((classB.getYposition() - classA.getYposition())/2);
+                this.XpositionOfText = classA.getXposition() + 55 + ((classB.getXposition() - classA.getXposition())/2);
+                this.YpositionOfText = classA.getYposition() + 55 + ((classB.getYposition() - classA.getYposition())/2);
             }
             else {
-                this.XpositionOfText = classA.getXposition() + 110 + ((interfaceB.getXposition() - classA.getXposition())/2);
-                this.YpositionOfText = classA.getYposition() + 110 + ((interfaceB.getYposition() - classA.getYposition())/2);
+                this.XpositionOfText = classA.getXposition() + 55 + ((interfaceB.getXposition() - classA.getXposition())/2);
+                this.YpositionOfText = classA.getYposition() + 55 + ((interfaceB.getYposition() - classA.getYposition())/2);
             }
         }
         else if (interfaceA != null){
             if (interfaceB != null){
-                this.XpositionOfText = interfaceA.getXposition() + 110 + ((interfaceB.getXposition() - interfaceA.getXposition())/2);
-                this.YpositionOfText = interfaceA.getYposition() + 110 + ((interfaceB.getYposition() - interfaceA.getYposition())/2);
+                this.XpositionOfText = interfaceA.getXposition() + 55 + ((interfaceB.getXposition() - interfaceA.getXposition())/2);
+                this.YpositionOfText = interfaceA.getYposition() + 55 + ((interfaceB.getYposition() - interfaceA.getYposition())/2);
             }
             else{
-                this.XpositionOfText = interfaceA.getXposition() + 110 + ((classB.getXposition() - interfaceA.getXposition())/2);
-                this.YpositionOfText = interfaceA.getYposition() + 110 + ((classB.getYposition() - interfaceA.getYposition())/2);
+                this.XpositionOfText = interfaceA.getXposition() + 55 + ((classB.getXposition() - interfaceA.getXposition())/2);
+                this.YpositionOfText = interfaceA.getYposition() + 55 + ((classB.getYposition() - interfaceA.getYposition())/2);
             }
         }
 

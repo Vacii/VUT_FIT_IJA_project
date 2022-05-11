@@ -8,17 +8,31 @@ import java.util.List;
 public class SequenceDiagram extends Element{
     private List<UMLClass> tridy;
     private List<UMLClassifier> klasifikatory;
-    private List<UMLClass> zpravy;
+    private List<UMLMessage> zpravy;
+    ArrayList<String> seqDiagAllClassList;
+    ArrayList<String> seqDiagClassList;
+    ArrayList<String> instancesList;
+    ArrayList<Double> classPosXList;
+    ArrayList<Double> instancePosXList;
     private boolean initialized;
     private boolean isOpened;
+    int instanceCounter;
+    int messageCounter;
 
     public SequenceDiagram(String name) {
         super(name);
         this.tridy = new ArrayList<>();
         this.zpravy= new ArrayList<>();
+        this.seqDiagAllClassList = new ArrayList<>();
+        this.seqDiagClassList = new ArrayList<>();
+        this.instancesList = new ArrayList<>();
+        this.classPosXList = new ArrayList<>();
+        this.instancePosXList = new ArrayList<>();
         this.klasifikatory = new ArrayList<>();
         this.initialized = false;
         this.isOpened = false;
+        this.instanceCounter = 0;
+        this.messageCounter = 0;
     }
 
     public boolean addClass(UMLClass classA) {
@@ -28,6 +42,12 @@ public class SequenceDiagram extends Element{
         this.tridy.add(classA);
         this.initialized = true;
         return true;
+    }
+
+    public UMLMessage createMessage(String name, String class1, String class2, String type, String operation) {
+        UMLMessage message = new UMLMessage(name, class1, class2, type, operation);
+        zpravy.add(message);
+        return message;
     }
 
     public boolean removeCleass(UMLClass classA){
@@ -49,6 +69,15 @@ public class SequenceDiagram extends Element{
         return null;
     }
 
+
+    public int getInstaceCounter() {
+        return this.instanceCounter;
+    }
+
+    public void incInstanceCounter() {
+        this.instanceCounter++;
+    }
+
     public List<UMLClass> getClasses(){
         return this.tridy;
     }
@@ -63,5 +92,13 @@ public class SequenceDiagram extends Element{
 
     public void setOpened(boolean opened) {
         isOpened = opened;
+    }
+
+    public String getMsgCounter() {
+    return String.valueOf(zpravy.size());
+    }
+
+    public void incMsgCounter() {
+        this.messageCounter++;
     }
 }
