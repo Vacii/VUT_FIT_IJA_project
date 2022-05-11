@@ -34,7 +34,6 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
-        //TODO classDiagram se takto nesmi nastavovat, pokud bude uzivatel otevirat json file
         classDiagram = new ClassDiagram("Diagram");
         launch();
     }

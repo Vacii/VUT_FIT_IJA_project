@@ -133,7 +133,7 @@ public class ClassDiagram extends Element {
      */
     public UMLClass findClass(String name){
         for (int i = 0; i < tridy.size(); i++){
-            if (tridy.get(i).getClassName() == name){
+            if (Objects.equals(tridy.get(i).getClassName(), name)){
                 return tridy.get(i);
             }
         }
@@ -142,7 +142,7 @@ public class ClassDiagram extends Element {
 
     public UMLInterface findInterface(String name){
         for (int i = 0; i < rozhrani.size(); i++){
-            if (rozhrani.get(i).getInterfaceName() == name){
+            if (Objects.equals(rozhrani.get(i).getInterfaceName(), name)){
                 return rozhrani.get(i);
             }
         }

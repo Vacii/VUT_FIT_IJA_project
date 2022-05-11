@@ -535,19 +535,29 @@ public class MainController {
                 String nameOfFirstClass = parts[1];
                 String nameOfSecondClass = parts[2];
 
+                System.out.println(classDiagram.findClass(nameOfFirstClass));
+                System.out.println(classDiagram.findClass(nameOfSecondClass));
+                System.out.println(relationName);
 
                 // TODO - nejde vytvořit relaci - třídy jsou null, ale už jsou vytvořený a jsou i v classDiagram.getclasses() - how??
-                UMLRelation newRelation = classDiagram.createRelation(nameOfFirstClass, nameOfSecondClass, relationName, "WHATHERE");
-                System.out.println(classDiagram.getClasses());
-
+                UMLRelation newRelation = classDiagram.createRelation(nameOfFirstClass, nameOfSecondClass, relationName, "Asociation (black)");
 
                 if (newRelation != null) {
 
                     Line line = new Line();
+                    Label label = new Label();
+
+                    label.setId(nameOfFirstClass + nameOfSecondClass + "RelationName");
+                    label.setLayoutX(newRelation.getXpositionOfText());
+                    label.setLayoutY(newRelation.getYpositionOfText() - 20);
+                    label.setText(newRelation.getName());
 
                     line.setStartX(newRelation.getFirstClass().getXposition() + 120);
                     line.setStartY(newRelation.getFirstClass().getYposition() + 120);
                     line.setId(newRelation.getFirstClass().getName() + newRelation.getSecondClass().getName() + "Relation");
+
+                    mainPane.getChildren().add(0, line);
+                    mainPane.getChildren().add(1,label);
 
                 }
             }
@@ -704,14 +714,18 @@ public class MainController {
 
             List<UMLRelation> relations = classDiagram.getClassRelations(name);
             for (int i = 0; i < relations.size(); i++){
+                relations.get(i).updateRelationNamePosition();
                 if(relations.get(i).getFirstClass() != null && relations.get(i).getSecondClass() != null){
-                    mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondClass().getName() + "Relation")));
+                    mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondClass().getName() + "Relation"));
+                    mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondClass().getName() + "RelationName"));
                 }
                 else if (relations.get(i).getFirstInterface() != null){
-                    mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondClass().getName() + "Relation")));
+                    mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondClass().getName() + "Relation"));
+                    mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstInterface().getName() + relations.get(i).getSecondClass().getName() + "RelationName"));
                 }
                 else{
-                    mainPane.getChildren().removeAll(mainPane.lookupAll(("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondInterface().getName() + "Relation")));
+                    mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondInterface().getName() + "Relation"));
+                    mainPane.getChildren().removeAll(mainPane.lookupAll("#" + relations.get(i).getFirstClass().getName() + relations.get(i).getSecondInterface().getName() + "RelationName"));
                 }
                 drawRelation(relations.get(i));
             }
@@ -1635,7 +1649,6 @@ public class MainController {
         }
     }
 
-    //TODO do not allow to open multiple windows
     @FXML
     private void loadSeqDiagram(ActionEvent event){
         if (!(chooseSeqDiagram.getValue() == null)){
