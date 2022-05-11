@@ -133,7 +133,6 @@ public class MainController {
     @FXML
     private void loadJsonFile(ActionEvent event) throws IOException {
 
-        actionsPerformed.add("load performed");
 
         String FilePath;
         FileChooser chooseFile = new FileChooser();

@@ -3,13 +3,22 @@ package ija.umleditor;
 import ija.umleditor.uml.UMLClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.List;
 
 import static ija.umleditor.Main.classDiagram;
@@ -98,6 +107,48 @@ public class SequenceController {
                 }
             });
         }
+    }
+
+    private void showClass (String name) {
+
+        if (name != null && classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).findClass(name) == null){
+            Label label = new Label();
+            label.setText(name);
+            label.setId(name + "label");
+            if (classDiagram.findClass(name) != null) {
+                label.setLayoutX(classDiagram.findClass(name).getSeqPos());
+                label.setLayoutY(20);
+                classPane.getChildren().add(label);
+                chooseFirstClassForMsg.getItems().add(name);
+                chooseFirstClassForMsg.setValue(name);
+                chooseSecondClassForMsg.getItems().add(name);
+                drawDashedLine(name);
+                classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).addClass(classDiagram.findClass(name));
+                wasInitialized = true;
+                if (!typesLoaded){
+                    loadMsgTypes();
+                }
+            }
+            label.setOnMousePressed(event -> {
+                XpositionOfClass = event.getSceneX() - label.getTranslateX();
+            });
+            label.setOnMouseDragged(event -> {
+                label.setTranslateX(event.getSceneX() - XpositionOfClass);
+                //TODO temp position setting
+                classDiagram.findClass(name).setSeqPos(event.getSceneX() - XpositionOfClass + 26);
+
+                classPane.getChildren().remove(classPane.lookup(("#" + name + "DashedLine")));
+                drawDashedLine(name);
+
+                List<Double> heights = classDiagram.findClass(name).getHeightsOfCom();
+                for (int i = 0; i < heights.size(); i++){
+                    classPane.getChildren().removeAll(classPane.lookupAll(("#" + name + "Communication")));
+                    Rectangle rectangle = new Rectangle();
+                    drawComRectangle(classDiagram.findClass(name), heights.get(i), rectangle);
+                }
+            });
+        }
+
     }
 
     @FXML
@@ -246,4 +297,69 @@ public class SequenceController {
             });
         }
     }
+
+    @FXML
+    private void loadSeqJson(ActionEvent e) {
+
+        String FilePath;
+        FileChooser chooseFile = new FileChooser();
+        chooseFile.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooseFile.setTitle("Select file");
+        chooseFile.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json"));
+        File selectedFile = chooseFile.showOpenDialog(new Stage());
+
+        if (selectedFile != null){
+
+            FilePath = selectedFile.getAbsolutePath();
+
+            parseJsonToObject(getJsonFromFile(FilePath));
+
+        }
+    }
+
+
+    private String getJsonFromFile (String filename) {
+
+        String jsonText = "";
+
+        try {
+
+            //reading through file and appending each line to our empty string jsonText
+            //when we reach the EOF we close the buffer and return JSON file as a string
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(filename));
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+
+                jsonText += line + "\n";
+            }
+
+            bufferedReader.close();
+        }
+
+        catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonText;
+
+    }
+
+    private void parseJsonToObject (String jsonStr) {
+
+        JSONArray jsonArray = new JSONArray(jsonStr);
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+            String entity = jsonObject.getString("entity"); //název classy
+
+            //teď mám její název - můžu displaynout
+
+            showClass(entity);
+        }
+
+    }
 }
+
