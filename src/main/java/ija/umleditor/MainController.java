@@ -389,7 +389,7 @@ public class MainController {
         JSONArray jsonArray = new JSONArray(JSONStr);
 
         //creating class diagram
-    //    ClassDiagram d = new ClassDiagram("Class Model");
+        //    ClassDiagram d = new ClassDiagram("Class Model");
 
         for (int i = 0; i < jsonArray.length(); i++) {
 
@@ -399,69 +399,74 @@ public class MainController {
             //in "i" object select the entity key word in JSON -> corresponds to elements name
             String entity = jsonObject.getString("entity");
 
+            String isInterface = jsonObject.getString("interface");
+
             //creating class in diagram, entity = name of class
-            UMLClass cls = classDiagram.createClass(entity);
 
-            //same as entity, only now we are choosing attributes -> it's an array
-            //need to iterate through that one more time
-            JSONObject jsonAttributeObject = (JSONObject) jsonObject.get("attributes");
+            if (isInterface.equals("false")) {
 
-            //we don't know the keyword for attributes -> every element has different names
-            //for its attributes -> object.names() solves the issue
-            JSONArray keys = jsonAttributeObject.names();
+                UMLClass cls = classDiagram.createClass(entity);
+                //same as entity, only now we are choosing attributes -> it's an array
+                //need to iterate through that one more time
+                JSONObject jsonAttributeObject = (JSONObject) jsonObject.get("attributes");
 
-            //iterating through attribute array, on "j" key we store the key (name of our attribute)
-            //and value, which is type in our case -> creating new Attribute object that requires UMLClassifier
-            //object for its type
-            //TO DO - userDefined - usage?
+                //we don't know the keyword for attributes -> every element has different names
+                //for its attributes -> object.names() solves the issue
+                JSONArray keys = jsonAttributeObject.names();
 
-            for (int j = 0; j < keys.length(); j++) {
-
-                String key = keys.getString(j);
-                String value = jsonAttributeObject.getString(key);
-
-                //creating attribute
-                UMLAttribute attributeObject = new UMLAttribute(key, classDiagram.classifierForName(value));
-
-                //adding attribute to class where it belongs
-                cls.addAttribute(attributeObject);
-
-            }
-
-            //methods are the same as attributes mentioned above
-            //constructor takes name of the method and value that the method returns
-            //TO DO - what about the arguments?
-
-            JSONObject jsonMethodObject = (JSONObject) jsonObject.get("methods");
-            JSONArray keys2 = jsonMethodObject.names();
+                //iterating through attribute array, on "j" key we store the key (name of our attribute)
+                //and value, which is type in our case -> creating new Attribute object that requires UMLClassifier
+                //object for its type
+                //TO DO - userDefined - usage?
 
 
-            for (int j = 0; j < keys2.length(); j++) {
+                for (int j = 0; j < keys.length(); j++) {
 
-                String key = keys2.getString(j);
-                String value = jsonMethodObject.getString(key);
+                    String key = keys.getString(j);
+                    String value = jsonAttributeObject.getString(key);
 
-                //creating method
-                UMLOperation operationObject = UMLOperation.create(key, classDiagram.classifierForName(value));
-                cls.addMethod(operationObject);
+                    //creating attribute
+                    UMLAttribute attributeObject = new UMLAttribute(key, classDiagram.classifierForName(value));
 
-            }
+                    //adding attribute to class where it belongs
+                    cls.addAttribute(attributeObject);
 
-            JSONObject jsonPositionObject = (JSONObject) jsonObject.get("position");
-            JSONArray keys3 = jsonPositionObject.names();
+                }
 
-            for (int j = 0; j < keys3.length(); j++) {
+                //methods are the same as attributes mentioned above
+                //constructor takes name of the method and value that the method returns
+                //TO DO - what about the arguments?
 
-                String key = keys3.getString(j);
-                Integer value = jsonPositionObject.getInt(key);
+                JSONObject jsonMethodObject = (JSONObject) jsonObject.get("methods");
+                JSONArray keys2 = jsonMethodObject.names();
 
-                //setting position
-                if (key.equals("x")) cls.setXposition(value);
-                else cls.setYposition(value);
 
-            }
+                for (int j = 0; j < keys2.length(); j++) {
 
-            JSONObject jsonRelationObject = (JSONObject) jsonObject.get("relations");
+                    String key = keys2.getString(j);
+                    String value = jsonMethodObject.getString(key);
+
+                    //creating method
+                    UMLOperation operationObject = UMLOperation.create(key, classDiagram.classifierForName(value));
+                    cls.addMethod(operationObject);
+
+                }
+
+                JSONObject jsonPositionObject = (JSONObject) jsonObject.get("position");
+                JSONArray keys3 = jsonPositionObject.names();
+
+                for (int j = 0; j < keys3.length(); j++) {
+
+                    String key = keys3.getString(j);
+                    Integer value = jsonPositionObject.getInt(key);
+
+                    //setting position
+                    if (key.equals("x")) cls.setXposition(value);
+                    else cls.setYposition(value);
+
+                }
+
+            /*JSONObject jsonRelationObject = (JSONObject) jsonObject.get("relations");
             JSONArray keys4 = jsonRelationObject.names();
 
             for (int j = 0; j < keys4.length(); j++) {
@@ -474,44 +479,148 @@ public class MainController {
                 relationsToDisplay.add(key + "@" + value);
 
             }
+            */
+                showClassToGUI(classDiagram, cls);
 
-            showClassToGUI(classDiagram, cls);
-
-            //printing data to output
-        }
-
-        //v tento moment existují všechny classy z jsonu - je třeba je napojit relacema
-
-        for (String nameOfRelation : relationsToDisplay) {
-
-            String [] parts = nameOfRelation.split("@");
-            String relationName = parts[0];
-            String nameOfFirstClass = parts[1];
-            String nameOfSecondClass = parts[2];
-
-
-            // TODO - nejde vytvořit relaci - třídy jsou null, ale už jsou vytvořený a jsou i v classDiagram.getclasses() - how??
-            UMLRelation newRelation = classDiagram.createRelation(nameOfFirstClass, nameOfSecondClass, relationName, "WHATHERE");
-            System.out.println(classDiagram.getClasses());
-
-
-            if (newRelation != null) {
-
-                Line line = new Line();
-
-                line.setStartX(newRelation.getFirstClass().getXposition() + 120);
-                line.setStartY(newRelation.getFirstClass().getYposition() + 120);
-                line.setId(newRelation.getFirstClass().getName() + newRelation.getSecondClass().getName() + "Relation");
-
+                //printing data to output
             }
+
+            else {
+
+                //interface nemá atributy
+
+                UMLInterface umlInterface = classDiagram.createInterface(entity);
+
+                JSONObject jsonMethodObject = (JSONObject) jsonObject.get("methods");
+                JSONArray keys2 = jsonMethodObject.names();
+
+
+                for (int j = 0; j < keys2.length(); j++) {
+
+                    String key = keys2.getString(j);
+                    String value = jsonMethodObject.getString(key);
+
+                    //creating method
+                    UMLOperation operationObject = UMLOperation.create(key, classDiagram.classifierForName(value));
+                    umlInterface.addMethod(operationObject);
+
+                }
+
+                JSONObject jsonPositionObject = (JSONObject) jsonObject.get("position");
+                JSONArray keys3 = jsonPositionObject.names();
+
+                for (int j = 0; j < keys3.length(); j++) {
+
+                    String key = keys3.getString(j);
+                    Integer value = jsonPositionObject.getInt(key);
+
+                    //setting position
+                    if (key.equals("x")) umlInterface.setXposition(value);
+                    else umlInterface.setYposition(value);
+
+                }
+
+                //zde ukládání relací
+
+
+                showInterfaceToGui(classDiagram , umlInterface);
+            }
+            //v tento moment existují všechny classy z jsonu - je třeba je napojit relacema
+
+            for (String nameOfRelation : relationsToDisplay) {
+
+                String[] parts = nameOfRelation.split("@");
+                String relationName = parts[0];
+                String nameOfFirstClass = parts[1];
+                String nameOfSecondClass = parts[2];
+
+
+                // TODO - nejde vytvořit relaci - třídy jsou null, ale už jsou vytvořený a jsou i v classDiagram.getclasses() - how??
+                UMLRelation newRelation = classDiagram.createRelation(nameOfFirstClass, nameOfSecondClass, relationName, "WHATHERE");
+                System.out.println(classDiagram.getClasses());
+
+
+                if (newRelation != null) {
+
+                    Line line = new Line();
+
+                    line.setStartX(newRelation.getFirstClass().getXposition() + 120);
+                    line.setStartY(newRelation.getFirstClass().getYposition() + 120);
+                    line.setId(newRelation.getFirstClass().getName() + newRelation.getSecondClass().getName() + "Relation");
+
+                }
+            }
+
+            System.out.println(relationsToDisplay);
+
+        }
+    }
+    //TODO nacitat a ukladat interface
+
+    private void showInterfaceToGui(ClassDiagram d, UMLInterface umlInterface) {
+        VBox box = new VBox();
+
+
+        String name = umlInterface.getName();
+
+        box.getChildren().add(new Separator()); // to jsem ti ukradl
+
+        VBox methods = new VBox();
+        box.getChildren().add(methods);
+        methods.setId(name + "Methods");
+
+        TitledPane titledPane = new TitledPane(umlInterface.getName(), box);
+        titledPane.setId(umlInterface.getName());
+        titledPane.setText(umlInterface.getName());
+        titledPane.setCollapsible(false);
+        titledPane.setPrefHeight(100);
+        titledPane.setPrefWidth(100);
+
+        for (int i = 0; i < umlInterface.getMethods().size(); i++) {
+
+            List<UMLOperation> tempArray = umlInterface.getMethods();
+            UMLOperation currentOperation = tempArray.get(i);
+
+            String operationString = currentOperation.toString();
+            //jenom osekání, aby to bylo korektně zapsaný
+            String [] parts = operationString.split(":");
+            String operationName = parts[0];
+            String type = parts[1];
+            type = type.replaceAll("\\([^\\)]*\\)\\s*", "");
+
+            //pokud se to správně nalinkuje tak tady už jen vytvářím místo pro ten text v tom příslušným vboxu
+            Text method = new Text (operationName + ":" + type);
+            //nastavení id do budoucna, kdy ho budu chtít znát
+            method.setId(operationName + "Meth");
+            methods.getChildren().add(method);
+
         }
 
-        System.out.println(relationsToDisplay);
+        if (d.findInterface(umlInterface.getName()) != null) {
+            titledPane.setLayoutX(umlInterface.getXposition());
+            titledPane.setLayoutY(umlInterface.getYposition());
+            mainPane.getChildren().add(titledPane); //adding class to main window so its visible
+            classCounter++;
+            chooseClass.getItems().add(name);
+            firstClassForRelation.getItems().add(name);
+            secondClassForRelation.getItems().add(name);
+        }
 
+        titledPane.setOnMousePressed(event -> {
+            XpositionOfClass = event.getSceneX() - titledPane.getTranslateX();
+            YpositionOfClass = event.getSceneY() - titledPane.getTranslateY();
+        });
+        titledPane.setOnMouseDragged(event -> {
+            titledPane.setTranslateX(event.getSceneX() - XpositionOfClass);
+            titledPane.setTranslateY(event.getSceneY() - YpositionOfClass);
+            classDiagram.findClass(name).setXposition(event.getSceneX() - XpositionOfClass);
+            classDiagram.findClass(name).setYposition(event.getSceneY() - YpositionOfClass);
+
+        });
+
+        //relace ?
     }
 
-    //TODO vypisovat tridy na spravne pozice, tusim se to neparsuje
-    //TODO nacitat a ukladat interface
     private void showClassToGUI(ClassDiagram d, UMLClass cls) {
         VBox box = new VBox();
 
