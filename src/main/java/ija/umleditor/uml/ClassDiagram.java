@@ -97,6 +97,8 @@ public class ClassDiagram extends Element {
         return inter;
     }
 
+    public List<UMLInterface> getInterfaces() {return Collections.unmodifiableList(this.rozhrani);}
+
     public UMLRelation createRelation(String classA, String classB, String name, String type){
         UMLRelation obj;
         for (int i = 0; i < this.relace.size(); i++) {
