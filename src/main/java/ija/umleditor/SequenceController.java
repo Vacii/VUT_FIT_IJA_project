@@ -225,7 +225,7 @@ public class SequenceController {
         try {
             height = Double.parseDouble(lenghtOfCom.getText());
         } catch (Exception e) {
-            System.out.println("You need to enter int value!");
+            System.out.println("You need to enter double value!");
         }
         if (height != 0){
             classDiagram.findClass(chooseClass.getValue()).addHeight(height);

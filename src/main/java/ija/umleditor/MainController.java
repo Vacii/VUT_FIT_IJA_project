@@ -1,15 +1,12 @@
 package ija.umleditor;
 import ija.umleditor.uml.*;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -90,6 +87,7 @@ public class MainController {
 
     private double XpositionOfClass;
     private double YpositionOfClass;
+    double orgTranslateX, orgTranslateY;
 
     private boolean operatorsLoaded = false;
     private boolean undoActive = false;
@@ -213,6 +211,8 @@ public class MainController {
             titledPane.setCollapsible(false);
             titledPane.setPrefHeight(100);
             titledPane.setPrefWidth(100);
+            titledPane.setLayoutX(classDiagram.findClass(name).getXposition());
+            titledPane.setLayoutY(classDiagram.findClass(name).getYposition());
             if (classDiagram.findClass(name) != null) {
                 if (!undoActive) actionsPerformed.add("added class");
                 titledPane.setLayoutX(classDiagram.findClass(name).getXposition());
@@ -227,14 +227,20 @@ public class MainController {
             }
 
             titledPane.setOnMousePressed(event -> {
-                XpositionOfClass = event.getSceneX() - titledPane.getTranslateX();
-                YpositionOfClass = event.getSceneY() - titledPane.getTranslateY();
+                XpositionOfClass = event.getSceneX();
+                YpositionOfClass = event.getSceneY();
+                orgTranslateX = ((TitledPane) (event.getSource())).getTranslateX();
+                orgTranslateY = ((TitledPane) (event.getSource())).getTranslateY();
             });
             titledPane.setOnMouseDragged(event -> {
-                titledPane.setTranslateX(event.getSceneX() - XpositionOfClass);
-                titledPane.setTranslateY(event.getSceneY() - YpositionOfClass);
-                classDiagram.findClass(name).setXposition(event.getSceneX() - XpositionOfClass);
-                classDiagram.findClass(name).setYposition(event.getSceneY() - YpositionOfClass);
+                ((TitledPane) (event.getSource())).setTranslateX(orgTranslateX + event.getSceneX() - XpositionOfClass);
+                ((TitledPane) (event.getSource())).setTranslateY(orgTranslateY + event.getSceneY() - YpositionOfClass);
+
+                classDiagram.findClass(name).setXposition(((TitledPane) (event.getSource())).getLayoutX() + orgTranslateX + event.getSceneX() - XpositionOfClass);
+                classDiagram.findClass(name).setYposition(((TitledPane) (event.getSource())).getLayoutY() + orgTranslateY + event.getSceneY() - YpositionOfClass);
+
+                System.out.println(classDiagram.findClass(name).getXposition());
+                System.out.println(classDiagram.findClass(name).getYposition());
 
                 List<UMLRelation> relations = classDiagram.getClassRelations(name);
                 for (int i = 0; i < relations.size(); i++){
@@ -653,6 +659,8 @@ public class MainController {
         titledPane.setCollapsible(false);
         titledPane.setPrefHeight(100);
         titledPane.setPrefWidth(100);
+        titledPane.setLayoutX(cls.getXposition());
+        titledPane.setLayoutY(cls.getYposition());
 
         //procházím všechny metody dané classy a chci je printnout do toho příslušnýho vboxu, kterej má každá classa
         for (int i = 0; i < cls.getMethods().size(); i++) {
@@ -703,14 +711,17 @@ public class MainController {
         }
 
         titledPane.setOnMousePressed(event -> {
-            XpositionOfClass = event.getSceneX() - titledPane.getTranslateX();
-            YpositionOfClass = event.getSceneY() - titledPane.getTranslateY();
+            XpositionOfClass = event.getSceneX();
+            YpositionOfClass = event.getSceneY();
+            orgTranslateX = ((TitledPane) (event.getSource())).getTranslateX();
+            orgTranslateY = ((TitledPane) (event.getSource())).getTranslateY();
         });
         titledPane.setOnMouseDragged(event -> {
-            titledPane.setTranslateX(event.getSceneX() - XpositionOfClass);
-            titledPane.setTranslateY(event.getSceneY() - YpositionOfClass);
-            classDiagram.findClass(name).setXposition(event.getSceneX() - XpositionOfClass);
-            classDiagram.findClass(name).setYposition(event.getSceneY() - YpositionOfClass);
+            ((TitledPane) (event.getSource())).setTranslateX(orgTranslateX + event.getSceneX() - XpositionOfClass);
+            ((TitledPane) (event.getSource())).setTranslateY(orgTranslateY + event.getSceneY() - YpositionOfClass);
+
+            classDiagram.findClass(name).setXposition(((TitledPane) (event.getSource())).getLayoutX() + orgTranslateX + event.getSceneX() - XpositionOfClass);
+            classDiagram.findClass(name).setYposition(((TitledPane) (event.getSource())).getLayoutY() + orgTranslateY + event.getSceneY() - YpositionOfClass);
 
             List<UMLRelation> relations = classDiagram.getClassRelations(name);
             for (int i = 0; i < relations.size(); i++){
@@ -789,20 +800,20 @@ public class MainController {
 
             //relace
             UMLClass currentClass = classDiagram.findClass(nameOfRemovedClass);
-            System.out.println(currentClass.getRaletions());
+            System.out.println(currentClass.getRelations());
 
-            for (int i = 0; i < currentClass.getRaletions().size(); i++) {
+            for (int i = 0; i < currentClass.getRelations().size(); i++) {
 
-                    UMLRelation relation = currentClass.getRaletions().get(i);
+                    UMLRelation relation = currentClass.getRelations().get(i);
                     //smazat teď v gui
                     classDiagram.deleteRelation(relation);
                     mainPane.getChildren().remove(mainPane.lookup("#" + relation.getFirstClass().getName() + relation.getSecondClass().getName() + "Relation"));
                     i--;
-                    if (currentClass.getRaletions().isEmpty()) break; //deleted from backend
+                    if (currentClass.getRelations().isEmpty()) break; //deleted from backend
 
             }
 
-            System.out.println(currentClass.getRaletions());
+            System.out.println(currentClass.getRelations());
 
             if (!editingClass) classesDeleted.add(classDiagram.findClass(nameOfRemovedClass)); //UNDO
             classDiagram.deleteClass(classDiagram.findClass(nameOfRemovedClass));
@@ -881,7 +892,7 @@ public class MainController {
                 type = typeText.getText();
             }
 
-            if ((!name.isEmpty() && !type.isEmpty()) && chosenClass != null && !listOfAttributes.contains(name)) {
+            if ((!name.isEmpty() && !type.isEmpty()) && chosenClass != null && !chosenClass.getNamesOfMethods().contains(name)) {
 
                 if (!undoActive) actionsPerformed.add("added attribute");
                 UMLAttribute newAttribute = new UMLAttribute(name, classDiagram.classifierForName(type));
@@ -913,13 +924,24 @@ public class MainController {
             String type = typeText.getText();
 
 
-            if ((!name.isEmpty() && !type.isEmpty()) && !listOfMethods.contains(name)) {
+            if ((!name.isEmpty() && !type.isEmpty()) && !chosenClass.getNamesOfMethods().contains(name)) {
                 if (!undoActive) actionsPerformed.add("added method");
                 UMLOperation newMethod = new UMLOperation(name, classDiagram.classifierForName(type));
                 chosenClass.addMethod(newMethod);
                 VBox methods = (VBox) mainPane.lookup("#" + chooseClass.getValue() + "Methods");
                 Text method = new Text(chooseOperator.getValue() + name + ":" + type);
                 method.setId(name + "Meth");
+                if (classDiagram.findClass(chooseClass.getValue()).getRelations() != null){
+                    List<UMLRelation> relations = classDiagram.findClass(chooseClass.getValue()).getRelations();
+                    for (int i = 0; i < relations.size(); i++){
+                        if (relations.get(i).getSecondClass().equals(classDiagram.findClass(chooseClass.getValue()))){
+                            if (relations.get(i).getFirstClass().getNamesOfMethods().contains(name)){
+                                method.setStroke(Color.PURPLE);
+                            }
+                        }
+
+                    }
+                }
                 methods.getChildren().add(method);
                 chooseMethod.getItems().add(method.getText().substring(1));
                 listOfMethods.add(name);
@@ -1598,7 +1620,7 @@ public class MainController {
             case "Asociation (black)":
                 line.setStroke(Color.BLACK);
                 break;
-            case "Inheritance (purple)":
+            case "Generalization (purple)":
                 line.setStroke(Color.PURPLE);
                 break;
             case "Aggregation (green)":
@@ -1628,7 +1650,7 @@ public class MainController {
     }
 
     public void loadClassesToRelations(){
-        String[] relationType = {"Asociation (black)", "Inheritance (purple)", "Aggregation (green)", "Composion (blue)"};
+        String[] relationType = {"Asociation (black)", "Generalization (purple)", "Aggregation (green)", "Composion (blue)"};
         chooseRelationType.setValue("Asociation (black)");
         chooseRelationType.getItems().addAll(relationType);
     }

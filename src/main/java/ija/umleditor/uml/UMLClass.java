@@ -41,8 +41,8 @@ public class UMLClass extends UMLClassifier {
         this.heightsOfCom = new ArrayList<>();
         this.posOfCom = new ArrayList<>();
         this.abstraktni = false;
-        this.posX = 70.0;
-        this.posY = 70.0;
+        this.posX = 300.0;
+        this.posY = 300.0;
         this.seqPos = 40.0;
     }
 
@@ -241,7 +241,7 @@ public class UMLClass extends UMLClassifier {
         return false;
     }
 
-    public List<UMLRelation> getRaletions(){
+    public List<UMLRelation> getRelations(){
         return this.relace;
     }
 

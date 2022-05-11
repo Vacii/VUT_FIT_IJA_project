@@ -1,6 +1,5 @@
 package ija.umleditor.uml;
 
-import java.nio.file.FileSystemLoopException;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
@@ -177,7 +176,7 @@ public class ClassDiagram extends Element {
     }
 
     public List<UMLRelation> getClassRelations(String name) {
-        return findClass(name).getRaletions();
+        return findClass(name).getRelations();
     }
 
     public List<UMLRelation> getInterfaceRelations(String name) {
