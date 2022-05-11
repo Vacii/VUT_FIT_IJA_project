@@ -1,6 +1,7 @@
 package ija.umleditor;
 
 import ija.umleditor.uml.UMLClass;
+import ija.umleditor.uml.UMLInterface;
 import ija.umleditor.uml.UMLMessage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,6 +21,8 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static ija.umleditor.Main.classDiagram;
@@ -70,6 +73,8 @@ public class SequenceController {
     private double orgTranslateX;
     private double orgTranslateY;
 
+    private ArrayList<String> classesToSave = new ArrayList();
+
 
     @FXML
     private void showClass(ActionEvent e){
@@ -78,6 +83,8 @@ public class SequenceController {
             Label label = new Label();
             label.setText(name);
             label.setId(name + "label");
+            if (!classesToSave.contains(name)) classesToSave.add(name);
+
             if (classDiagram.findClass(name) != null) {
                 label.setLayoutX(classDiagram.findClass(name).getSeqPos());
                 label.setLayoutY(20);
@@ -127,6 +134,8 @@ public class SequenceController {
             Label label = new Label();
             label.setText(name);
             label.setId(name + "label");
+            if (!classesToSave.contains(name)) classesToSave.add(name);
+
             if (classDiagram.findClass(name) != null) {
                 label.setLayoutX(classDiagram.findClass(name).getSeqPos());
                 label.setLayoutY(20);
@@ -185,9 +194,9 @@ public class SequenceController {
                 //Setup default position of class
                 classDiagram.findClass(name).setSeqPos(20);
                 //Remove classes from Choiceboxes
-
                 chooseFirstClassForMsg.getItems().remove(name);
                 chooseSecondClassForMsg.getItems().remove(name);
+                classesToSave.remove(name);
             }
 
         }
@@ -342,10 +351,12 @@ public class SequenceController {
             UMLClass secondClass = classDiagram.findClass(chooseSecondClassForMsg.getValue());
             UMLMessage message;
             String name = ("msg" + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCounter());
-            message = classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).createMessage(name, firstClass.getName(),   "Instance " + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getInstaceCounter() + " of " + secondClass.getName(), chooseMsgType.getValue(), chooseMsgOperation.getValue());
+            message = classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).createMessage(name, firstClass.getName(),  secondClass.getName(), chooseMsgType.getValue(), chooseMsgOperation.getValue());
             classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).incInstanceCounter();
 
             classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).incMsgCounter();
+
+            System.out.println(message.getName() + " " + message.getOperation());
 
             drawMessage(message);
 
@@ -354,6 +365,12 @@ public class SequenceController {
 
     private void drawMessage(UMLMessage message){
         Line line;
+
+        if (message.getType().equals("Synchronous")) {
+
+
+            System.out.println();
+        }
 
     }
 
@@ -417,6 +434,58 @@ public class SequenceController {
             //teď mám její název - můžu displaynout
 
             showClass(entity);
+        }
+
+    }
+
+
+    @FXML
+    private void saveJsonFile (ActionEvent e) {
+
+        String FilePath;
+        FileChooser chooseFile = new FileChooser();
+        chooseFile.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooseFile.setTitle("Save file");
+        chooseFile.getExtensionFilters().add(new FileChooser.ExtensionFilter("json file", "*.json"));
+        chooseFile.setInitialFileName(nameOfSeqDiagram.getText());
+
+        try {
+            File selectedFile = chooseFile.showSaveDialog(new Stage());
+
+            if (selectedFile != null) {
+
+                JSONArray arr = new JSONArray();
+                FilePath = selectedFile.getAbsolutePath();
+
+                //tady musím získat všechny věci ze sekvenčního a hodit je do json array
+
+                System.out.println(classesToSave);
+                for (String className : classesToSave) {
+
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("entity", className);
+                    arr.put(jsonObject);
+                }
+
+                String jsonText = arr.toString();
+                try {
+
+                    File file = new File(FilePath);
+                    file.createNewFile();
+
+                    FileWriter fw = new FileWriter(file);
+                    fw.write(jsonText);
+                    fw.close();
+                } catch (Exception exc) {
+
+                    throw new RuntimeException();
+                }
+            }
+        }
+
+        catch (Exception exception) {
+
+            throw new RuntimeException();
         }
 
     }
