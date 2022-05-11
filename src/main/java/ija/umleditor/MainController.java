@@ -555,7 +555,6 @@ public class MainController {
 
         }
     }
-    //TODO nacitat a ukladat interface
 
     private void showInterfaceToGui(ClassDiagram d, UMLInterface umlInterface) {
         VBox box = new VBox();
@@ -593,13 +592,13 @@ public class MainController {
             //nastavení id do budoucna, kdy ho budu chtít znát
             method.setId(operationName + "Meth");
             methods.getChildren().add(method);
-
+            chooseMethod.getItems().add(operationName + ":" + type);
         }
 
         if (d.findInterface(umlInterface.getName()) != null) {
             titledPane.setLayoutX(umlInterface.getXposition());
             titledPane.setLayoutY(umlInterface.getYposition());
-            mainPane.getChildren().add(titledPane); //adding class to main window so its visible
+            mainPane.getChildren().add(titledPane); //adding interface to main window so its visible
             classCounter++;
             chooseClass.getItems().add(name);
             firstClassForRelation.getItems().add(name);
@@ -613,8 +612,8 @@ public class MainController {
         titledPane.setOnMouseDragged(event -> {
             titledPane.setTranslateX(event.getSceneX() - XpositionOfClass);
             titledPane.setTranslateY(event.getSceneY() - YpositionOfClass);
-            classDiagram.findClass(name).setXposition(event.getSceneX() - XpositionOfClass);
-            classDiagram.findClass(name).setYposition(event.getSceneY() - YpositionOfClass);
+            classDiagram.findInterface(name).setXposition(event.getSceneX() - XpositionOfClass);
+            classDiagram.findInterface(name).setYposition(event.getSceneY() - YpositionOfClass);
 
         });
 
@@ -663,6 +662,7 @@ public class MainController {
             //nastavení id do budoucna, kdy ho budu chtít znát
             method.setId(operationName + "Meth");
             methods.getChildren().add(method);
+            chooseMethod.getItems().add(operationName + ":" + type);
 
         }
 
@@ -679,7 +679,7 @@ public class MainController {
             Text attribute = new Text (attributeName + ":" + type);
             attribute.setId(attributeName + "Attr");
             attributes.getChildren().add(attribute);
-
+            chooseAttribute.getItems().add(attributeName + ":" + type);
         }
 
         if (d.findClass(cls.getName()) != null) {
@@ -1211,6 +1211,35 @@ public class MainController {
 
     }
 
+    private JSONObject interfaceToJsonObject (UMLInterface umlInterface) {
+
+        JSONObject object = new JSONObject();
+        JSONObject position = new JSONObject();
+        JSONObject methods = new JSONObject();
+
+        position.put("x", umlInterface.getXposition());
+        position.put("y", umlInterface.getYposition());
+
+        List<UMLOperation> operationList = umlInterface.getMethods();
+        for (UMLOperation operation : operationList) {
+
+            String operationString = operation.toString();
+            String [] parts = operationString.split(":");
+            String operationName = parts[0];
+            String type = parts[1];
+            type = type.replaceAll("\\([^\\)]*\\)\\s*", "");
+            methods.put(operationName, type);
+        }
+
+
+        object.put("position", position);
+        object.put("methods", methods);
+        object.put("entity", umlInterface.getName());
+        object.put("interface", "true");
+        return object;
+
+    }
+
     private JSONObject classToJsonObject (UMLClass cls) {
 
         JSONObject object = new JSONObject();
@@ -1244,9 +1273,11 @@ public class MainController {
             attributes.put(attributeName, type);
         }
 
+
         object.put("position", position);
         object.put("methods", methods);
         object.put("attributes", attributes);
+        object.put("interface", "false");
         object.put("entity", cls.getName());
         return object;
 
@@ -1254,7 +1285,7 @@ public class MainController {
 
     @FXML
     private void saveJsonFile(ActionEvent e) {
-    //TODO nejdou otevrit ulozene soubory
+    //TODO nejdou otevrit ulozene soubory - nesmí být prázdný metody a atributy
 
         String FilePath;
         FileChooser chooseFile = new FileChooser();
@@ -1269,12 +1300,19 @@ public class MainController {
             if (selectedFile != null) {
 
                 List<UMLClass> classList = classDiagram.getClasses();
+                List<UMLInterface> interfaceList = classDiagram.getInterfaces();
                 JSONArray arr = new JSONArray();
                 FilePath = selectedFile.getAbsolutePath();
 
                 for (UMLClass umlClass : classList) {
 
                     arr.put(classToJsonObject(umlClass));
+                }
+
+                for (UMLInterface umlInterface : interfaceList) {
+
+                    arr.put(interfaceToJsonObject(umlInterface));
+
                 }
 
                 String jsonText = arr.toString();
