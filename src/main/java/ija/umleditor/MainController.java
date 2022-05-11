@@ -776,6 +776,7 @@ public class MainController {
 
                     UMLAttribute attribute = arr.get(i);
                     classDiagram.findClass(nameOfRemovedClass).removeAttribute(attribute);
+                    chooseAttribute.getItems().remove(attribute.getName() + ":" + attribute.getType().toString().replaceAll("\\([^\\)]*\\)\\s*", ""));
                     if(!editingClass) attributesOfClassesDeleted.add(attribute);
                     i--;
                     if (classDiagram.findClass(nameOfRemovedClass).getAttributes().isEmpty()) break;
@@ -791,6 +792,7 @@ public class MainController {
 
                     UMLOperation operation = arr2.get(i);
                     classDiagram.findClass(nameOfRemovedClass).removeMethod(operation);
+                    chooseMethod.getItems().remove(operation.getName() + ":" + operation.getType().toString().replaceAll("\\([^\\)]*\\)\\s*", ""));
                     if (!editingClass) methodsOfClassesDeleted.add(operation);
                     i--;
                     if (classDiagram.findClass(nameOfRemovedClass).getMethods().isEmpty()) break;
@@ -1504,6 +1506,8 @@ public class MainController {
 
             //9. TODO - class was edited
             // editoval jsem classu - tzn. musím odstranit novou a zobrazit do gui starou
+            //když je undo pro editaci classy - tak potom nejde undo na její atributy a metody - why?
+
 
             else if (actionsPerformed.get(actionsPerformed.size() - 1).equals("edited class")) {
 
@@ -1513,7 +1517,6 @@ public class MainController {
                 //přidám starou
                 String nameOfClassToAdd = editedClass.get(editedClass.size() -2).getName();
                 classDiagram.createClass(nameOfClassToAdd);
-
                 //přidat atributy a metody ze staré classy
                 //když volám deleteClassHelp tak se ukládají odstraněný atributy a metody do attributesOfClassesDeleted
 
@@ -1521,10 +1524,16 @@ public class MainController {
 
                     classDiagram.findClass(nameOfClassToAdd).addAttribute(attributesOfClassesDeleted.get(attributesOfClassesDeleted.size() -1));
                     attributesOfClassesDeleted.remove(attributesOfClassesDeleted.size() - 1);
+
                 }
 
-                System.out.println(classDiagram.findClass(nameOfClassToAdd).getAttributes());
-                classesDeleted.remove(classesDeleted.size() - 1);
+                for (int i = 0; i < numberOfMethodsDeleted.size(); i++) {
+
+                    classDiagram.findClass(nameOfClassToAdd).addMethod(methodsOfClassesDeleted.get(methodsOfClassesDeleted.size() - 1));
+                    methodsOfClassesDeleted.remove(methodsOfClassesDeleted.size() - 1);
+
+                }
+
                 numberOfMethodsDeleted.remove(numberOfMethodsDeleted.size() -1);
                 numberOfAttributesDeleted.remove(numberOfAttributesDeleted.size() -1);
 
