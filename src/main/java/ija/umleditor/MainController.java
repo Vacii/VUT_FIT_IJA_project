@@ -466,26 +466,25 @@ public class MainController {
 
                 }
 
-            /*JSONObject jsonRelationObject = (JSONObject) jsonObject.get("relations");
-            JSONArray keys4 = jsonRelationObject.names();
+                JSONObject jsonRelationObject = (JSONObject) jsonObject.get("relations");
+                JSONArray keys4 = jsonRelationObject.names();
 
-            for (int j = 0; j < keys4.length(); j++) {
+                for (int j = 0; j < keys4.length(); j++) {
 
-                String key =  keys4.getString(j);
-                String value = jsonRelationObject.getString(key);
+                    String key = keys4.getString(j);
+                    String value = jsonRelationObject.getString(key);
 
-                //String ve tvaru class1@class2
+                    //String ve tvaru class1@class2
 
-                relationsToDisplay.add(key + "@" + value);
+                    relationsToDisplay.add(key + "@" + value); //tady přidávám každou relaci pro konkrétní třídu do listu
+                    //to si pak beru tam, kde je zobrazuju - 532
 
-            }
-            */
+                }
+
                 showClassToGUI(classDiagram, cls);
 
                 //printing data to output
-            }
-
-            else {
+            } else {
 
                 //interface nemá atributy
 
@@ -523,8 +522,10 @@ public class MainController {
                 //zde ukládání relací
 
 
-                showInterfaceToGui(classDiagram , umlInterface);
+                showInterfaceToGui(classDiagram, umlInterface);
             }
+        }
+
             //v tento moment existují všechny classy z jsonu - je třeba je napojit relacema
 
             for (String nameOfRelation : relationsToDisplay) {
@@ -553,7 +554,6 @@ public class MainController {
 
             System.out.println(relationsToDisplay);
 
-        }
     }
 
     private void showInterfaceToGui(ClassDiagram d, UMLInterface umlInterface) {

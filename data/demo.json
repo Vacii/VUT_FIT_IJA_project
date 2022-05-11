@@ -20,6 +20,11 @@
 
       "x" : 10.0,
       "y" : 10.0
+    },
+
+    "relations" : {
+
+      "relation1": "Employee@Vehicle"
     }
   },
   {
@@ -40,6 +45,10 @@
 
       "x" : 110.0,
       "y" : 110.0
+    },
+    "relations" : {
+
+      "relation1": "Employee@Vehicle"
     }
   },
 
