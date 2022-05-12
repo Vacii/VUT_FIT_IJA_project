@@ -316,7 +316,7 @@ public class SequenceController {
     }
 
     private void loadMsgTypes(){
-        String[] types = {"Synchronous", "Asynchronous", "Reply", "Create object", "Remove object"};
+        String[] types = {"Synchronous", "Asynchronous", "Return", "Create object", "Remove object"};
         chooseMsgType.setValue("Synchronous");
         chooseMsgType.getItems().addAll(types);
         typesLoaded = true;
@@ -328,6 +328,20 @@ public class SequenceController {
                 chooseMsgOperation.setValue(classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods().get(0));
             }
         });
+
+        chooseMsgType.setOnAction(event -> {
+            if (chooseMsgType.getValue().equals("Return")){
+                chooseMsgOperation.getItems().removeAll(chooseMsgOperation.getItems());
+                chooseMsgOperation.getItems().add("Return");
+                chooseMsgOperation.setValue("Return");
+            }
+            else {
+                chooseMsgOperation.getItems().removeAll(chooseMsgOperation.getItems());
+                chooseMsgOperation.getItems().addAll(classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods());
+                chooseMsgOperation.setValue(classDiagram.findClass(chooseFirstClassForMsg.getValue()).getNamesOfMethods().get(0));
+            }
+        });
+
     }
 
     @FXML
@@ -376,11 +390,6 @@ public class SequenceController {
             classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).incrementMsgCount();
 
             drawMessage(message);
-//            label.setLayoutX(classDiagram.findClass(message.getClass1()).getSeqPos() + (((classDiagram.findClass(message.getClass2()).getSeqPos() + 6) - (classDiagram.findClass(message.getClass1()).getSeqPos() + 6))/2));
-//            label.setLayoutY(message.getHeight()-20);
-//            label.setText(message.getName());
-//            label.setId(message.getName());
-//            classPane.getChildren().add(1, label);
 
             line.setOnMousePressed(event -> {
                 msgTranslateY = event.getSceneY();
@@ -449,13 +458,37 @@ public class SequenceController {
                 classPane.getChildren().add(0, polygon);
                 classPane.getChildren().add(0,line);
                 break;
+            case "Return":
+                line.setId(message.getName() + "Message"  + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner());
+                arrUp.setId(message.getName() + "MessageUpArr"  + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner());
+                arrDown.setId(message.getName() + "MessageDownArr"  + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner());
+
+                line.setStartX(classDiagram.findClass(message.getClass1()).getSeqPos() + 6);
+                line.setStartY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                line.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                line.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+
+                arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                arrUp.setStartY(message.getHeight()-5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                arrUp.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                arrDown.setStartY(message.getHeight()+5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                arrDown.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+
+                line.getStrokeDashArray().addAll(10d, 10d);
+
+                classPane.getChildren().add(0,line);
+                classPane.getChildren().add(0,arrDown);
+                classPane.getChildren().add(0,arrUp);
+                break;
         }
+        message.setHeight(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
         label.setLayoutX(classDiagram.findClass(message.getClass1()).getSeqPos() + (((classDiagram.findClass(message.getClass2()).getSeqPos() + 6) - (classDiagram.findClass(message.getClass1()).getSeqPos() + 6))/2));
         label.setLayoutY(message.getHeight()-20);
         label.setText(message.getName());
         label.setId(message.getName() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner());
-
-        message.setHeight(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
         classPane.getChildren().add(1, label);
     }
 
@@ -503,6 +536,31 @@ public class SequenceController {
                 polygon.setId(message.getName() + "MessageTriangle" + message.getOrder());
                 classPane.getChildren().add(0, polygon);
                 classPane.getChildren().add(0,line);
+                break;
+            case "Return":
+                line.setId(message.getName() + "Message"  + message.getOrder());
+                arrUp.setId(message.getName() + "MessageUpArr" + message.getOrder());
+                arrDown.setId(message.getName() + "MessageDownArr" + message.getOrder());
+
+                line.setStartX(classDiagram.findClass(message.getClass1()).getSeqPos() + 6);
+                line.setStartY(message.getHeight());
+                line.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                line.setEndY(message.getHeight());
+
+                line.getStrokeDashArray().addAll(10d, 10d);
+
+                arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                arrUp.setStartY(message.getHeight()-5);
+                arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                arrUp.setEndY(message.getHeight());
+                arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                arrDown.setStartY(message.getHeight()+5);
+                arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                arrDown.setEndY(message.getHeight());
+
+                classPane.getChildren().add(0,line);
+                classPane.getChildren().add(0,arrDown);
+                classPane.getChildren().add(0,arrUp);
                 break;
         }
         label.setLayoutX(classDiagram.findClass(message.getClass1()).getSeqPos() + (((classDiagram.findClass(message.getClass2()).getSeqPos() + 6) - (classDiagram.findClass(message.getClass1()).getSeqPos() + 6))/2));
