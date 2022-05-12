@@ -279,6 +279,7 @@ public class SequenceController {
 
     //TODO when class is moved, the dotetd line is the right position and class not
     public void loadSavedDiagram(String name){
+        String nameOfSeqDia = nameOfSeqDiagram.getText();
         for (int i = 0; i < classDiagram.findSeqDiagram(name).getClasses().size(); i++){
             Label label = new Label();
             UMLClass obj = classDiagram.findSeqDiagram(name).getClasses().get(i);
@@ -324,6 +325,16 @@ public class SequenceController {
                     classPane.getChildren().removeAll(classPane.lookupAll(("#" + obj.getName() + "Communication")));
                     Rectangle rectangle = new Rectangle();
                     drawComRectangle(obj, heights.get(k), rectangle);
+                }
+                List<UMLMessage> messages = classDiagram.findSeqDiagram(nameOfSeqDia).getMessages();
+                for (int l = 0; l < messages.size(); l++){
+                    classPane.getChildren().remove(classPane.lookup("#" + messages.get(l).getName() + "MessageUpArr" + (l+1)));
+                    classPane.getChildren().remove(classPane.lookup("#" + messages.get(l).getName() + "MessageDownArr" + (l+1)));
+                    classPane.getChildren().remove(classPane.lookup("#" + messages.get(l).getName() + "MessageTriangle" + (l+1)));
+                    classPane.getChildren().remove(classPane.lookup("#" + messages.get(l).getName() + "Message" + (l+1)));
+                    classPane.getChildren().remove(classPane.lookup("#" + messages.get(l).getName() + (l+1)));
+                    redrawMessage(messages.get(l));
+
                 }
             });
 
@@ -444,15 +455,26 @@ public class SequenceController {
                 line.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
                 line.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
 
-                arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
-                arrUp.setStartY(message.getHeight()-5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
-                arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
-                arrUp.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
-                arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
-                arrDown.setStartY(message.getHeight()+5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
-                arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
-                arrDown.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
-
+                if ((classDiagram.findClass(message.getClass1()).getSeqPos() + 6) > (classDiagram.findClass(message.getClass2()).getSeqPos() + 6)) {
+                    arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos() + 12);
+                    arrUp.setStartY(message.getHeight() - 5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                    arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrUp.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                    arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos() + 12);
+                    arrDown.setStartY(message.getHeight() + 5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                    arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrDown.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                }
+                else{
+                    arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                    arrUp.setStartY(message.getHeight() - 5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                    arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrUp.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                    arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                    arrDown.setStartY(message.getHeight() + 5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                    arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrDown.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                }
                 classPane.getChildren().add(0,line);
                 classPane.getChildren().add(0,arrDown);
                 classPane.getChildren().add(0,arrUp);
@@ -464,11 +486,20 @@ public class SequenceController {
                 line.setStartY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
                 line.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
                 line.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
-
                 Polygon polygon = new Polygon();
-                polygon.getPoints().addAll(classDiagram.findClass(message.getClass2()).getSeqPos(), message.getHeight()-5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20,
-                        classDiagram.findClass(message.getClass2()).getSeqPos() + 6, message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20,
-                        classDiagram.findClass(message.getClass2()).getSeqPos(), message.getHeight()+5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+
+                if ((classDiagram.findClass(message.getClass1()).getSeqPos() + 6) > (classDiagram.findClass(message.getClass2()).getSeqPos() + 6)) {
+
+                    polygon.getPoints().addAll(classDiagram.findClass(message.getClass2()).getSeqPos() + 12, message.getHeight() - 5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20,
+                            classDiagram.findClass(message.getClass2()).getSeqPos() + 6, message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20,
+                            classDiagram.findClass(message.getClass2()).getSeqPos() + 12, message.getHeight() + 5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                }
+                else{
+                    polygon.getPoints().addAll(classDiagram.findClass(message.getClass2()).getSeqPos(), message.getHeight() - 5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20,
+                            classDiagram.findClass(message.getClass2()).getSeqPos() + 6, message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20,
+                            classDiagram.findClass(message.getClass2()).getSeqPos(), message.getHeight() + 5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                }
+
                 polygon.setId(message.getName() + "MessageTriangle"  + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner());
                 classPane.getChildren().add(0, polygon);
                 classPane.getChildren().add(0,line);
@@ -483,14 +514,27 @@ public class SequenceController {
                 line.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
                 line.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
 
-                arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
-                arrUp.setStartY(message.getHeight()-5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
-                arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
-                arrUp.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
-                arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
-                arrDown.setStartY(message.getHeight()+5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
-                arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
-                arrDown.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+
+                if ((classDiagram.findClass(message.getClass1()).getSeqPos() + 6) > (classDiagram.findClass(message.getClass2()).getSeqPos() + 6)) {
+                    arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos() + 12);
+                    arrUp.setStartY(message.getHeight() - 5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                    arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrUp.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                    arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos() + 12);
+                    arrDown.setStartY(message.getHeight() + 5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                    arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrDown.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                }
+                else{
+                    arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                    arrUp.setStartY(message.getHeight() - 5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                    arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrUp.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                    arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                    arrDown.setStartY(message.getHeight() + 5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                    arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrDown.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                }
 
                 line.getStrokeDashArray().addAll(10d, 10d);
 
@@ -523,14 +567,26 @@ public class SequenceController {
                 line.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
                 line.setEndY(message.getHeight());
 
-                arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
-                arrUp.setStartY(message.getHeight()-5);
-                arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
-                arrUp.setEndY(message.getHeight());
-                arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
-                arrDown.setStartY(message.getHeight()+5);
-                arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
-                arrDown.setEndY(message.getHeight());
+                if ((classDiagram.findClass(message.getClass1()).getSeqPos() + 6) < (classDiagram.findClass(message.getClass2()).getSeqPos() + 6)){
+                    arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                    arrUp.setStartY(message.getHeight()-5);
+                    arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrUp.setEndY(message.getHeight());
+                    arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                    arrDown.setStartY(message.getHeight()+5);
+                    arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrDown.setEndY(message.getHeight());
+                }
+                else{
+                    arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos() + 12);
+                    arrUp.setStartY(message.getHeight()-5);
+                    arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrUp.setEndY(message.getHeight());
+                    arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos() + 12);
+                    arrDown.setStartY(message.getHeight()+5);
+                    arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrDown.setEndY(message.getHeight());
+                }
 
                 classPane.getChildren().add(0,line);
                 classPane.getChildren().add(0,arrDown);
@@ -545,9 +601,16 @@ public class SequenceController {
                 line.setEndY(message.getHeight());
 
                 Polygon polygon = new Polygon();
-                polygon.getPoints().addAll(classDiagram.findClass(message.getClass2()).getSeqPos(), message.getHeight()-5,
-                        classDiagram.findClass(message.getClass2()).getSeqPos() + 6, message.getHeight(),
-                        classDiagram.findClass(message.getClass2()).getSeqPos(), message.getHeight()+5);
+                if ((classDiagram.findClass(message.getClass1()).getSeqPos() + 6) < (classDiagram.findClass(message.getClass2()).getSeqPos() + 6)) {
+                    polygon.getPoints().addAll(classDiagram.findClass(message.getClass2()).getSeqPos(), message.getHeight() - 5,
+                            classDiagram.findClass(message.getClass2()).getSeqPos() + 6, message.getHeight(),
+                            classDiagram.findClass(message.getClass2()).getSeqPos(), message.getHeight() + 5);
+                }
+                else{
+                    polygon.getPoints().addAll(classDiagram.findClass(message.getClass2()).getSeqPos() + 12, message.getHeight() - 5,
+                            classDiagram.findClass(message.getClass2()).getSeqPos() + 6, message.getHeight(),
+                            classDiagram.findClass(message.getClass2()).getSeqPos() + 12, message.getHeight() + 5);
+                }
                 polygon.setId(message.getName() + "MessageTriangle" + message.getOrder());
                 classPane.getChildren().add(0, polygon);
                 classPane.getChildren().add(0,line);
@@ -564,15 +627,26 @@ public class SequenceController {
 
                 line.getStrokeDashArray().addAll(10d, 10d);
 
-                arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
-                arrUp.setStartY(message.getHeight()-5);
-                arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
-                arrUp.setEndY(message.getHeight());
-                arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
-                arrDown.setStartY(message.getHeight()+5);
-                arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
-                arrDown.setEndY(message.getHeight());
-
+                if ((classDiagram.findClass(message.getClass1()).getSeqPos() + 6) < (classDiagram.findClass(message.getClass2()).getSeqPos() + 6)) {
+                    arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                    arrUp.setStartY(message.getHeight() - 5);
+                    arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrUp.setEndY(message.getHeight());
+                    arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                    arrDown.setStartY(message.getHeight() + 5);
+                    arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrDown.setEndY(message.getHeight());
+                }
+                else{
+                    arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos() + 12);
+                    arrUp.setStartY(message.getHeight()-5);
+                    arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrUp.setEndY(message.getHeight());
+                    arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos() + 12);
+                    arrDown.setStartY(message.getHeight()+5);
+                    arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                    arrDown.setEndY(message.getHeight());
+                }
                 classPane.getChildren().add(0,line);
                 classPane.getChildren().add(0,arrDown);
                 classPane.getChildren().add(0,arrUp);
