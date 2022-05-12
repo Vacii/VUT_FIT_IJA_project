@@ -451,6 +451,7 @@ public class MainController {
                     //creating method
                     UMLOperation operationObject = UMLOperation.create(key, classDiagram.classifierForName(value));
                     cls.addMethod(operationObject);
+                    System.out.println(operationObject);
 
                 }
 
@@ -471,18 +472,19 @@ public class MainController {
                 JSONObject jsonRelationObject = (JSONObject) jsonObject.get("relations");
                 JSONArray keys4 = jsonRelationObject.names();
 
-                for (int j = 0; j < keys4.length(); j++) {
+                if (keys4 != null) {
+                    for (int j = 0; j < keys4.length(); j++) {
 
-                    String key = keys4.getString(j);
-                    String value = jsonRelationObject.getString(key);
+                        String key = keys4.getString(j);
+                        String value = jsonRelationObject.getString(key);
 
-                    //String ve tvaru class1@class2
+                        //String ve tvaru class1@class2
 
-                    relationsToDisplay.add(key + "@" + value); //tady přidávám každou relaci pro konkrétní třídu do listu
-                    //to si pak beru tam, kde je zobrazuju - 532
+                        relationsToDisplay.add(key + "@" + value); //tady přidávám každou relaci pro konkrétní třídu do listu
+                        //to si pak beru tam, kde je zobrazuju - 532
 
+                    }
                 }
-
                 showClassToGUI(classDiagram, cls);
 
                 //printing data to output
@@ -522,6 +524,22 @@ public class MainController {
                 }
 
                 //zde ukládání relací
+                JSONObject jsonRelationObject = (JSONObject) jsonObject.get("relations");
+                JSONArray keys4 = jsonRelationObject.names();
+
+                if (keys4 != null) {
+                    for (int j = 0; j < keys4.length(); j++) {
+
+                        String key = keys4.getString(j);
+                        String value = jsonRelationObject.getString(key);
+
+                        //String ve tvaru class1@class2
+
+                        relationsToDisplay.add(key + "@" + value); //tady přidávám každou relaci pro konkrétní třídu do listu
+                        //to si pak beru tam, kde je zobrazuju - 532
+                        System.out.println(relationsToDisplay);
+                    }
+                }
 
 
                 showInterfaceToGui(classDiagram, umlInterface);
@@ -530,39 +548,85 @@ public class MainController {
 
             //v tento moment existují všechny classy z jsonu - je třeba je napojit relacema
 
-            for (String nameOfRelation : relationsToDisplay) {
+            if (!relationsToDisplay.isEmpty()) {
 
-                String[] parts = nameOfRelation.split("@");
-                String relationName = parts[0];
-                String nameOfFirstClass = parts[1];
-                String nameOfSecondClass = parts[2];
-                String relationType = parts [3];
+                for (String nameOfRelation : relationsToDisplay) {
 
-                // TODO - nejde vytvořit relaci - třídy jsou null, ale už jsou vytvořený a jsou i v classDiagram.getclasses() - how??
-                UMLRelation newRelation = classDiagram.createRelation(nameOfFirstClass, nameOfSecondClass, relationName, relationType);
+                    String[] parts = nameOfRelation.split("@");
+                    String relationName = parts[0];
+                    String nameOfFirstClass = parts[1];
+                    String nameOfSecondClass = parts[2];
+                    String relationType = parts[3];
 
-                if (newRelation != null) {
+                    UMLRelation newRelation = classDiagram.createRelation(nameOfFirstClass, nameOfSecondClass, relationName, relationType);
 
-                    Line line = new Line();
-                    Label label = new Label();
+                    if (newRelation != null) {
 
-                    label.setId(nameOfFirstClass + nameOfSecondClass + "RelationName");
-                    label.setLayoutX(newRelation.getXpositionOfText());
-                    label.setLayoutY(newRelation.getYpositionOfText() - 20);
-                    label.setText(newRelation.getName());
+                        if (classDiagram.findClass(nameOfFirstClass) != null && classDiagram.findClass(nameOfSecondClass) != null) {
+                            Line line = new Line();
+                            Label label = new Label();
 
-                    line.setStartX(newRelation.getFirstClass().getXposition() + 55);
-                    line.setStartY(newRelation.getFirstClass().getYposition() + 55);
-                    line.setEndX(newRelation.getSecondClass().getXposition() + 55);
-                    line.setEndY(newRelation.getSecondClass().getYposition() + 55);
-                    line.setId(newRelation.getFirstClass().getName() + newRelation.getSecondClass().getName() + "Relation");
+                            label.setId(nameOfFirstClass + nameOfSecondClass + "RelationName");
+                            label.setLayoutX(newRelation.getXpositionOfText());
+                            label.setLayoutY(newRelation.getYpositionOfText() - 20);
+                            label.setText(newRelation.getName());
 
-                    mainPane.getChildren().add(0, line);
-                    mainPane.getChildren().add(1,label);
+                            line.setStartX(newRelation.getFirstClass().getXposition() + 55);
+                            line.setStartY(newRelation.getFirstClass().getYposition() + 55);
+                            line.setEndX(newRelation.getSecondClass().getXposition() + 55);
+                            line.setEndY(newRelation.getSecondClass().getYposition() + 55);
+                            line.setId(newRelation.getFirstClass().getName() + newRelation.getSecondClass().getName() + "Relation");
 
+                            mainPane.getChildren().add(0, line);
+                            mainPane.getChildren().add(1, label);
+
+                        }
+
+                        //první classa je interface
+                        else if (classDiagram.findClass(nameOfFirstClass) == null) {
+                            Line line = new Line();
+                            Label label = new Label();
+
+                            label.setId(nameOfFirstClass + nameOfSecondClass + "RelationName");
+                            label.setLayoutX(newRelation.getXpositionOfText());
+                            label.setLayoutY(newRelation.getYpositionOfText() - 20);
+                            label.setText(newRelation.getName());
+
+                            line.setStartX(newRelation.getFirstInterface().getXposition() + 55);
+                            line.setStartY(newRelation.getFirstInterface().getYposition() + 55);
+                            line.setEndX(newRelation.getSecondClass().getXposition() + 55);
+                            line.setEndY(newRelation.getSecondClass().getYposition() + 55);
+                            line.setId(newRelation.getFirstInterface().getName() + newRelation.getSecondClass().getName() + "Relation");
+
+                            mainPane.getChildren().add(0, line);
+                            mainPane.getChildren().add(1, label);
+
+
+                        }
+
+                        else if (classDiagram.findClass(nameOfSecondClass) == null) {
+
+                            Line line = new Line();
+                            Label label = new Label();
+
+                            label.setId(nameOfFirstClass + nameOfSecondClass + "RelationName");
+                            label.setLayoutX(newRelation.getXpositionOfText());
+                            label.setLayoutY(newRelation.getYpositionOfText() - 20);
+                            label.setText(newRelation.getName());
+
+                            line.setStartX(newRelation.getFirstClass().getXposition() + 55);
+                            line.setStartY(newRelation.getFirstClass().getYposition() + 55);
+                            line.setEndX(newRelation.getSecondInterface().getXposition() + 55);
+                            line.setEndY(newRelation.getSecondInterface().getYposition() + 55);
+                            line.setId(newRelation.getFirstClass().getName() + newRelation.getSecondInterface().getName() + "Relation");
+
+                            mainPane.getChildren().add(0, line);
+                            mainPane.getChildren().add(1, label);
+
+                        }
+                    }
                 }
             }
-
             System.out.println(relationsToDisplay);
 
     }
@@ -572,8 +636,6 @@ public class MainController {
 
 
         String name = umlInterface.getName();
-
-        box.getChildren().add(new Separator()); // to jsem ti ukradl
 
         VBox methods = new VBox();
         box.getChildren().add(methods);

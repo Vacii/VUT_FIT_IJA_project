@@ -680,6 +680,7 @@ public class SequenceController {
 
             if (newMessage != null) {
 
+                classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).incrementMsgCount();
                 drawMessage(newMessage);
 
             }
