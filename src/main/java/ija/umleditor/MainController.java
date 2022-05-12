@@ -1020,8 +1020,9 @@ public class MainController {
                 if (classDiagram.findClass(chooseClass.getValue()).getRelations() != null){
                     List<UMLRelation> relations = classDiagram.findClass(chooseClass.getValue()).getRelations();
                     for (int i = 0; i < relations.size(); i++){
-                        if (relations.get(i).getSecondClass().equals(classDiagram.findClass(chooseClass.getValue()))){
-                            if (relations.get(i).getFirstClass().getNamesOfMethods().contains(name)){
+                        System.out.println(relations.get(i).getSecondClass());
+                        if (relations.get(i).getFirstClass() != null && relations.get(i).getFirstClass().equals(classDiagram.findClass(chooseClass.getValue()))){
+                            if (relations.get(i).getSecondClass() != null && relations.get(i).getSecondClass().getNamesOfMethods().contains(name)){
                                 method.setStroke(Color.PURPLE);
                             }
                         }
