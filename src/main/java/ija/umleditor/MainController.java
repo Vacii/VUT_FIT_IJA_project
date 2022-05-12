@@ -536,9 +536,10 @@ public class MainController {
                 String relationName = parts[0];
                 String nameOfFirstClass = parts[1];
                 String nameOfSecondClass = parts[2];
+                String relationType = parts [3];
 
                 // TODO - nejde vytvořit relaci - třídy jsou null, ale už jsou vytvořený a jsou i v classDiagram.getclasses() - how??
-                UMLRelation newRelation = classDiagram.createRelation(nameOfFirstClass, nameOfSecondClass, relationName, "Asociation (black)");
+                UMLRelation newRelation = classDiagram.createRelation(nameOfFirstClass, nameOfSecondClass, relationName, relationType);
 
                 if (newRelation != null) {
 
@@ -827,8 +828,10 @@ public class MainController {
 
                     UMLRelation relation = currentClass.getRelations().get(i);
                     //smazat teď v gui
+                    //nemaže se jméno relace - jenom čára
                     classDiagram.deleteRelation(relation);
                     mainPane.getChildren().remove(mainPane.lookup("#" + relation.getFirstClass().getName() + relation.getSecondClass().getName() + "Relation"));
+                    mainPane.getChildren().remove(mainPane.lookup("#" + relation.getFirstClass().getName() + relation.getSecondClass().getName() + "RelationName"));
                     i--;
                     if (currentClass.getRelations().isEmpty()) break; //deleted from backend
 

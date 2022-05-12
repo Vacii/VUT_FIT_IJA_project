@@ -80,6 +80,7 @@ public class SequenceController {
     private double orgHeight;
 
     private ArrayList<String> classesToSave = new ArrayList();
+    private ArrayList<String> messagesToDisplay = new ArrayList<>();
 
 
     @FXML
@@ -130,6 +131,8 @@ public class SequenceController {
                     Rectangle rectangle = new Rectangle();
                     drawComRectangle(classDiagram.findClass(name), heights.get(i), rectangle);
                 }
+                //vzal jsem to co máš nahoře, ale dělá to nějaký špatný věci xd
+
                 List<UMLMessage> messages = classDiagram.findSeqDiagram(nameOfSeqDia).getMessages();
                 for (int i = 0; i < messages.size(); i++){
                         classPane.getChildren().remove(classPane.lookup("#" + messages.get(i).getName() + "MessageUpArr" + (i+1)));
@@ -188,6 +191,18 @@ public class SequenceController {
                     classPane.getChildren().removeAll(classPane.lookupAll(("#" + name + "Communication")));
                     Rectangle rectangle = new Rectangle();
                     drawComRectangle(classDiagram.findClass(name), heights.get(i), rectangle);
+                }
+
+                List<UMLMessage> messages = classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMessages();
+                System.out.println(messages);
+                for (int i = 0; i < messages.size(); i++){
+                    classPane.getChildren().remove(classPane.lookup("#" + messages.get(i).getName() + "MessageUpArr" + (i+1)));
+                    classPane.getChildren().remove(classPane.lookup("#" + messages.get(i).getName() + "MessageDownArr" + (i+1)));
+                    classPane.getChildren().remove(classPane.lookup("#" + messages.get(i).getName() + "MessageTriangle" + (i+1)));
+                    classPane.getChildren().remove(classPane.lookup("#" + messages.get(i).getName() + "Message" + (i+1)));
+                    classPane.getChildren().remove(classPane.lookup("#" + messages.get(i).getName() + (i+1)));
+                    redrawMessage(messages.get(i));
+
                 }
             });
         }
@@ -629,7 +644,46 @@ public class SequenceController {
 
             //teď mám její název - můžu displaynout
 
+            //messages
+
+            JSONObject messageObject = (JSONObject) jsonObject.get("messages");
+
+            JSONArray keys = messageObject.names();
+
+            if (keys != null) {
+
+                for (int j = 0; j < keys.length(); j++) {
+
+                    String key = keys.getString(j);
+                    String value = messageObject.getString(key);
+
+                    System.out.println(key + " " + value);
+                    messagesToDisplay.add(key + "@" + value); //operation@class1@class2@typ
+
+                }
+            }
             showClass(entity);
+        }
+
+
+        for (String message : messagesToDisplay) {
+
+            String [] parts = message.split("@");
+            String operationName = parts [0];
+            String nameOfFirstClass = parts [1];
+            String nameOfSecondClass = parts [2];
+            String typeOfMessage = parts [3];
+
+            System.out.println(operationName + " " + nameOfFirstClass + " " + nameOfSecondClass + " " + typeOfMessage );
+
+            UMLMessage newMessage = classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).createMessage(operationName, nameOfFirstClass, nameOfSecondClass, typeOfMessage, operationName);
+
+            if (newMessage != null) {
+
+                drawMessage(newMessage);
+
+            }
+
         }
 
     }

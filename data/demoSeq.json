@@ -1,12 +1,20 @@
 [
   {
-    "entity" : "Employee"
+    "entity" : "Employee",
+    "messages" : {
 
+        "getName()" :  "Employee@Vehicle@Synchronous"
+
+    }
   },
 
   {
 
-    "entity" : "Vehicle"
+    "entity" : "Vehicle",
+    "messages" : {
+
+
+    }
 
   }
 ]

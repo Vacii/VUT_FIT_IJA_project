@@ -24,7 +24,7 @@
 
     "relations" : {
 
-      "relation1": "Employee@Vehicle"
+      "relation1": "Employee@Vehicle@Asociation (black)",
     }
   },
   {
@@ -48,7 +48,7 @@
     },
     "relations" : {
 
-      "relation1": "Employee@Vehicle"
+      "relation1": "Employee@Vehicle@Asociation (black)"
     }
   },
 
