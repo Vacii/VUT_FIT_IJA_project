@@ -81,6 +81,7 @@ public class SequenceController {
 
     private ArrayList<String> classesToSave = new ArrayList();
     private ArrayList<String> messagesToDisplay = new ArrayList<>();
+    private ArrayList<UMLMessage> messagesToSave = new ArrayList<>();
 
 
     @FXML
@@ -149,6 +150,7 @@ public class SequenceController {
 
     private void showClass (String name) {
 
+
         if (name != null && classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).findClass(name) == null){
             Label label = new Label();
             label.setText(name);
@@ -194,7 +196,6 @@ public class SequenceController {
                 }
 
                 List<UMLMessage> messages = classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMessages();
-                System.out.println(messages);
                 for (int i = 0; i < messages.size(); i++){
                     classPane.getChildren().remove(classPane.lookup("#" + messages.get(i).getName() + "MessageUpArr" + (i+1)));
                     classPane.getChildren().remove(classPane.lookup("#" + messages.get(i).getName() + "MessageDownArr" + (i+1)));
@@ -444,7 +445,7 @@ public class SequenceController {
         Label label = new Label();
 
         message.setOrder(classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner());
-
+        messagesToSave.add(message);
         switch (message.getType()){
             case "Asynchronous":
                 line.setId(message.getName() + "Message" + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner());
@@ -481,7 +482,6 @@ public class SequenceController {
                 break;
             case "Synchronous":
                 line.setId(message.getName() + "Message"  + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner());
-
                 line.setStartX(classDiagram.findClass(message.getClass1()).getSeqPos() + 6);
                 line.setStartY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
                 line.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
@@ -731,7 +731,6 @@ public class SequenceController {
                     String key = keys.getString(j);
                     String value = messageObject.getString(key);
 
-                    System.out.println(key + " " + value);
                     messagesToDisplay.add(key + "@" + value); //operation@class1@class2@typ
 
                 }
@@ -748,7 +747,6 @@ public class SequenceController {
             String nameOfSecondClass = parts [2];
             String typeOfMessage = parts [3];
 
-            System.out.println(operationName + " " + nameOfFirstClass + " " + nameOfSecondClass + " " + typeOfMessage );
 
             UMLMessage newMessage = classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).createMessage(operationName, nameOfFirstClass, nameOfSecondClass, typeOfMessage, operationName);
 
@@ -784,11 +782,20 @@ public class SequenceController {
 
                 //tady musím získat všechny věci ze sekvenčního a hodit je do json array
 
-                System.out.println(classesToSave);
                 for (String className : classesToSave) {
 
                     JSONObject jsonObject = new JSONObject();
+                    JSONObject messageObject = new JSONObject();
                     jsonObject.put("entity", className);
+
+                    //všechny messages, který byly provedeny musím načíst
+
+                    for (UMLMessage message : messagesToSave) {
+
+                            if (message.getClass1().equals(className)) messageObject.put(message.getName(), message.getClass1() + "@" + message.getClass2() + "@" + message.getType());
+                    }
+
+                    jsonObject.put("messages", messageObject);
                     arr.put(jsonObject);
                 }
 

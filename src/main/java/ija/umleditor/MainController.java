@@ -661,7 +661,7 @@ public class MainController {
             type = type.replaceAll("\\([^\\)]*\\)\\s*", "");
 
             //pokud se to správně nalinkuje tak tady už jen vytvářím místo pro ten text v tom příslušným vboxu
-            Text method = new Text (operationName + ":" + type);
+            Text method = new Text ("+" + operationName + ":" + type);
             //nastavení id do budoucna, kdy ho budu chtít znát
             method.setId(operationName + "Meth");
             methods.getChildren().add(method);
@@ -758,7 +758,7 @@ public class MainController {
             type = type.replaceAll("\\([^\\)]*\\)\\s*", "");
 
             //pokud se to správně nalinkuje tak tady už jen vytvářím místo pro ten text v tom příslušným vboxu
-            Text method = new Text (operationName + ":" + type);
+            Text method = new Text ("+" + operationName + ":" + type);
             //nastavení id do budoucna, kdy ho budu chtít znát
             method.setId(operationName + "Meth");
             methods.getChildren().add(method);
@@ -776,7 +776,7 @@ public class MainController {
             String attributeName = parts[0];
             String type = parts[1].replaceAll("\\([^\\)]*\\)\\s*", "");
 
-            Text attribute = new Text (attributeName + ":" + type);
+            Text attribute = new Text ("+" + attributeName + ":" + type);
             attribute.setId(attributeName + "Attr");
             attributes.getChildren().add(attribute);
             chooseAttribute.getItems().add(attributeName + ":" + type);

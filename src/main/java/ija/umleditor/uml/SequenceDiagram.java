@@ -3,6 +3,7 @@ package ija.umleditor.uml;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 
 public class SequenceDiagram extends Element{
@@ -48,11 +49,9 @@ public class SequenceDiagram extends Element{
     }
 
     public UMLClass findClass(String name){
-        UMLClass obj;
         for (int i = 0; i < this.tridy.size(); i++) {
-            obj = this.tridy.get(i);
-            if (obj.getName().compareTo(name) == 0) {
-                return obj;
+            if (Objects.equals(tridy.get(i).getClassName(), name)){
+                return tridy.get(i);
             }
         }
         return null;

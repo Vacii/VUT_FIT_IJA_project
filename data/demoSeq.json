@@ -1,19 +1,31 @@
 [
   {
-    "entity" : "Employee",
+    "entity" : "ClassDiagram",
     "messages" : {
 
-        "getName()" :  "Employee@Vehicle@Synchronous"
+     "createClass(name-String)" : "ClassDiagram@UMLClass@Return",
 
     }
   },
 
   {
 
-    "entity" : "Vehicle",
+    "entity" : "UMLClass",
     "messages" : {
 
-      "getBrand()" : "Vehicle@Employee@Return"
+      "addAttribute(attr-UMLAttribute)" : "UMLClass@ClassDiagram@Asynchronous",
+      "getAttrPosition(attr-UMLAttribute)" : "UMLClass@ClassDiagram@Synchronous"
+
+    }
+
+  },
+
+  {
+
+    "entity" : "UMLAttribute",
+    "messages" : {
+
+      "getType()" : "UMLAttribute@UMLClass@Synchronous"
     }
 
   }
