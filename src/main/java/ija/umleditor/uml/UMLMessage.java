@@ -15,7 +15,7 @@ public class UMLMessage extends Element {
         this.class1 = class1;
         this.class2 = class2;
         this.operation = operation;
-        this.height = 100;
+        this.height = 50;
         this.order = "1";
     }
 

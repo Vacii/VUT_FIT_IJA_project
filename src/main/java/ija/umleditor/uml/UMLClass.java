@@ -273,4 +273,6 @@ public class UMLClass extends UMLClassifier {
         this.posOfCom.add(index,pos);
         this.posOfCom.remove(index + 1);
     }
+
+
 }

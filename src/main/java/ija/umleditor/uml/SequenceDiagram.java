@@ -9,30 +9,19 @@ public class SequenceDiagram extends Element{
     private List<UMLClass> tridy;
     private List<UMLClassifier> klasifikatory;
     private List<UMLMessage> zpravy;
-    ArrayList<String> seqDiagAllClassList;
-    ArrayList<String> seqDiagClassList;
-    ArrayList<String> instancesList;
-    ArrayList<Double> classPosXList;
-    ArrayList<Double> instancePosXList;
+
     private boolean initialized;
     private boolean isOpened;
-    int instanceCounter;
-    int messageCounter;
+    private int msgCounter;
 
     public SequenceDiagram(String name) {
         super(name);
         this.tridy = new ArrayList<>();
         this.zpravy= new ArrayList<>();
-        this.seqDiagAllClassList = new ArrayList<>();
-        this.seqDiagClassList = new ArrayList<>();
-        this.instancesList = new ArrayList<>();
-        this.classPosXList = new ArrayList<>();
-        this.instancePosXList = new ArrayList<>();
         this.klasifikatory = new ArrayList<>();
         this.initialized = false;
         this.isOpened = false;
-        this.instanceCounter = 0;
-        this.messageCounter = 0;
+        this.msgCounter = 0;
     }
 
     public boolean addClass(UMLClass classA) {
@@ -70,12 +59,8 @@ public class SequenceDiagram extends Element{
     }
 
 
-    public int getInstaceCounter() {
-        return this.instanceCounter;
-    }
-
-    public void incInstanceCounter() {
-        this.instanceCounter++;
+    public List<UMLMessage> getMessages(){
+        return this.zpravy;
     }
 
     public List<UMLClass> getClasses(){
@@ -94,11 +79,11 @@ public class SequenceDiagram extends Element{
         isOpened = opened;
     }
 
-    public String getMsgCounter() {
-    return String.valueOf(zpravy.size());
+    public void incrementMsgCount(){
+        this.msgCounter++;
     }
 
-    public void incMsgCounter() {
-        this.messageCounter++;
+    public int getMsgCouner(){
+        return this.msgCounter;
     }
 }

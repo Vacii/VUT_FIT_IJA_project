@@ -4,14 +4,17 @@ import ija.umleditor.uml.UMLClass;
 import ija.umleditor.uml.UMLInterface;
 import ija.umleditor.uml.UMLMessage;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -26,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ija.umleditor.Main.classDiagram;
+import static javafx.application.Application.setUserAgentStylesheet;
 
 /**
  * SequenceController je hlavní třída pro ovládání GUI sekvenčních diagramů
@@ -72,12 +76,15 @@ public class SequenceController {
     private double newXpositionOfClass;
     private double orgTranslateX;
     private double orgTranslateY;
+    private double msgTranslateY;
+    private double orgHeight;
 
     private ArrayList<String> classesToSave = new ArrayList();
 
 
     @FXML
     private void showClass(ActionEvent e){
+        String nameOfSeqDia = nameOfSeqDiagram.getText();
         String name = chooseClass.getValue();
         if (name != null && classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).findClass(name) == null){
             Label label = new Label();
@@ -112,7 +119,6 @@ public class SequenceController {
             });
             label.setOnMouseDragged(event -> {
                 ((Label) (event.getSource())).setTranslateX(orgTranslateX + event.getSceneX() - XpositionOfClass);
-
                 //TODO temp position setting
                 classDiagram.findClass(name).setSeqPos(orgTranslateX + event.getSceneX() - XpositionOfClass);
                 classPane.getChildren().remove(classPane.lookup(("#" + name + "DashedLine")));
@@ -123,6 +129,16 @@ public class SequenceController {
                     classPane.getChildren().removeAll(classPane.lookupAll(("#" + name + "Communication")));
                     Rectangle rectangle = new Rectangle();
                     drawComRectangle(classDiagram.findClass(name), heights.get(i), rectangle);
+                }
+                List<UMLMessage> messages = classDiagram.findSeqDiagram(nameOfSeqDia).getMessages();
+                for (int i = 0; i < messages.size(); i++){
+                        classPane.getChildren().remove(classPane.lookup("#" + messages.get(i).getName() + "MessageUpArr"));
+                        classPane.getChildren().remove(classPane.lookup("#" + messages.get(i).getName() + "MessageDownArr"));
+                        classPane.getChildren().remove(classPane.lookup("#" + messages.get(i).getName() + "MessageTriangle"));
+                        classPane.getChildren().remove(classPane.lookup("#" + messages.get(i).getName() + "Message"));
+                        classPane.getChildren().remove(classPane.lookup("#" + messages.get(i).getName()));
+                        redrawMessage(messages.get(i));
+
                 }
             });
         }
@@ -349,29 +365,150 @@ public class SequenceController {
         if (!chooseFirstClassForMsg.getValue().isEmpty() && !chooseSecondClassForMsg.getValue().isEmpty() && !chooseMsgType.getValue().isEmpty() && !chooseMsgOperation.getValue().isEmpty()){
             UMLClass firstClass = classDiagram.findClass(chooseFirstClassForMsg.getValue());
             UMLClass secondClass = classDiagram.findClass(chooseSecondClassForMsg.getValue());
-            UMLMessage message;
-            String name = ("msg" + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCounter());
-            message = classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).createMessage(name, firstClass.getName(),  secondClass.getName(), chooseMsgType.getValue(), chooseMsgOperation.getValue());
-            classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).incInstanceCounter();
+            UMLMessage message = classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).createMessage(chooseMsgOperation.getValue(), firstClass.getName(), secondClass.getName(), chooseMsgType.getValue(), chooseMsgOperation.getValue());
 
-            classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).incMsgCounter();
+            //TODO message cannot be moved on Y axis
+            Line line = new Line();
+            Line arrUp = new Line();
+            Line arrDown = new Line();
+            Label label = new Label();
 
-            System.out.println(message.getName() + " " + message.getOperation());
+            classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).incrementMsgCount();
 
             drawMessage(message);
+//            label.setLayoutX(classDiagram.findClass(message.getClass1()).getSeqPos() + (((classDiagram.findClass(message.getClass2()).getSeqPos() + 6) - (classDiagram.findClass(message.getClass1()).getSeqPos() + 6))/2));
+//            label.setLayoutY(message.getHeight()-20);
+//            label.setText(message.getName());
+//            label.setId(message.getName());
+//            classPane.getChildren().add(1, label);
 
+            line.setOnMousePressed(event -> {
+                msgTranslateY = event.getSceneY();
+                orgTranslateY = ((Line) (event.getSource())).getTranslateY();
+                orgHeight = message.getHeight();
+            });
+
+            System.out.println(message);
+            line.setOnMouseDragged(event -> {
+                double offsetY = event.getSceneY() - msgTranslateY;
+                double newTranslateY = orgTranslateY + offsetY;
+
+                ((Line) (event.getSource())).setTranslateY(newTranslateY);
+                line.setTranslateY(newTranslateY);
+                label.setTranslateY(newTranslateY);
+                message.setHeight(orgHeight + offsetY);
+                classPane.getChildren().remove(classPane.lookup(("#" + message.getName() + "Message")));
+                drawMessage(message);
+            });
         }
     }
 
     private void drawMessage(UMLMessage message){
-        Line line;
+        Line line = new Line();
+        Line arrUp = new Line();
+        Line arrDown = new Line();
+        Label label = new Label();
 
-        if (message.getType().equals("Synchronous")) {
+        switch (message.getType()){
+            case "Asynchronous":
+                line.setId(message.getName() + "Message");
+                arrUp.setId(message.getName() + "MessageUpArr");
+                arrDown.setId(message.getName() + "MessageDownArr");
+                line.setStartX(classDiagram.findClass(message.getClass1()).getSeqPos() + 6);
+                line.setStartY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                line.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                line.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
 
+                arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                arrUp.setStartY(message.getHeight()-5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                arrUp.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                arrDown.setStartY(message.getHeight()+5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                arrDown.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
 
-            System.out.println();
+                classPane.getChildren().add(0,line);
+                classPane.getChildren().add(0,arrDown);
+                classPane.getChildren().add(0,arrUp);
+                break;
+            case "Synchronous":
+                line.setId(message.getName() + "Message");
+
+                line.setStartX(classDiagram.findClass(message.getClass1()).getSeqPos() + 6);
+                line.setStartY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                line.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                line.setEndY(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+
+                Polygon polygon = new Polygon();
+                polygon.getPoints().addAll(classDiagram.findClass(message.getClass2()).getSeqPos(), message.getHeight()-5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20,
+                        classDiagram.findClass(message.getClass2()).getSeqPos() + 6, message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20,
+                        classDiagram.findClass(message.getClass2()).getSeqPos(), message.getHeight()+5 + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+                polygon.setId(message.getName() + "MessageTriangle");
+                classPane.getChildren().add(0, polygon);
+                classPane.getChildren().add(0,line);
+                break;
         }
+        label.setLayoutX(classDiagram.findClass(message.getClass1()).getSeqPos() + (((classDiagram.findClass(message.getClass2()).getSeqPos() + 6) - (classDiagram.findClass(message.getClass1()).getSeqPos() + 6))/2));
+        label.setLayoutY(message.getHeight()-20);
+        label.setText(message.getName());
+        label.setId(message.getName());
 
+        message.setHeight(message.getHeight() + classDiagram.findSeqDiagram(nameOfSeqDiagram.getText()).getMsgCouner() * 20);
+        classPane.getChildren().add(1, label);
+    }
+
+    private void redrawMessage(UMLMessage message){
+        Line line = new Line();
+        Line arrUp = new Line();
+        Line arrDown = new Line();
+        Label label = new Label();
+
+        switch (message.getType()){
+            case "Asynchronous":
+                line.setId(message.getName() + "Message");
+                arrUp.setId(message.getName() + "MessageUpArr");
+                arrDown.setId(message.getName() + "MessageDownArr");
+                line.setStartX(classDiagram.findClass(message.getClass1()).getSeqPos() + 6);
+                line.setStartY(message.getHeight());
+                line.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                line.setEndY(message.getHeight());
+
+                arrUp.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                arrUp.setStartY(message.getHeight()-5);
+                arrUp.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                arrUp.setEndY(message.getHeight());
+                arrDown.setStartX(classDiagram.findClass(message.getClass2()).getSeqPos());
+                arrDown.setStartY(message.getHeight()+5);
+                arrDown.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                arrDown.setEndY(message.getHeight());
+
+                classPane.getChildren().add(0,line);
+                classPane.getChildren().add(0,arrDown);
+                classPane.getChildren().add(0,arrUp);
+                break;
+            case "Synchronous":
+                line.setId(message.getName() + "Message");
+
+                line.setStartX(classDiagram.findClass(message.getClass1()).getSeqPos() + 6);
+                line.setStartY(message.getHeight());
+                line.setEndX(classDiagram.findClass(message.getClass2()).getSeqPos() + 6);
+                line.setEndY(message.getHeight());
+
+                Polygon polygon = new Polygon();
+                polygon.getPoints().addAll(classDiagram.findClass(message.getClass2()).getSeqPos(), message.getHeight()-5,
+                        classDiagram.findClass(message.getClass2()).getSeqPos() + 6, message.getHeight(),
+                        classDiagram.findClass(message.getClass2()).getSeqPos(), message.getHeight()+5);
+                polygon.setId(message.getName() + "MessageTriangle");
+                classPane.getChildren().add(0, polygon);
+                classPane.getChildren().add(0,line);
+                break;
+        }
+        label.setLayoutX(classDiagram.findClass(message.getClass1()).getSeqPos() + (((classDiagram.findClass(message.getClass2()).getSeqPos() + 6) - (classDiagram.findClass(message.getClass1()).getSeqPos() + 6))/2));
+        label.setLayoutY(message.getHeight()-20);
+        label.setText(message.getName());
+        label.setId(message.getName());
+        classPane.getChildren().add(1, label);
     }
 
     @FXML
