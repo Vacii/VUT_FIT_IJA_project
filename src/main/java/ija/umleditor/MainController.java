@@ -1048,6 +1048,17 @@ public class MainController {
                 VBox methods = (VBox) mainPane.lookup("#" + chooseClass.getValue() + "Methods");
                 Text method = new Text(chooseOperator.getValue() + name + ":" + type);
                 method.setId(name + "Meth");
+                if (classDiagram.findInterface(chooseClass.getValue()).getRelations() != null){
+                    List<UMLRelation> relations = classDiagram.findInterface(chooseClass.getValue()).getRelations();
+                    for (int i = 0; i < relations.size(); i++){
+                        if (relations.get(i).getFirstInterface() != null && relations.get(i).getFirstInterface().equals(classDiagram.findInterface(chooseClass.getValue()))){
+                            if (relations.get(i).getSecondClass() != null && relations.get(i).getSecondClass().getNamesOfMethods().contains(name)){
+                                method.setStroke(Color.PURPLE);
+                            }
+                        }
+
+                    }
+                }
                 methods.getChildren().add(method);
 //                methodsAdded.add(newMethod); //UNDO
                 //classOfMethodAdded.add(chosenInterface); //UNDO not ready for interfaces
