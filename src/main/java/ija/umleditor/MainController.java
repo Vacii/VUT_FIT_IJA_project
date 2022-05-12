@@ -1096,6 +1096,7 @@ public class MainController {
                     if(!undoActive == true) actionsPerformed.add("removed method");
 
                     chosenClass.removeMethod(operation); //deleted from backend data
+                    chosenClass.removeNameFromMethods(operation.getName());
                     listOfMethods.remove(operation.getName());
 
                     VBox methods = (VBox) mainPane.lookup("#" + chosenClass.getName() + "Methods");
@@ -1339,6 +1340,7 @@ public class MainController {
         JSONObject object = new JSONObject();
         JSONObject position = new JSONObject();
         JSONObject methods = new JSONObject();
+        JSONObject relations = new JSONObject();
 
         position.put("x", umlInterface.getXposition());
         position.put("y", umlInterface.getYposition());
@@ -1353,8 +1355,27 @@ public class MainController {
             type = type.replaceAll("\\([^\\)]*\\)\\s*", "");
             methods.put(operationName, type);
         }
+        List<UMLRelation> relationList = umlInterface.getRelations();
 
+        for (UMLRelation relation : relationList) {
 
+            //interface je druhé jméno
+            if (relation.getFirstInterface() == null) {
+
+                String relationValue = (relation.getFirstClass().getName() + "@" + relation.getSecondInterface() + "@" + relation.getType());
+                relations.put(relation.getName(), relationValue);
+
+            }
+            //interface je první jméno
+            else {
+
+                String relationValue = (relation.getFirstInterface().getName() + "@" + relation.getSecondClass().getName() + "@" + relation.getType());
+                relations.put(relation.getName(), relationValue);
+            }
+
+        }
+
+        object.put("relations", relations);
         object.put("position", position);
         object.put("methods", methods);
         object.put("entity", umlInterface.getName());
@@ -1369,6 +1390,7 @@ public class MainController {
         JSONObject position = new JSONObject();
         JSONObject methods = new JSONObject();
         JSONObject attributes = new JSONObject();
+        JSONObject relations = new JSONObject();
 
         //methods n attributes cannot be empty atm - TODO
 
@@ -1396,7 +1418,47 @@ public class MainController {
             attributes.put(attributeName, type);
         }
 
+        List<UMLRelation> relationList = cls.getRelations();
+        for (UMLRelation relation : relationList) {
 
+            //problém u vazby třída - interface
+
+            //relace mezi dvěma třídama
+            if (relation.getFirstClass() != null && relation.getSecondClass() != null) {
+
+                String relationValue = (relation.getFirstClass().getName() + "@" + relation.getSecondClass().getName() + "@" + relation.getType());
+                relations.put(relation.getName(), relationValue);
+            }
+
+            //relace mezi 1. třídou 2. interface
+
+            else if (relation.getFirstClass() != null && relation.getSecondInterface() != null) {
+
+                String relationValue = (relation.getFirstClass().getName() + "@" + relation.getSecondInterface().getName() + "@" + relation.getType());
+                relations.put(relation.getName(), relationValue);
+
+            }
+
+            //relace mezi 1. interface 2. třídou
+
+            else if (relation.getFirstInterface() != null && relation.getSecondClass() != null) {
+
+                String relationValue = (relation.getFirstInterface().getName() + "@" + relation.getSecondClass().getName() + "@" + relation.getType());
+                relations.put(relation.getName(), relationValue);
+
+            }
+
+            //jinak mezi interfacama
+
+            else {
+
+
+                String relationValue = (relation.getFirstInterface().getName() + "@" + relation.getSecondInterface().getName() + "@" + relation.getType());
+                relations.put(relation.getName(), relationValue);
+            }
+        }
+
+        object.put("relations", relations);
         object.put("position", position);
         object.put("methods", methods);
         object.put("attributes", attributes);

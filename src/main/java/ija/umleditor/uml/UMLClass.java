@@ -90,6 +90,11 @@ public class UMLClass extends UMLClassifier {
         return Collections.unmodifiableList(this.operace);
     }
 
+    public void removeNameFromMethods(String name) {
+
+        this.jmenaOperaci.remove(name);
+    }
+
     public List<String> getNamesOfMethods(){
         return this.jmenaOperaci;
     }
