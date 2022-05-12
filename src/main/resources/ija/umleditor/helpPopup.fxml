@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="507.0" prefWidth="423.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <Label layoutX="114.0" layoutY="14.0" text="UMLEditor manual">
-         <font>
-            <Font name="System Bold Italic" size="25.0" />
-         </font></Label>
-      <Label layoutX="51.0" layoutY="77.0" text="This application does not show any diagram at the moment." />
-      <Label layoutX="65.0" layoutY="117.0" text="JSON file is loaded automaticaly and printed to stdout." />
-   </children>
-</AnchorPane>
+<SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+  <items>
+    <AnchorPane maxHeight="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="57.0" prefWidth="598.0">
+         <children>
+            <Label layoutX="203.0" layoutY="13.0" text="CLASS DIAGRAM HELP">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Label>
+         </children></AnchorPane>
+      <TextArea prefHeight="200.0" prefWidth="200.0" text="Menu bar:&#10;- File:&#10;&#9;-Open = Open new json file&#10;&#9;-Save = Save current class diagram&#10;&#9;-Exit = Exits app&#10;-Help:&#10;&#9;-About = Manual of class diagram view&#10;&#10;Left Side:&#10;&#9;-Here you can create and edit your class diagram&#10;&#9;-If you want to add/remove any objects from class/interface, &#10;&#9;you have to choose them under &quot;Select class&quot; &#10;&#10;&#9;-Relations needs to have a name and two objects selected&#10;&#9;-Types of relations are showing as different relation colors:&#10;&#9;&#9;&#9;*Asociation = black&#10;&#9;&#9;&#9;*Generalization = purple&#10;&#9;&#9;&#9;*Aggregation = green&#10;&#9;&#9;&#9;*Composition = blue&#10;&#10;Right Side:&#10;&#9;&#9;-Place for class diagram&#10;&#10;Top Side:&#10;&#9;&#9;-Here you can create or open a sequence diagram&#10;" />
+  </items>
+</SplitPane>
